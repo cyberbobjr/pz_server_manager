@@ -1,0 +1,8 @@
+server:
+    port: 7777
+auth :
+    username : admin
+    password : admin
+    secret : "123456"
+pz:
+    path : "/Users/benjaminmarchand/IdeaProjects/project-zomboid-server-docker/workshop-mods/content/108600"
