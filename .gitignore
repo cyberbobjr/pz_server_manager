@@ -1,0 +1,5 @@
+.idea
+venv
+.vscode
+docker/data
+docker/workshop-mods
