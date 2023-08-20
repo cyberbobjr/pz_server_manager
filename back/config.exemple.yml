@@ -1,0 +1,18 @@
+server:
+  port: 7777
+rcon:
+  port: 27015
+  password: ""
+  host: "127.0.0.1"
+auth:
+  username: admin
+  password: admin
+  secret: "123456"
+pz:
+  mod_path: ""
+steam:
+  apikey: ""
+  steamcmd_path: "steamcmd_dir"
+  modpack_path: "modpacks"
+  cache_folder: "mod_cache"
+  appid: 108600

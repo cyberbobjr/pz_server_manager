@@ -17,6 +17,7 @@ class PZGame:
         self.gamepath = gamepath
 
     def scan_mods(self):
+        self.mods = []
         for file in glob.glob(self.gamepath + '/*/mods/*/' + MODINFO):
             mod = self.parse_info(file, self.gamepath)
             if mod is not None:

@@ -14,18 +14,20 @@ class Steam(object):
         if not os.path.exists(self.cache_folder):
             os.makedirs(self.cache_folder, exist_ok=True)
 
-    def get_mod_info(self, workshop_id: str):
-        cache_filename = os.path.join(self.cache_folder, f"{hash(workshop_id)}.txt")
-        if os.path.exists(cache_filename):
+    def get_mod_info(self, workshop_id: str, force=False):
+        cache_filename = os.path.join(self.cache_folder, f"{workshop_id}.json")
+        if os.path.exists(cache_filename) and force is False:
             with open(cache_filename, "r") as cache_file:
                 cached_data = json.load(cache_file)
             return cached_data
 
         url = "IPublishedFileService/GetDetails/v1/"
+        from main import app_config
         query_params = {
             "key": self.key,
             "appid": app_config["steam"]["appid"],
-            "publishedfileids[0]": workshop_id
+            "publishedfileids[0]": workshop_id,
+            "includevotes": 1
         }
 
         response = requests.get(f"{self.baseUrl}{url}", params=query_params)

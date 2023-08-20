@@ -1,13 +1,30 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-
-const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: '/welcome' },
-  { path: 'welcome', loadChildren: () => import('./pages/welcome/welcome.module').then(m => m.WelcomeModule) }
-];
+import {RouterModule} from '@angular/router';
+import {NgModule} from '@angular/core';
+import {NotfoundComponent} from './demo/components/notfound/notfound.component';
+import {AppLayoutComponent} from "./layout/app.layout.component";
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot([
+      {
+        path: '', component: AppLayoutComponent,
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('./demo/components/dashboard/dashboard.module').then(m => m.DashboardModule)
+          },
+          {
+            path: 'mods',
+            loadChildren: () => import('./pages/mods/mods.module').then(m => m.ModsModule)
+          }
+        ]
+      },
+      {path: 'auth', loadChildren: () => import('./demo/components/auth/auth.module').then(m => m.AuthModule)},
+      {path: 'notfound', component: NotfoundComponent},
+      {path: '**', redirectTo: '/notfound'},
+    ], {scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled', onSameUrlNavigation: 'reload'})
+  ],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}
