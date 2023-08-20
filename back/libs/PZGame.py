@@ -6,17 +6,20 @@ MODINFO = "mod.info"
 
 
 class PZGame:
-    mods = []
+    mods: list[Mod] = []
     recipes = {}
+    gamepath = ""
 
     def __init__(self, gamepath: str):
         self.init(gamepath)
 
     def init(self, gamepath: str):
-        for file in glob.glob(gamepath + '/*/mods/*/' + MODINFO):
-            mod = self.parse_info(file, gamepath)
+        self.gamepath = gamepath
+
+    def scan_mods(self):
+        for file in glob.glob(self.gamepath + '/*/mods/*/' + MODINFO):
+            mod = self.parse_info(file, self.gamepath)
             if mod is not None:
-                mod.seek_recipe()
                 self.mods.append(mod)
 
     def parse_info(self, file, gamepath) -> Mod:

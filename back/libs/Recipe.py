@@ -16,6 +16,11 @@ def get_qty(result: str) -> int:
         return int(parts[1])
     return qty
 
+def remove_comments(input_string):
+    # Utilisation de l'expression régulière pour supprimer les commentaires /* ... */
+    pattern = r"/\*.*?\*/"
+    clean_string = re.sub(pattern, "", input_string, flags=re.DOTALL)
+    return clean_string
 
 class Recipe:
     payload = list[str]
@@ -33,7 +38,7 @@ class Recipe:
     def parse_result(self):
         result = list(filter(lambda r: r.strip().startswith("Result"), self.payload))
         if result is not None and len(result) > 0:
-            clean_result = " ".join(result[0].split()).replace(",", "")
+            clean_result = remove_comments(" ".join(result[0].split()).replace(",", ""))
             self.result = get_result(clean_result)
             self.qty = get_qty(clean_result)
         return None

@@ -3,3 +3,7 @@ venv
 .vscode
 docker/data
 docker/workshop-mods
+back/config.yml
+back/mod_cache
+back/steamcmd_dir
+back/test
