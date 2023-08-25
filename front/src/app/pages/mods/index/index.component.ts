@@ -1,7 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
-import {Parser} from 'bulletin-board-code';
 import {DataView} from 'primeng/dataview';
-import {BehaviorSubject, Observable, of, switchMap} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, Observable} from 'rxjs';
 import {Mod} from '../api/Mod';
 import {ModpackService} from '../service/modpack.service';
 import {ModsService} from '../service/mods.service';
@@ -13,7 +12,6 @@ import {ModsService} from '../service/mods.service';
 })
 export class IndexComponent {
   @ViewChild('dv', {static: false}) dv!: DataView;
-  parser = new Parser();
   modpacks$: BehaviorSubject<string[]> = this.modpackService.modpacks$;
   mods$: Observable<Mod[]> = this.modsService.mods$;
   selectedModpack!: string;
@@ -27,6 +25,6 @@ export class IndexComponent {
   }
 
   addToModpack(product: Mod) {
-    this.modpackService.addModIdToModpack(this.selectedModpack, product.id);
+    firstValueFrom(this.modpackService.addModIdToModpack(this.selectedModpack, product.mod_info.dir));
   }
 }

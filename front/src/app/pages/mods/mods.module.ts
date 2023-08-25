@@ -2,6 +2,7 @@ import {CommonModule} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+import {AccordionModule} from 'primeng/accordion';
 import {ButtonModule} from 'primeng/button';
 import {ChipModule} from 'primeng/chip';
 import {DataViewModule} from 'primeng/dataview';
@@ -17,6 +18,7 @@ import {VotePipe} from './pipe/vote.pipe';
 import {ModpackService} from './service/modpack.service';
 import {StarRatingComponent} from './ui/star-rating/star-rating.component';
 import { ModpackdetailComponent } from './modpackdetail/modpackdetail.component';
+import { PreviewStaticPipe } from './pipe/preview-static.pipe';
 
 
 @NgModule({
@@ -24,7 +26,8 @@ import { ModpackdetailComponent } from './modpackdetail/modpackdetail.component'
     IndexComponent,
     VotePipe,
     StarRatingComponent,
-    ModpackdetailComponent
+    ModpackdetailComponent,
+    PreviewStaticPipe
   ],
   imports: [
     CommonModule,
@@ -38,7 +41,8 @@ import { ModpackdetailComponent } from './modpackdetail/modpackdetail.component'
     ChipModule,
     ButtonModule,
     InputTextModule,
-    DropdownModule
+    DropdownModule,
+    AccordionModule
   ],
   providers: [
 

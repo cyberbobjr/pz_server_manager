@@ -15,7 +15,7 @@ export class ModsService {
   mods$: Observable<Mod[]> = this.listMods()
                                  .pipe(
                                    switchMap(m => of(
-                                       m.sort((a, b) => a.name.localeCompare(b.name))
+                                       m.sort((a, b) => a.mod_info.name.localeCompare(b.mod_info.name))
                                         .map(mod => ({
                                           ...mod,
                                           html_description: this.parser.toHTML(mod.steam_data!.file_description),
@@ -31,9 +31,5 @@ export class ModsService {
 
   listMods(): Observable<Mod[]> {
     return this.httpClient.get<Mod[]>(`${this.baseUrl}/mods/`);
-  }
-
-  listModpack(): Observable<string[]> {
-    return this.httpClient.get<string[]>(`${this.baseUrl}/mods/modpack/`);
   }
 }

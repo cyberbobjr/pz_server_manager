@@ -1,18 +1,23 @@
+import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, firstValueFrom} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, Observable} from 'rxjs';
+import {environment} from '../../../../environments/environment';
+import {ModpackDetail} from '../api/Mod';
 import {ModsService} from './mods.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModpackService {
+  private baseUrl: string = environment.baseUrl;
   modpacksContents: Map<string, Set<string>> = new Map<string, Set<string>>();
   modpacksContents$: BehaviorSubject<Map<string, Set<string>>> = new BehaviorSubject<Map<string, Set<string>>>(new Map());
   modpacks: string[] = [];
   modpacks$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
 
-  constructor(private modsService: ModsService) {
-    firstValueFrom(this.modsService.listModpack())
+  constructor(private modsService: ModsService,
+              private httpClient: HttpClient) {
+    firstValueFrom(this.listModpack())
       .then(m => {
         this.modpacks = m;
         this.modpacks$.next(m);
@@ -32,5 +37,18 @@ export class ModpackService {
     }
     this.modpacksContents.set(modpackname, modIds.add(modId));
     this.modpacksContents$.next(this.modpacksContents);
+    return this.httpClient.post<string[]>(`${this.baseUrl}/mods/modpack/`, {
+      mods: [modId],
+      packname: modpackname,
+      prefix: modpackname
+    });
+  }
+
+  listModpack(): Observable<string[]> {
+    return this.httpClient.get<string[]>(`${this.baseUrl}/mods/modpack/`);
+  }
+
+  getModpackDetails(modpackname: string): Observable<ModpackDetail[]> {
+    return this.httpClient.get<ModpackDetail[]>(`${this.baseUrl}/mods/modpack/?packname=${modpackname}`);
   }
 }

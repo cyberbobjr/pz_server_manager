@@ -1,3 +1,4 @@
+import configparser
 import json
 import os
 import re
@@ -26,14 +27,33 @@ def parse_mod_info(file) -> str:
 
 
 def build_server_ini_file(packname, mod_ids: list[str]):
-    f = open(os.path.join(packname, "server.ini"), "w")
-    f.write("Mods=" + ";".join(mod_ids))
-    f.close()
+    filename = os.path.join(packname, "server.ini")
+    config = configparser.ConfigParser()
+    value = ";".join(mod_ids)
+    if config.read(filename):
+        if "Mods" in config:
+            existing_values = config["Mods"]["Mods"]
+            new_values = existing_values + ";" + value
+            config["Mods"]["Mods"] = new_values
+    else:
+        config["Mods"] = {"Mods": value}
+
+    # Écrire les données dans le fichier INI
+    with open(filename, "w") as config_file:
+        config.write(config_file)
 
 
 def build_modpack_info(packname, pack_info):
-    with open(os.path.join(packname, "modpack.info"), "w") as modpack_info:
-        json.dump(pack_info, modpack_info, indent=4)
+    modpack_info_path = os.path.join(packname, "modpack.info")
+    if os.path.exists(modpack_info_path):
+        with open(modpack_info_path, 'r+') as modpack_info:
+            existing = json.load(modpack_info)
+            modpack_info.close()
+        with open(modpack_info_path, 'w') as modpack_info:
+            json.dump({**existing, **pack_info}, modpack_info, indent=4)
+    else:
+        with open(modpack_info_path, "w") as modpack_info:
+            json.dump(pack_info, modpack_info, indent=4)
 
 
 def modify_mod_info(file_path, prefix):
@@ -97,6 +117,29 @@ def get_subdirectories(directory):
         return []
 
 
+def remove_empty_lines(text):
+    lines = text.splitlines()
+    non_empty_lines = [line for line in lines if line.strip() != ""]
+    cleaned_text = "\n".join(non_empty_lines)
+    return cleaned_text
+
+
+def convert_modinfo_to_json(modinfo_content, modname):
+    modinfo_json = {}
+    for line in modinfo_content:
+        try:
+            if line.strip() != "":
+                if line.startswith("require"):
+                    modinfo_json["require"] = line.strip().replace("require=", "").split(",")
+                else:
+                    key, value = line.strip().split("=")
+                    modinfo_json[key] = value
+        except Exception as e:
+            print(e)
+    modinfo_json["dir"] = modname
+    return modinfo_json
+
+
 class BuildPackRequest(BaseModel):
     mods: list[str]
     packname: str
@@ -112,65 +155,19 @@ class SearchModRequest(BaseModel):
 @router.get("/mods/", tags=["list mod"])
 async def index(force=False):
     try:
+        mods = []
         from main import pzGame
         pzGame.scan_mods()
         from main import steam
         for mod in pzGame.mods:
-            mod.steam_data = steam.get_mod_info(mod.workshopId, force)
-        return pzGame.mods
-    except Exception as e:
-        print(e)
-
-
-@router.get("/mods/modpack")
-async def get_build_pack(packname: str = None):
-    from main import app_config
-    from main import steam
-    modpack_path = app_config["steam"]["modpack_path"]
-    if packname is None:
-        return get_subdirectories(modpack_path)
-    with open(os.path.join(modpack_path, packname, "modpack.info"), "r") as cache_file:
-        mods = {}
-        modpack_content = json.load(cache_file)
-        for key, mod in modpack_content.items():
-            mods[key] = steam.get_mod_info(mod)
+            mod_info = open(mod.file, "r")
+            mods.append({
+                "mod_info": convert_modinfo_to_json(mod_info.readlines(), mod.path),
+                "steam_data": steam.get_mod_info(mod.workshopId)
+            })
         return mods
-
-
-@router.post("/mods/modpack")
-async def build_pack(request: BuildPackRequest):
-    try:
-        pack_info = {}
-        mods = request.mods
-        packname = request.packname
-        prefix = request.prefix
-        from main import app_config
-        dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
-        # Créer le répertoire du pack
-        if not os.path.exists(dst_packname):
-            os.makedirs(dst_packname)
-        ids = []
-        # Parcourir chaque répertoire dans mods et copier son contenu dans le répertoire packname
-        for mod_dir in mods:
-            workshop_id = get_workshop_id(mod_dir)
-            mod_id = parse_mod_info(os.path.join(mod_dir, 'mod.info'))
-            pack_info[mod_id] = workshop_id
-            dst_dir = os.path.join(dst_packname, os.path.basename(mod_dir))
-            if os.path.exists(mod_dir) and os.path.isdir(mod_dir) and not os.path.exists(dst_dir):
-                # Copier le contenu du répertoire et de ses sous-répertoires dans packname
-                shutil.copytree(mod_dir, dst_dir, dirs_exist_ok=True)
-            mod_info_path = os.path.join(dst_packname, mod_id, "mod.info")
-            if os.path.exists(mod_info_path):
-                modify_mod_info(os.path.join(dst_packname, mod_id, "mod.info"), prefix)
-                ids.append(prefix + mod_id)
-            else:
-                return HTTPException(status_code=400, detail=f"Le répertoire {mod_dir} n'existe pas.")
-        build_server_ini_file(dst_packname, ids)
-        build_modpack_info(dst_packname, pack_info)
-        return {"message": f"Le pack '{packname}' a été construit avec succès."}
     except Exception as e:
         print(e)
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/mods/search")
@@ -192,6 +189,65 @@ async def search_mods(workshop_id: str):
     from main import app_config
     steamcmd.install_workshopfiles(app_config["steam"]["appid"], workshop_id, app_config["pz"]["mod_path"])
     return {"message": f"Le mod '{workshop_id}' a été téléchargé avec succès."}
+
+
+@router.get("/mods/modpack")
+async def get_build_pack(packname: str = None):
+    from main import app_config
+    from main import steam
+    modpack_path = app_config["steam"]["modpack_path"]
+    if packname is None:
+        return get_subdirectories(modpack_path)
+    with open(os.path.join(modpack_path, packname, "modpack.info"), "r") as cache_file:
+        mods = []
+        modpack_content = json.load(cache_file)
+        for key, mod in modpack_content.items():
+            mod_info = open(os.path.join(modpack_path, packname, key, "mod.info"), "r")
+            mods.append({
+                "mod_info": convert_modinfo_to_json(mod_info.readlines(), key),
+                "steam_data": steam.get_mod_info(mod)
+            })
+        return mods
+
+
+# @router.put("/mods/modpack")
+# async def add_to_modpack(request: BuildPackRequest):
+
+@router.post("/mods/modpack")
+async def build_pack(request: BuildPackRequest):
+    try:
+        pack_info = {}
+        mods = request.mods
+        packname = request.packname
+        prefix = request.prefix
+        from main import app_config
+        dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
+        # Créer le répertoire du pack
+        if not os.path.exists(dst_packname):
+            os.makedirs(dst_packname)
+        ids = []
+        # Parcourir chaque répertoire dans mods et copier son contenu dans le répertoire packname
+        for mod_dir in mods:
+            workshop_id = get_workshop_id(mod_dir)
+            # mod_dir_name = os.path.basename(mod_dir)
+            mod_id = parse_mod_info(os.path.join(mod_dir, 'mod.info'))
+            pack_info[mod_id] = workshop_id
+            dst_dir = os.path.join(dst_packname, mod_id)
+            if os.path.exists(mod_dir) and os.path.isdir(mod_dir) and not os.path.exists(dst_dir):
+                # Copier le contenu du répertoire et de ses sous-répertoires dans packname
+                shutil.copytree(mod_dir, dst_dir, dirs_exist_ok=True)
+            mod_info_path = os.path.join(dst_packname, mod_id, "mod.info")
+            if os.path.exists(mod_info_path):
+                modify_mod_info(mod_info_path, prefix + "_")
+                ids.append(prefix + "_" + mod_id)
+            else:
+                return HTTPException(status_code=400, detail=f"Le répertoire {mod_info_path} n'existe pas.")
+        build_server_ini_file(dst_packname, ids)
+        build_modpack_info(dst_packname, pack_info)
+        return {"message": f"Le pack '{packname}' a été construit avec succès."}
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.delete("/mods/modpack")

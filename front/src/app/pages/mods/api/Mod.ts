@@ -1,9 +1,5 @@
 export interface Mod {
-  workshopId: number;
-  name: string;
-  path: string;
-  file: string;
-  id: string;
+  mod_info: ModInfo;
   steam_data?: SteamInfo
 }
 
@@ -64,4 +60,17 @@ export interface SteamInfo {
 export interface Modpack {
   name: string;
   mod_ids: string[];
+}
+
+export interface ModInfo {
+  "name": string;
+  "id": string;
+  "description": string;
+  "poster": string;
+  "dir": string;
+}
+
+export interface ModpackDetail {
+  mod_info: ModInfo;
+  steam_data: SteamInfo;
 }
