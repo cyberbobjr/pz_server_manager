@@ -10,7 +10,8 @@ class PZGame:
     recipes = {}
     gamepath = ""
 
-    def __init__(self, gamepath: str):
+    def __init__(self, gamepath: str, debug: bool):
+        self.isDebug = debug
         self.init(gamepath)
 
     def init(self, gamepath: str):
@@ -18,7 +19,9 @@ class PZGame:
 
     def scan_mods(self):
         self.mods = []
-        for file in glob.glob(self.gamepath + '/*/mods/*/' + MODINFO):
+        path = self.gamepath + '/*/mods/*/' + MODINFO
+        self.debug(f"scan mod called : {path}")
+        for file in glob.glob(path):
             mod = self.parse_info(file, self.gamepath)
             if mod is not None:
                 self.mods.append(mod)
@@ -72,3 +75,7 @@ class PZGame:
         for mod in self.mods:
             f.write(f"{mod.name}\n")
         f.close()
+
+    def debug(self, message):
+        if self.isDebug:
+            print(message)

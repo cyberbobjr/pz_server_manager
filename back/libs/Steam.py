@@ -43,7 +43,7 @@ class Steam(object):
         else:
             print("La requête a échoué avec le code:", response.status_code)
 
-    def search_mod(self, cursor=None, text=None, tags=None):
+    def search_mod(self, cursor=None, text=None, tags=None, sort=21):
         if tags is None:
             tags = []
         url = "IPublishedFileService/QueryFiles/v1/"
@@ -59,7 +59,7 @@ class Steam(object):
             "return_children": 1,
             "return_tags": 1,
             "return_metadata": 1,
-            "query_type": 21,  # 9 si tri par nombre de souscription, 21 = dernière mise à jour
+            "query_type": sort,  # 9 si tri par nombre de souscription, 21 = dernière mise à jour
             "numperpage": 100
         }
         if text is not None:
@@ -73,3 +73,6 @@ class Steam(object):
             return data
         else:
             print("La requête a échoué avec le code:", response.status_code)
+
+    def get_latest(self, cursor=None):
+        return self.search_mod()

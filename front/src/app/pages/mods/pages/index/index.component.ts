@@ -1,9 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
 import {DataView} from 'primeng/dataview';
 import {BehaviorSubject, firstValueFrom, Observable} from 'rxjs';
-import {Mod} from '../api/Mod';
-import {ModpackService} from '../service/modpack.service';
-import {ModsService} from '../service/mods.service';
+import {Mod} from '../../api/Mod';
+import {ModpackService} from '../../service/modpack.service';
+import {ModsService} from '../../service/mods.service';
 
 @Component({
   selector: 'app-index',
@@ -15,7 +15,7 @@ export class IndexComponent {
   modpacks$: BehaviorSubject<string[]> = this.modpackService.modpacks$;
   mods$: Observable<Mod[]> = this.modsService.mods$;
   selectedModpack!: string;
-
+  visible: boolean = false;
   constructor(private modsService: ModsService,
               private modpackService: ModpackService) {
   }

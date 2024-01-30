@@ -55,7 +55,10 @@ export class AppMenuComponent implements OnInit, OnDestroy {
         label: 'Mods',
         items: [
           {
-            label: 'Liste des mods', icon: 'pi pi-fw pi-id-card', routerLink: ['/mods']
+            label: 'Liste des mods installés', icon: 'pi pi-fw pi-id-card', routerLink: ['/mods']
+          },
+          {
+            label: 'Rechercher des mods sur Steam', icon: 'fa-brands fa-steam', routerLink: ['/steam']
           }
         ]
       },

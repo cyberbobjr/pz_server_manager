@@ -2,9 +2,9 @@ import {Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Parser} from 'bulletin-board-code';
 import {filter, Observable, of, switchMap, tap} from 'rxjs';
-import {ModpackDetail} from '../api/Mod';
-import {ModpackService} from '../service/modpack.service';
-import {ModsService} from '../service/mods.service';
+import {ModpackDetail} from '../../api/Mod';
+import {ModpackService} from '../../service/modpack.service';
+import {ModsService} from '../../service/mods.service';
 
 @Component({
   selector: 'app-modpackdetail',

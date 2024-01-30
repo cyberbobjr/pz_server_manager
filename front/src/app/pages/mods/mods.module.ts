@@ -6,28 +6,23 @@ import {AccordionModule} from 'primeng/accordion';
 import {ButtonModule} from 'primeng/button';
 import {ChipModule} from 'primeng/chip';
 import {DataViewModule} from 'primeng/dataview';
+import {DialogModule} from 'primeng/dialog';
 import {DropdownModule} from 'primeng/dropdown';
 import {InputTextModule} from 'primeng/inputtext';
 import {ProgressBarModule} from 'primeng/progressbar';
 import {RatingModule} from 'primeng/rating';
 import {TagModule} from 'primeng/tag';
-import {IndexComponent} from './index/index.component';
+import {AppSharedModule} from '../../shared/appshared.module';
+import {IndexComponent} from './pages/index/index.component';
 
 import {ModsRoutingModule} from './mods-routing.module';
-import {VotePipe} from './pipe/vote.pipe';
-import {ModpackService} from './service/modpack.service';
-import {StarRatingComponent} from './ui/star-rating/star-rating.component';
-import { ModpackdetailComponent } from './modpackdetail/modpackdetail.component';
-import { PreviewStaticPipe } from './pipe/preview-static.pipe';
+import {ModpackdetailComponent} from './pages/modpackdetail/modpackdetail.component';
 
 
 @NgModule({
   declarations: [
     IndexComponent,
-    VotePipe,
-    StarRatingComponent,
     ModpackdetailComponent,
-    PreviewStaticPipe
   ],
   imports: [
     CommonModule,
@@ -42,11 +37,11 @@ import { PreviewStaticPipe } from './pipe/preview-static.pipe';
     ButtonModule,
     InputTextModule,
     DropdownModule,
-    AccordionModule
+    AccordionModule,
+    AppSharedModule,
+    DialogModule
   ],
-  providers: [
-
-  ]
+  providers: []
 })
 export class ModsModule {
 }

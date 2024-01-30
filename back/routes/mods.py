@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 from typing import Optional
+from datetime import datetime
 
 from fastapi import APIRouter, HTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -152,7 +153,7 @@ class SearchModRequest(BaseModel):
     text: Optional[str]
 
 
-@router.get("/mods/", tags=["list mod"])
+@router.get("/mods/", tags=["list all mods"])
 async def index(force=False):
     try:
         mods = []
@@ -168,20 +169,6 @@ async def index(force=False):
         return mods
     except Exception as e:
         print(e)
-
-
-@router.post("/mods/search")
-async def search_mods(request: SearchModRequest):
-    try:
-        cursor = request.cursor
-        tags = request.tags
-        text = request.text
-        from main import steam
-        return steam.search_mod(cursor, text, tags)
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/mods/download")
 async def search_mods(workshop_id: str):
@@ -216,7 +203,7 @@ async def get_build_pack(packname: str = None):
 @router.post("/mods/modpack")
 async def build_pack(request: BuildPackRequest):
     try:
-        pack_info = {}
+        pack_info = []
         mods = request.mods
         packname = request.packname
         prefix = request.prefix
@@ -231,7 +218,11 @@ async def build_pack(request: BuildPackRequest):
             workshop_id = get_workshop_id(mod_dir)
             # mod_dir_name = os.path.basename(mod_dir)
             mod_id = parse_mod_info(os.path.join(mod_dir, 'mod.info'))
-            pack_info[mod_id] = workshop_id
+            pack_info.append({
+                "workshop_id": workshop_id,
+                "mod_id": mod_id,
+                "ts_added": datetime.now().isoformat()
+            })
             dst_dir = os.path.join(dst_packname, mod_id)
             if os.path.exists(mod_dir) and os.path.isdir(mod_dir) and not os.path.exists(dst_dir):
                 # Copier le contenu du répertoire et de ses sous-répertoires dans packname

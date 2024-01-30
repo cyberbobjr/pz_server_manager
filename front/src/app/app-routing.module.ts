@@ -16,6 +16,10 @@ import {AppLayoutComponent} from "./layout/app.layout.component";
           {
             path: 'mods',
             loadChildren: () => import('./pages/mods/mods.module').then(m => m.ModsModule)
+          },
+          {
+            path: 'steam',
+            loadChildren: () => import('./pages/steam/steam.module').then(m => m.SteamModule)
           }
         ]
       },
