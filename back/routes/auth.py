@@ -1,8 +1,7 @@
 import datetime
 import jwt
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, HTTPException
 from pydantic import BaseModel
-
 from libs import Config
 
 router = APIRouter()

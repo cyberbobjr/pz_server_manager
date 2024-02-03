@@ -2,7 +2,7 @@ import os
 import pathlib
 import re
 import codecs
-from libs.Recipe import Recipe
+from .Recipe import Recipe
 
 REGEX_IMPORTS = "\\s*imports(.*)\\s+\\{([^}]+)\\}"
 REGEX_RECIPE = "\\s*recipe (.*)\\s+\\{([^}]+)\\}"
@@ -46,3 +46,25 @@ class Mod:
                             self.recipes[recipe_name] = Recipe(recipe_name, recipe, base, path)
             except:
                 print(f"Error in file {path}")
+
+    @staticmethod
+    def convert_modinfo_to_json(modinfo_content, modname):
+        modinfo_json = {}
+        for line in modinfo_content:
+            line = line.strip().replace("\n", "")
+            try:
+                if len(line) > 1:
+                    if line.startswith("require"):
+                        modinfo_json["require"] = line.replace("require=", "").split(",")
+                    elif line.startswith("url"):
+                        modinfo_json["url"] = line.replace("url=", "")
+                    else:
+                        key, value = line.split("=")
+                        modinfo_json[key] = value
+            except Exception as e:
+                if 'description' in modinfo_json:
+                    modinfo_json['description'] += '\n' + line
+                else:
+                    modinfo_json['description'] = line
+        modinfo_json["dir"] = modname
+        return modinfo_json

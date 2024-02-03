@@ -8,8 +8,9 @@ class Steam(object):
     baseUrl = "https://api.steampowered.com/"
     cache_folder = "mod_cache"
 
-    def __init__(self, key: str, cache_folder):
+    def __init__(self, key: str, cache_folder, app_id):
         self.key = key
+        self.app_id = app_id
         self.cache_folder = cache_folder
         if not os.path.exists(self.cache_folder):
             os.makedirs(self.cache_folder, exist_ok=True)
@@ -22,10 +23,9 @@ class Steam(object):
             return cached_data
 
         url = "IPublishedFileService/GetDetails/v1/"
-        from main import app_config
         query_params = {
             "key": self.key,
-            "appid": app_config["steam"]["appid"],
+            "appid": self.app_id,
             "publishedfileids[0]": workshop_id,
             "includevotes": 1
         }
@@ -41,7 +41,7 @@ class Steam(object):
                 return content
             return None
         else:
-            print("La requête a échoué avec le code:", response.status_code)
+            print("The request has been failed with the code:", response.status_code)
 
     def search_mod(self, cursor=None, text=None, tags=None):
         if tags is None:
@@ -49,17 +49,16 @@ class Steam(object):
         url = "IPublishedFileService/QueryFiles/v1/"
         if cursor is None:
             cursor = "*"
-        from main import app_config
         query_params = {
             "key": self.key,
-            "appid": app_config["steam"]["appid"],
+            "appid": self.app_id,
             "cursor": cursor,
             "match_all_tags": 1,
             "return_short_description": 1,
             "return_children": 1,
             "return_tags": 1,
             "return_metadata": 1,
-            "query_type": 21,  # 9 si tri par nombre de souscription, 21 = dernière mise à jour
+            "query_type": 21,  # 9 nb of subscription, 21 = last updated
             "numperpage": 100
         }
         if text is not None:
@@ -72,4 +71,4 @@ class Steam(object):
             data = response.json()
             return data
         else:
-            print("La requête a échoué avec le code:", response.status_code)
+            print("The request has been failed with the code:", response.status_code)
