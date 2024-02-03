@@ -1,33 +1,31 @@
-import asyncio
 import os
 import signal
 import subprocess
-
-import psutil
 from fastapi import Body, APIRouter
 
-from mcrcon import MCRcon
-from libs import Config
 from fastapi.security import OAuth2PasswordBearer
 
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-global process, output_process, output_error
+global pz_process
+output_file_name = "output.txt"
 
 
 @router.post("/server/command", tags=["server"])
 async def command(cmd: str = Body()):
-    port = Config.app_config["rcon"]["port"]
-    password = Config.app_config["rcon"]["password"]
-    host = Config.app_config["rcon"]["host"]
     try:
-        with MCRcon(host, port=port, password=password) as client:
-            # await client.connect()
-            result = client.command(cmd)
-            print(result)
-            # await client.close()
-            return result
+        from main import pzGame, pzRcon
+        result = await pzRcon.send_command(cmd)
+        if result is False:
+            return {
+                "success": False,
+                "msg": "Commande not sent"
+            }
+        return {
+            "success": True,
+            "msg": result
+        }
     except Exception as e:
         print(e)
 
@@ -43,12 +41,13 @@ async def status():
 
 @router.get("/server/webconsole", tags=["server"])
 async def webconsole():
-    global process, output_process, output_error
+    global pz_process
     from main import pzGame
+    from main import app_config
+    filepath = f'{app_config["pz"]["pz_exe_path"]}\\{output_file_name}'
     if pzGame.check_process():
-        output = await process.stdout.readline()
-        if output:
-            return output
+        with open(filepath, "r") as f:
+            return f.readlines()
     else:
         return {
             "success": False,
@@ -66,15 +65,13 @@ async def start():
         }
     from main import app_config
     try:
-        process_path = f'{app_config["pz"]["pz_exe_path"]}\\StartServer64.bat'
-        global process
-        process = await asyncio.create_subprocess_shell(
-            cmd=process_path,
-            creationflags=subprocess.CREATE_NEW_CONSOLE,
-            shell=True,
-            stdout=subprocess.PIPE)
+        process_path = f'{app_config["pz"]["pz_exe_path"]}\\StartServer64.bat > {output_file_name}'
+        global pz_process, output_thread
+        pz_process = subprocess.Popen(process_path,
+                                      cwd=app_config["pz"]["pz_exe_path"],
+                                      creationflags=subprocess.CREATE_NEW_CONSOLE)
         # TODO : remplir un log de façon continue
-        return_code = process.returncode
+        return_code = pz_process.returncode
         if return_code == 0:
             return {
                 "success": True
@@ -89,6 +86,20 @@ async def start():
         return {
             "success": False,
             "msg": f"An error occurred while executing the process: {str(e)}"
+        }
+
+
+@router.get("/server/stop", tags=["server"])
+async def stop():
+    try:
+        return {
+            "success": True,
+            "msg": "Server stopped"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "msg": e
         }
 
 

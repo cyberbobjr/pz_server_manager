@@ -36,9 +36,8 @@ pzRcon = PZRcon(app_config["rcon"]["host"], app_config["rcon"]["port"], app_conf
 
 if pzGame.check_process():
     print("Server Running")
-
-if pzRcon.check_open():
-    print("Server Started")
+    if pzRcon.check_open():
+        print("Server Started")
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware,
