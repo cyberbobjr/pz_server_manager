@@ -1,9 +1,9 @@
+import asyncio
 import uvicorn
 import os
 
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
 from libs.Config import init_config
 from fastapi import FastAPI
 
@@ -13,6 +13,8 @@ from libs.Steam import Steam
 from libs.SteamcmdException import Steamcmd, SteamcmdException
 
 from routes import auth, server, mods
+
+global pz_process
 
 CONF_FILE = "config.yml"
 app_config = init_config(CONF_FILE)
@@ -40,6 +42,23 @@ if pzGame.check_process():
         print("Server Started")
 
 app = FastAPI()
+
+
+async def monitor_process():
+    global pz_process
+    while True:
+        if not pzGame.check_process():
+            pz_process = pzGame.start_server()
+            print("Starting server")
+        await asyncio.sleep(120)  # check every 2 minutes
+
+
+@app.on_event("startup")
+async def startup_db_client():
+    print("startup")
+    asyncio.create_task(monitor_process())
+
+
 app.add_middleware(CORSMiddleware,
                    allow_origins=["*"],
                    allow_credentials=True,
@@ -49,5 +68,6 @@ app.include_router(auth.router)
 app.include_router(server.router)
 app.include_router(mods.router)
 # app.mount("/static", StaticFiles(directory=os.path.abspath(modpack_path)), name="static")
+
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=app_config["server"]["port"])

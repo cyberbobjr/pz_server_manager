@@ -1,5 +1,6 @@
 import glob
 import os
+import subprocess
 
 import psutil
 
@@ -87,6 +88,20 @@ class PZGame:
                 arguments = psutil.Process(process.pid).cmdline()
                 if process.name() == "java.exe" and 'zombie.network.GameServer' in arguments:
                     return process.pid
-            except:
+            except Exception as e:
                 continue
         return None
+
+    def start_server(self):
+        from main import app_config
+        if "log_filename" not in app_config["pz"]:
+            app_config["pz"]["log_filename"] = "output.txt"
+        output_file_name = app_config["pz"]["log_filename"]
+        process_path = f'{app_config["pz"]["pz_exe_path"]}\\StartServer64.bat > {output_file_name}'
+        return subprocess.Popen(process_path,
+                                cwd=app_config["pz"]["pz_exe_path"],
+                                creationflags=subprocess.CREATE_NEW_CONSOLE)
+
+    async def stop_server(self):
+        from main import pzRcon
+        return await pzRcon.send_command("quit")

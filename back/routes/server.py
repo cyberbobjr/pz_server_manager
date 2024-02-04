@@ -8,7 +8,6 @@ from fastapi.security import OAuth2PasswordBearer
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-global pz_process
 output_file_name = "output.txt"
 
 
@@ -41,11 +40,11 @@ async def status():
 
 @router.get("/server/webconsole", tags=["server"])
 async def webconsole():
-    global pz_process
-    from main import pzGame
     from main import app_config
-    filepath = f'{app_config["pz"]["pz_exe_path"]}\\{output_file_name}'
-    if pzGame.check_process():
+    if "log_filename" not in app_config["pz"]:
+        app_config["pz"]["log_filename"] = "output.txt"
+    filepath = f'{app_config["pz"]["pz_exe_path"]}\\{app_config["pz"]["log_filename"]}'
+    if os.path.exists(filepath):
         with open(filepath, "r") as f:
             return f.readlines()
     else:
@@ -63,13 +62,9 @@ async def start():
             "success": False,
             "msg": "Server already started"
         }
-    from main import app_config
     try:
-        process_path = f'{app_config["pz"]["pz_exe_path"]}\\StartServer64.bat > {output_file_name}'
-        global pz_process, output_thread
-        pz_process = subprocess.Popen(process_path,
-                                      cwd=app_config["pz"]["pz_exe_path"],
-                                      creationflags=subprocess.CREATE_NEW_CONSOLE)
+        from ..main import pz_process
+        pz_process = pzGame.start_server()
         # TODO : remplir un log de façon continue
         return_code = pz_process.returncode
         if return_code == 0:
@@ -92,10 +87,12 @@ async def start():
 @router.get("/server/stop", tags=["server"])
 async def stop():
     try:
+        from main import pzGame
+        pzGame.stop_server()
         return {
-            "success": True,
-            "msg": "Server stopped"
-        }
+                "success": True,
+                "msg": "Server stopped"
+            }
     except Exception as e:
         return {
             "success": False,
