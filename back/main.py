@@ -4,6 +4,8 @@ import os
 
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+
+from libs.Bootstrap import Bootstrap
 from libs.Config import init_config
 from fastapi import FastAPI
 
@@ -32,14 +34,14 @@ try:
 except SteamcmdException as e:
     print(e)
 
+# install if necessary
+
 steam = Steam(app_config["steam"]["apikey"], app_config["steam"]["cache_folder"], app_config["steam"]["appid"])
 pzGame = PZGame(pz_exe_path, server_path)
 pzRcon = PZRcon(app_config["rcon"]["host"], app_config["rcon"]["port"], app_config["rcon"]["password"])
 
-if pzGame.check_process():
-    print("Server Running")
-    if pzRcon.check_open():
-        print("Server Started")
+bootstrap = Bootstrap(app_config, steamcmd, pzGame, pzRcon)
+bootstrap.check_if_server_installed()
 
 app = FastAPI()
 
