@@ -49,7 +49,7 @@ app = FastAPI()
 async def monitor_process():
     global pz_process
     while True:
-        if not pzGame.check_process():
+        if not pzGame.is_process_running() and pzGame.should_be_always_start():
             pz_process = pzGame.start_server()
             print("Starting server")
         await asyncio.sleep(120)  # check every 2 minutes

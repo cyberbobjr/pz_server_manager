@@ -1,6 +1,8 @@
 import os
 import signal
-import subprocess
+import time
+from typing import List
+
 from fastapi import Body, APIRouter
 
 from fastapi.security import OAuth2PasswordBearer
@@ -8,7 +10,6 @@ from fastapi.security import OAuth2PasswordBearer
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-output_file_name = "output.txt"
 
 
 @router.post("/server/command", tags=["server"])
@@ -33,17 +34,17 @@ async def command(cmd: str = Body()):
 async def status():
     from main import pzGame, pzRcon
     return {
-        "process_running": pzGame.check_process(),
+        "process_running": pzGame.is_process_running(),
         "server_started": pzRcon.check_open()
     }
 
 
 @router.get("/server/webconsole", tags=["server"])
 async def webconsole():
-    from main import app_config
+    from main import app_config, pzGame
     if "log_filename" not in app_config["pz"]:
         app_config["pz"]["log_filename"] = "output.txt"
-    filepath = f'{app_config["pz"]["pz_exe_path"]}\\{app_config["pz"]["log_filename"]}'
+    filepath = f'{pzGame.get_exe_path()}\\{app_config["pz"]["log_filename"]}'
     if os.path.exists(filepath):
         with open(filepath, "r") as f:
             return f.readlines()
@@ -54,18 +55,37 @@ async def webconsole():
         }
 
 
+@router.get("/server/restart", tags=["server"])
+async def restart():
+    from main import pzGame
+    if pzGame.is_process_running():
+        await pzGame.stop_server()
+        while pzGame.is_process_running():
+            time.sleep(5)
+        pz_process = pzGame.start_server()
+        pzGame.set_be_always_start(True)
+        return {
+            "success": True,
+            "msg": f'Server restarted with the pid {pz_process.pid}'
+        }
+    else:
+        return {
+            "success": False,
+            "msg": f'Server not started'
+        }
+
+
 @router.get("/server/start", tags=["server"])
 async def start():
     from main import pzGame
-    if pzGame.check_process():
+    if pzGame.is_process_running():
         return {
             "success": False,
             "msg": "Server already started"
         }
     try:
-        from ..main import pz_process
         pz_process = pzGame.start_server()
-        # TODO : remplir un log de façon continue
+        pzGame.set_be_always_start(True)
         return_code = pz_process.returncode
         if return_code == 0:
             return {
@@ -89,10 +109,11 @@ async def stop():
     try:
         from main import pzGame
         pzGame.stop_server()
+        pzGame.set_be_always_start(False)
         return {
-                "success": True,
-                "msg": "Server stopped"
-            }
+            "success": True,
+            "msg": "Server stopped"
+        }
     except Exception as e:
         return {
             "success": False,
@@ -103,11 +124,12 @@ async def stop():
 @router.get("/server/forcestop", tags=["server"])
 async def force_stop():
     from main import pzGame
-    if pzGame.check_process():
+    if pzGame.is_process_running():
         try:
             pid = pzGame.get_pid()
             os.kill(pid, signal.SIGTERM)
             print("Process with PID", pid, "has been successfully stopped.")
+            pzGame.set_be_always_start(False)
             return {
                 "success": True,
                 "msg": f'Process with PID {pid} has been successfully stopped.'
@@ -118,3 +140,34 @@ async def force_stop():
                 "success": False,
                 "msg": f'Unable to stop process with PID'
             }
+
+
+@router.post("/server/mods", tags=["server"])
+async def save_mods_ini(Mods: List[str], WorkshopItems: List[str]):
+    try:
+        from main import pzGame
+        pzGame.build_server_mods_ini(Mods, WorkshopItems)
+        return {
+            "success": True,
+            "msg": "ini file saved"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "msg": e
+        }
+
+
+@router.post("/server/settings", tags=["server"])
+async def save_server_settings(key: str, value):
+    try:
+        from main import pzGame
+        return {
+            "success": True,
+            "msg": pzGame.build_server_ini(key, value)
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "msg": e
+        }
