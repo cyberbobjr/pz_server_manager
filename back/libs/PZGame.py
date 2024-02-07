@@ -1,12 +1,10 @@
 import glob
 import os
-import re
 import subprocess
-
-import psutil
 
 from .Mod import Mod
 from .PZConfigFile import PZConfigFile
+from .PZProcess import PZProcess
 
 MODINFO = "mod.info"
 
@@ -14,19 +12,20 @@ MODINFO = "mod.info"
 class PZGame:
     mods: list[Mod] = []
     mod_path = "\\steamapps\\workshop\\content\\108600\\"
+    memory = 16
     server_path = ""
     pz_exe_path = ""
     server_name = "servertest"
     pz_config: PZConfigFile
+    pz_process: PZProcess
 
-    def __init__(self, pz_exe_path: str, server_path: str):
+    def __init__(self, pz_exe_path: str, server_path: str, server_admin_password: str):
         self.must_restart = True
-        self.init(pz_exe_path, server_path)
-
-    def init(self, pz_exe_path: str, server_path: str):
+        self.server_admin_password = server_admin_password
         self.pz_exe_path = pz_exe_path
         self.server_path = server_path
-        self.pz_config = PZConfigFile(self.server_path + '\\' + self.server_name + '.ini')
+        self.pz_config = PZConfigFile(self.server_path + '\\Zomboid\\Server\\' + self.server_name + '.ini')
+        self.pz_process = PZProcess(self.pz_exe_path)
 
     def scan_mods_in_server_dir(self):
         self.mods = []
@@ -71,68 +70,54 @@ class PZGame:
             print(mod)
 
     def build_server_mods_ini(self, Mods, WorkshopItems):
-        ini_path = f'{self.server_path}\\{self.server_name}.ini'
-        with open(ini_path, 'r') as file:
-            lines = file.readlines()
-            # Parcourir les lignes du fichier pour trouver et remplacer la chaîne
-            for i, line in enumerate(lines):
-                if re.match(r'\s*Mods\s*=', line):
-                    # Construire la nouvelle ligne avec les valeurs fournies
-                    new_line = "Mods=" + ';'.join(Mods) + "\n"
-                    # Remplacer la ligne dans la liste des lignes
-                    lines[i] = new_line
-                if re.match(r'\s*WorkshopItems\s*=', line):
-                    # Construire la nouvelle ligne avec les valeurs fournies
-                    new_line = "WorkshopItems=" + ';'.join(WorkshopItems) + "\n"
-                    # Remplacer la ligne dans la liste des lignes
-                    lines[i] = new_line
+        self.set_server_ini("Mods", ';'.join(Mods) + "\n")
+        self.set_server_ini("WorkshopItems", ';'.join(WorkshopItems) + "\n")
 
-        # Réécrire le fichier avec les lignes modifiées
-        with open(ini_path, 'w') as file:
-            file.writelines(lines)
+    def set_server_ini(self, key: str, value):
+        return self.pz_config.write_value(key, value)
 
-    def build_server_ini(self, key: str, value):
-        ini_path = f'{self.server_path}\\{self.server_name}.ini'
-        with open(ini_path, 'r') as file:
-            lines = file.readlines()
-            # Parcourir les lignes du fichier pour trouver et remplacer la chaîne
-            for i, line in enumerate(lines):
-                if re.match(rf'\s*{key.strip()}\s*=', line):
-                    # Construire la nouvelle ligne avec les valeurs fournies
-                    new_line = f"{key.strip()}=" + value
-                    # Remplacer la ligne dans la liste des lignes
-                    lines[i] = new_line
+    def get_server_init(self):
+        return self.pz_config.get_content()
 
-        # Réécrire le fichier avec les lignes modifiées
-        with open(ini_path, 'w') as file:
-            file.writelines(lines)
+    def set_sandbox_options(self, sandbox_content):
+        sandbox_path = f'{self.server_path}\\Zomboid\\Server\\{self.server_name}_SandboxVars.lua'
+        with open(sandbox_path, 'w') as file:
+            file.write(sandbox_content)
+        return sandbox_content
 
-        return lines
+    def get_sandbox_options(self):
+        sandbox_path = f'{self.server_path}\\Zomboid\\Server\\{self.server_name}_SandboxVars.lua'
+        with open(sandbox_path, 'r') as file:
+            return file.read()
 
     def is_process_running(self) -> bool:
         return self.get_pid() is not None
 
     def get_pid(self):
-        for process in psutil.process_iter():
-            try:
-                arguments = psutil.Process(process.pid).cmdline()
-                if process.name() == "java.exe" and 'zombie.network.GameServer' in arguments:
-                    return process.pid
-                if process.name() == "cmd.exe" and f'{self.pz_exe_path}\\StartServer64.bat' in arguments:
-                    return process.pid
-            except Exception as e:
-                continue
-        return None
+        return self.pz_process.get_pid()
+
+    def get_process(self):
+        return self.pz_process.get_process()
+
+    def get_process_running_time(self):
+        return self.pz_process.get_running_time()
 
     def start_server(self):
         from main import app_config
         if "log_filename" not in app_config["pz"]:
             app_config["pz"]["log_filename"] = "output.txt"
-        output_file_name = app_config["pz"]["log_filename"]
-        process_path = f'{self.get_exe_path()}\\StartServer64.bat > {output_file_name}'
-        return subprocess.Popen(process_path,
-                                cwd=self.get_exe_path(),
-                                creationflags=subprocess.CREATE_NEW_CONSOLE)
+        java_command = f'"{self.get_exe_path()}\\jre64\\bin\\java.exe"'
+        java_options = f'-Djava.awt.headless=true -Dzomboid.steam=0 -Dzomboid.znetlog=1 -XX:+UseZGC -XX:-CreateCoredumpOnCrash -XX:-OmitStackTraceInFastThrow -Xms{self.memory}g -Xmx{self.memory}g -Djava.library.path=natives/;natives/win64/;. -Duser.home="{self.server_path}" '
+        classpath = f'-cp java/istack-commons-runtime.jar;java/jassimp.jar;java/javacord-2.0.17-shaded.jar;java/javax.activation-api.jar;java/jaxb-api.jar;java/jaxb-runtime.jar;java/lwjgl.jar;java/lwjgl-natives-windows.jar;java/lwjgl-glfw.jar;java/lwjgl-glfw-natives-windows.jar;java/lwjgl-jemalloc.jar;java/lwjgl-jemalloc-natives-windows.jar;java/lwjgl-opengl.jar;java/lwjgl-opengl-natives-windows.jar;java/lwjgl_util.jar;java/sqlite-jdbc-3.27.2.1.jar;java/trove-3.0.3.jar;java/uncommons-maths-1.2.3.jar;java/commons-compress-1.18.jar;java/'
+        main_class = 'zombie.network.GameServer'
+        additional_args = f'-statistic 0 -adminpassword {self.server_admin_password}'
+
+        command = f'{java_command} {java_options} {classpath} {main_class} {additional_args}'
+        # Exécuter la commande
+        # process_path = f'{self.get_exe_path()}\\StartServer64.bat > {self.get_exe_path()}\\{output_file_name}'
+        return subprocess.Popen(command,
+                                creationflags=subprocess.CREATE_NEW_CONSOLE,
+                                cwd=self.get_exe_path())
 
     async def stop_server(self):
         from main import pzRcon

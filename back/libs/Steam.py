@@ -43,6 +43,9 @@ class Steam(object):
         else:
             print("The request has been failed with the code:", response.status_code)
 
+    def get_latest_mods(self):
+        return self.search_mod("*", None, None)
+
     def search_mod(self, cursor=None, text=None, tags=None):
         if tags is None:
             tags = []
@@ -72,3 +75,20 @@ class Steam(object):
             return data
         else:
             print("The request has been failed with the code:", response.status_code)
+
+    def get_lastupdate_mod(self, workshop_id):
+        url = "IPublishedFileService/GetDetails/v1/"
+        query_params = {
+            "key": self.key,
+            "appid": self.app_id,
+            "publishedfileids[0]": workshop_id
+        }
+        response = requests.get(f"{self.baseUrl}{url}", params=query_params)
+        if response.status_code == 200:
+            data = response.json()
+            if 'response' in data and 'publishedfiledetails' in data['response'] and \
+                    len(data['response']['publishedfiledetails']) > 0:
+                return data['response']['publishedfiledetails'][0]['time_updated']
+        else:
+            print("The request has been failed with the code:", response.status_code)
+        return None

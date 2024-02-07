@@ -1,29 +1,33 @@
+import os.path
+import re
+
+
 class PZConfigFile:
     def __init__(self, file_name):
         self.file_name = file_name
-        self.config = {}
-        self.read_file()
 
-    def read_file(self):
+    def get_content(self):
         with open(self.file_name, 'r') as file:
-            for line in file:
-                line = line.strip().replace('\n', '')
-                # Ignore commented lines
-                if line and not line.startswith('#'):
-                    key_value_pair = line.split('=', 1)
-                    if len(key_value_pair) == 2:
-                        key, value = key_value_pair
-                        self.config[key.strip()] = value.strip()
+            return file.read()
 
     def get_value(self, key) -> str:
-        return self.config.get(key)
+        pattern = rf'\s*{re.escape(key.strip())}\s*=\s*(.*)'
+        with open(self.file_name, 'r') as file:
+            lines = file.readlines()
+            for i, line in enumerate(lines):
+                match = re.match(pattern, line)
+                if match:
+                    return match.group(1)
 
-    def modify_value(self, key, new_value):
-        if key in self.config:
-            self.config[key] = new_value
-            self.write_file()
+    def write_value(self, key, value):
+        with open(self.file_name, 'r') as file:
+            lines = file.readlines()
+            for i, line in enumerate(lines):
+                if re.match(rf'\s*{key.strip()}\s*=', line):
+                    new_line = f"{key.strip()}=" + value
+                    lines[i] = new_line
 
-    def write_file(self):
         with open(self.file_name, 'w') as file:
-            for key, value in self.config.items():
-                file.write(f"{key}={value}\n")
+            file.writelines(lines)
+
+        return lines

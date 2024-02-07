@@ -108,7 +108,11 @@ async def start():
 async def stop():
     try:
         from main import pzGame
-        pzGame.stop_server()
+        if not await pzGame.stop_server():
+            return {
+                "success": False,
+                "msg": "Server not responding"
+            }
         pzGame.set_be_always_start(False)
         return {
             "success": True,
@@ -158,13 +162,74 @@ async def save_mods_ini(Mods: List[str], WorkshopItems: List[str]):
         }
 
 
+@router.put("/server/mods", tags=["server"])
+async def add_mods_ini(Mods: List[str], WorkshopItems: List[str]):
+    try:
+        from main import pzGame
+        pzGame.build_server_mods_ini(Mods, WorkshopItems)
+        return {
+            "success": True,
+            "msg": "ini file saved"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "msg": e
+        }
+
+
 @router.post("/server/settings", tags=["server"])
 async def save_server_settings(key: str, value):
     try:
         from main import pzGame
         return {
             "success": True,
-            "msg": pzGame.build_server_ini(key, value)
+            "msg": pzGame.set_server_ini(key, value)
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "msg": e
+        }
+
+
+@router.get("/server/settings", tags=["server"])
+async def get_settings():
+    try:
+        from main import pzGame
+        return {
+            "success": True,
+            "msg": pzGame.get_server_init()
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "msg": e
+        }
+
+
+@router.post("/server/sandbox_settings", tags=["server"])
+async def save_sandbox_settings(sandbox_content):
+    try:
+        from main import pzGame
+        return {
+            "success": True,
+            "msg": pzGame.set_sandbox_options(sandbox_content)
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "msg": e
+        }
+
+
+@router.get("/server/sandbox_settings", tags=["server"])
+async def save_sandbox_settings():
+    try:
+        from main import pzGame
+        return {
+            "success": True,
+            "msg": pzGame.get_sandbox_options()
         }
     except Exception as e:
         return {
