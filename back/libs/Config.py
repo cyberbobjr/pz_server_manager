@@ -2,11 +2,8 @@ import os
 
 import yaml
 
-app_config = {}
-
 
 def init_config(config_file):
-    global app_config
     if not os.path.exists(config_file):
         print("config.yml not found !")
         exit(0)

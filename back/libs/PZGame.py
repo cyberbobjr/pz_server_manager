@@ -1,9 +1,11 @@
+import asyncio
 import glob
 import os
 import subprocess
 
 from .Mod import Mod
 from .PZConfigFile import PZConfigFile
+from .PZLog import PZLog
 from .PZProcess import PZProcess
 
 MODINFO = "mod.info"
@@ -18,6 +20,7 @@ class PZGame:
     server_name = "servertest"
     pz_config: PZConfigFile
     pz_process: PZProcess
+    pz_rcon = None
 
     def __init__(self, pz_exe_path: str, server_path: str, server_admin_password: str):
         self.must_restart = True
@@ -76,8 +79,10 @@ class PZGame:
     def set_server_ini(self, key: str, value):
         return self.pz_config.write_value(key, value)
 
-    def get_server_init(self):
-        return self.pz_config.get_content()
+    def get_server_init(self, key=None):
+        if key is None:
+            return self.pz_config.get_content()
+        return self.pz_config.get_value(key)
 
     def set_sandbox_options(self, sandbox_content):
         sandbox_path = f'{self.server_path}\\Zomboid\\Server\\{self.server_name}_SandboxVars.lua'
@@ -102,7 +107,7 @@ class PZGame:
     def get_process_running_time(self):
         return self.pz_process.get_running_time()
 
-    def start_server(self):
+    async def start_server(self):
         from main import app_config
         if "log_filename" not in app_config["pz"]:
             app_config["pz"]["log_filename"] = "output.txt"
@@ -113,15 +118,21 @@ class PZGame:
         additional_args = f'-statistic 0 -adminpassword {self.server_admin_password}'
 
         command = f'{java_command} {java_options} {classpath} {main_class} {additional_args}'
-        # Exécuter la commande
-        # process_path = f'{self.get_exe_path()}\\StartServer64.bat > {self.get_exe_path()}\\{output_file_name}'
-        return subprocess.Popen(command,
-                                creationflags=subprocess.CREATE_NEW_CONSOLE,
-                                cwd=self.get_exe_path())
+        await PZLog.print(f'Server is starting...')
+        process = subprocess.Popen(command,
+                                   creationflags=subprocess.CREATE_NEW_CONSOLE,
+                                   cwd=self.get_exe_path())
+        asyncio.create_task(self.check_when_server_ready())
+        return process
+
+    async def check_when_server_ready(self):
+        while not self.pz_rcon.check_open():
+            await asyncio.sleep(10)
+        await PZLog.print(f"Server is ready")
 
     async def stop_server(self):
-        from main import pzRcon
-        return await pzRcon.send_command("quit")
+        await PZLog.print(f'Server stopped')
+        return await self.pz_rcon.send_command("quit")
 
     def should_be_always_start(self):
         return self.must_restart

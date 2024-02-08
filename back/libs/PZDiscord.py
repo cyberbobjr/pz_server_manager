@@ -1,3 +1,5 @@
+import time
+
 import discord
 
 
@@ -6,11 +8,12 @@ class PZDiscord:
         self.token = token
         self.channel_id = channel_id
         intents = discord.Intents.default()
-        # intents.messages = True
         self.client = discord.Client(intents=intents)
+        self.is_ready = False
 
     async def send_message(self, message):
-        await self.client.wait_until_ready()
+        while not self.client.is_ready:
+            time.sleep(10)
         channel = self.client.get_channel(self.channel_id)
         if channel:
             await channel.send(message)
@@ -21,6 +24,7 @@ class PZDiscord:
         @self.client.event
         async def on_ready():
             print(f'Logged in as {self.client.user}')
+            self.is_ready = True
 
         await self.client.start(self.token)
 

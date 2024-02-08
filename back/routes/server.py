@@ -4,8 +4,9 @@ import time
 from typing import List
 
 from fastapi import Body, APIRouter
-
 from fastapi.security import OAuth2PasswordBearer
+
+from pz_setup import pzRcon, pzGame, app_config
 
 router = APIRouter()
 
@@ -15,7 +16,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 @router.post("/server/command", tags=["server"])
 async def command(cmd: str = Body()):
     try:
-        from main import pzGame, pzRcon
         result = await pzRcon.send_command(cmd)
         if result is False:
             return {
@@ -32,7 +32,6 @@ async def command(cmd: str = Body()):
 
 @router.get("/server/status", tags=["server"])
 async def status():
-    from main import pzGame, pzRcon
     return {
         "process_running": pzGame.is_process_running(),
         "server_started": pzRcon.check_open()
@@ -41,7 +40,6 @@ async def status():
 
 @router.get("/server/webconsole", tags=["server"])
 async def webconsole():
-    from main import app_config, pzGame
     if "log_filename" not in app_config["pz"]:
         app_config["pz"]["log_filename"] = "output.txt"
     filepath = f'{pzGame.get_exe_path()}\\{app_config["pz"]["log_filename"]}'
@@ -77,14 +75,13 @@ async def restart():
 
 @router.get("/server/start", tags=["server"])
 async def start():
-    from main import pzGame
     if pzGame.is_process_running():
         return {
             "success": False,
             "msg": "Server already started"
         }
     try:
-        pz_process = pzGame.start_server()
+        pz_process = await pzGame.start_server()
         pzGame.set_be_always_start(True)
         return_code = pz_process.returncode
         if return_code == 0:
@@ -107,7 +104,6 @@ async def start():
 @router.get("/server/stop", tags=["server"])
 async def stop():
     try:
-        from main import pzGame
         if not await pzGame.stop_server():
             return {
                 "success": False,
@@ -127,7 +123,6 @@ async def stop():
 
 @router.get("/server/forcestop", tags=["server"])
 async def force_stop():
-    from main import pzGame
     if pzGame.is_process_running():
         try:
             pid = pzGame.get_pid()
@@ -149,7 +144,6 @@ async def force_stop():
 @router.post("/server/mods", tags=["server"])
 async def save_mods_ini(Mods: List[str], WorkshopItems: List[str]):
     try:
-        from main import pzGame
         pzGame.build_server_mods_ini(Mods, WorkshopItems)
         return {
             "success": True,
@@ -165,7 +159,6 @@ async def save_mods_ini(Mods: List[str], WorkshopItems: List[str]):
 @router.put("/server/mods", tags=["server"])
 async def add_mods_ini(Mods: List[str], WorkshopItems: List[str]):
     try:
-        from main import pzGame
         pzGame.build_server_mods_ini(Mods, WorkshopItems)
         return {
             "success": True,
@@ -181,7 +174,6 @@ async def add_mods_ini(Mods: List[str], WorkshopItems: List[str]):
 @router.post("/server/settings", tags=["server"])
 async def save_server_settings(key: str, value):
     try:
-        from main import pzGame
         return {
             "success": True,
             "msg": pzGame.set_server_ini(key, value)
@@ -196,7 +188,6 @@ async def save_server_settings(key: str, value):
 @router.get("/server/settings", tags=["server"])
 async def get_settings():
     try:
-        from main import pzGame
         return {
             "success": True,
             "msg": pzGame.get_server_init()
@@ -211,7 +202,6 @@ async def get_settings():
 @router.post("/server/sandbox_settings", tags=["server"])
 async def save_sandbox_settings(sandbox_content):
     try:
-        from main import pzGame
         return {
             "success": True,
             "msg": pzGame.set_sandbox_options(sandbox_content)
@@ -226,7 +216,6 @@ async def save_sandbox_settings(sandbox_content):
 @router.get("/server/sandbox_settings", tags=["server"])
 async def save_sandbox_settings():
     try:
-        from main import pzGame
         return {
             "success": True,
             "msg": pzGame.get_sandbox_options()

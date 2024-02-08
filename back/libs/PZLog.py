@@ -1,3 +1,6 @@
+global pzDiscord
+
+
 class PZLog:
 
     @staticmethod

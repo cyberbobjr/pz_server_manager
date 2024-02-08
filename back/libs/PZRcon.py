@@ -10,11 +10,6 @@ class PZRcon:
     def check_open(self):
         try:
             with MCRcon(self.rcon_host, port=self.rcon_port, password=self.rcon_password) as client:
-                # await client.connect()
-                # result = client.command(cmd)
-                # print(result)
-                # await client.close()
-                # return result
                 return True
         except Exception as e:
             print(e)

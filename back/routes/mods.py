@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 
 from libs.Mod import Mod
+from pz_setup import pzGame, steam, app_config, steamcmd
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -20,9 +21,7 @@ class SearchModRequest(BaseModel):
 async def index():
     try:
         mods = []
-        from main import pzGame
         pzGame.scan_mods_in_server_dir()
-        from main import steam
         for mod in pzGame.mods:
             mod_info = open(mod.file, "r")
             mods.append({
@@ -40,8 +39,6 @@ async def index():
 async def get_mod_ini():
     try:
         workshops = []
-        from main import pzGame
-        from main import steam
         [Mods, workshop_items] = pzGame.scan_mods_in_ini()
         for w in workshop_items:
             modids = Mod.get_modids_from_workshop_id(w, pzGame.get_mod_path())
@@ -65,7 +62,6 @@ async def search_mods(request: SearchModRequest):
         cursor = request.cursor
         tags = request.tags
         text = request.text
-        from main import steam
         return steam.search_mod(cursor, text, tags)
     except Exception as e:
         print(e)
@@ -74,8 +70,6 @@ async def search_mods(request: SearchModRequest):
 
 @router.get("/mods/download", tags=["mods"])
 async def search_mods(workshop_id: str):
-    from main import steamcmd, pzGame
-    from main import app_config
     try:
         steamcmd.install_workshopfiles(app_config["steam"]["appid"], workshop_id, pzGame.get_exe_path())
         return {"success": True, "message": f"The mod '{workshop_id}' was downloaded"}
