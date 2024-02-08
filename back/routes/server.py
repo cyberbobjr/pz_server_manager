@@ -55,7 +55,6 @@ async def webconsole():
 
 @router.get("/server/restart", tags=["server"])
 async def restart():
-    from main import pzGame
     if pzGame.is_process_running():
         await pzGame.stop_server()
         while pzGame.is_process_running():

@@ -3,6 +3,7 @@ import glob
 import os
 import subprocess
 
+from .Bootstrap import Bootstrap
 from .Mod import Mod
 from .PZConfigFile import PZConfigFile
 from .PZLog import PZLog
@@ -126,7 +127,7 @@ class PZGame:
         return process
 
     async def check_when_server_ready(self):
-        while not self.pz_rcon.check_open():
+        while not Bootstrap.is_pzserver_ready(self, self.pz_rcon):
             await asyncio.sleep(10)
         await PZLog.print(f"Server is ready")
 

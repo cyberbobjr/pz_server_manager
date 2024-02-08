@@ -1,18 +1,10 @@
 import os
 
-from libs.PZGame import PZGame
-from libs.PZRcon import PZRcon
-
 
 class Bootstrap:
     @staticmethod
-    def is_pzserver_ready(pzGame: PZGame, pzRcon: PZRcon):
-        if pzGame.is_process_running():
-            print("Server Running")
-            if pzRcon.check_open():
-                print("Server Started")
-                return True
-        return False
+    def is_pzserver_ready(pzGame, pzRcon):
+        return pzGame.is_process_running() and pzRcon.check_open()
 
     @staticmethod
     def is_pzserver_installed(pz_exe_path):
