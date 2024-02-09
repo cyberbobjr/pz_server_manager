@@ -24,7 +24,7 @@ class PZConfigFile:
             lines = file.readlines()
             for i, line in enumerate(lines):
                 if re.match(rf'\s*{key.strip()}\s*=', line):
-                    new_line = f"{key.strip()}=" + value
+                    new_line = f"{key.strip()}=" + str(value) + "\n"
                     lines[i] = new_line
 
         with open(self.file_name, 'w') as file:

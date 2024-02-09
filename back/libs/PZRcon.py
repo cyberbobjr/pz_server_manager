@@ -18,7 +18,7 @@ class PZRcon:
 
     async def send_command(self, cmd: str):
         try:
-            with MCRcon(self.rcon_host, port=self.rcon_port, password=self.rcon_password) as client:
+            with MCRcon(self.rcon_host, port=int(self.rcon_port), password=self.rcon_password) as client:
                 # await client.connect()
                 result = client.command(cmd)
                 print(result)
