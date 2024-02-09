@@ -2,13 +2,14 @@ import asyncio
 import signal
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from starlette.middleware.cors import CORSMiddleware
 
 from libs.Bootstrap import Bootstrap
-from monitor import start_bot, monitor_process, monitor_mod_update, signal_handler
+from pz_monitor import start_bot, monitor_process, monitor_mod_update, signal_handler
 from pz_setup import app_config, steamcmd, pzDiscord
 from routes import auth, mods, server
+from libs.security import decode_jwt
 
 if not Bootstrap.is_pzserver_installed(app_config["pz"]["pz_exe_path"]):
     Bootstrap.install_pzserver(app_config["pz"]["pz_exe_path"], steamcmd)
@@ -45,8 +46,8 @@ app.add_middleware(CORSMiddleware,
                    allow_methods=["*"],
                    allow_headers=["*"])
 app.include_router(auth.router)
-app.include_router(server.router)
-app.include_router(mods.router)
+app.include_router(server.router, dependencies=[Depends(decode_jwt)])
+app.include_router(mods.router, dependencies=[Depends(decode_jwt)])
 # app.mount("/static", StaticFiles(directory=os.path.abspath(modpack_path)), name="static")
 
 if __name__ == "__main__":
