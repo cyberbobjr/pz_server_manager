@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MenuItem} from 'primeng/api';
-import {Subscription} from 'rxjs';
+import {firstValueFrom, Subscription} from 'rxjs';
 import {LayoutService} from 'src/app/layout/service/app.layout.service';
-import {Product} from '../../api/product';
+import {PzServerService} from "../../core/services/pz-server.service";
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -11,7 +11,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   items!: MenuItem[];
 
-  products!: Product[];
+  products!: any[];
 
   chartData: any;
 
@@ -19,15 +19,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   subscription!: Subscription;
 
-  constructor(public layoutService: LayoutService) {
+  constructor(public layoutService: LayoutService,
+              private pzServerService: PzServerService) {
     this.subscription = this.layoutService.configUpdate$.subscribe(() => {
       this.initChart();
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.initChart();
-
+    await firstValueFrom(this.pzServerService.getStatus())
     this.items = [
       {label: 'Add New', icon: 'pi pi-fw pi-plus'},
       {label: 'Remove', icon: 'pi pi-fw pi-minus'}

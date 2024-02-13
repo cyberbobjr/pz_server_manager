@@ -26,7 +26,18 @@ class PZDiscord:
             print(f'Logged in as {self.client.user}')
             self.is_ready = True
 
+        @self.client.event
+        async def on_message(message):
+            if message.author == self.client.user:
+                return
+            if message.content.startswith('!players'):
+                await self.handle_message(message)
+
         await self.client.start(self.token)
+
+    async def handle_message(self, message):
+        await message.channel.send(
+            'Il y a actuellement X joueurs en ligne.')  # Remplacer X par le nombre réel de joueurs en ligne
 
     def stop_bot(self):
         print("Stopping bot...")
