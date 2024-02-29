@@ -28,19 +28,23 @@ async def monitor_mod_update():
             msg = f'Last reboot (not wipe) : {DatetimeHelper.epoch_to_iso(running_time)}'
             await PZLog.print(msg)
             for workshop_id in workshop_ids:
-                last_update = steam.get_lastupdate_mod(workshop_id)
-                if last_update is not None and last_update > running_time:
-                    msg = f'workshop item {workshop_id} was updated {DatetimeHelper.epoch_to_iso(last_update)} since {DatetimeHelper.epoch_to_iso(running_time)}, server rebooting'
-                    await PZLog.print(msg)
-                    msg = f'servermsg The server will reboot in 1 minute for updating mods...'
-                    await PZLog.print(msg)
-                    await pzRcon.send_command(f"servermsg {msg}")
-                    time.sleep(60)
-                    await pzGame.stop_server()
-                    while pzGame.is_process_running():
-                        time.sleep(5)
-                    await pzGame.start_server()
-                    break
+                try:
+                    last_update = steam.get_lastupdate_mod(workshop_id)
+                    if last_update is not None and last_update > running_time:
+                        msg = f'workshop item {workshop_id} was updated {DatetimeHelper.epoch_to_iso(last_update)} since {DatetimeHelper.epoch_to_iso(running_time)}, server rebooting'
+                        await PZLog.print(msg)
+                        msg = f'servermsg The server will reboot in 1 minute for updating mods...'
+                        await PZLog.print(msg)
+                        await pzRcon.send_command(f"servermsg {msg}")
+                        time.sleep(60)
+                        await pzGame.stop_server()
+                        while pzGame.is_process_running():
+                            time.sleep(5)
+                        await pzGame.start_server()
+                        break
+                except Exception as e:
+                    print(f'{e}')
+                    continue
         await asyncio.sleep(60 * 60)  # check every hour
 
 
