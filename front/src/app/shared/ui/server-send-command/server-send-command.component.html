@@ -1,0 +1,8 @@
+<form [formGroup]="commandForm" (ngSubmit)="sendCommand()">
+  <mat-form-field [hideRequiredMarker]="false" class="full-width-input">
+    <input matInput formControlName="command">
+  </mat-form-field>
+</form>
+<mat-form-field class="full-width-input" *ngIf="commandResult$ | async as result">
+  <textarea rows="8" matInput readonly [ngModel]="result"></textarea>
+</mat-form-field>

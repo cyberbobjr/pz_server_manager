@@ -1,28 +1,53 @@
-import {HashLocationStrategy, LocationStrategy} from '@angular/common';
-import {NgModule} from '@angular/core';
+import {CommonModule, HashLocationStrategy, LocationStrategy} from '@angular/common';
+import {NgModule, isDevMode} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {AppLayoutModule} from './layout/app.layout.module';
-import {ModpackService} from './pages/mods/service/modpack.service';
-import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {SharedModule} from "./shared/shared.module";
-import {JwtInterceptor} from "./auth/services/jwt-interceptor.service";
-import {AuthInterceptor} from "./auth/services/auth-interceptor.service";
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {AuthInterceptor} from "./core/services/auth-interceptor.service";
+import {JwtInterceptor} from "./core/services/jwt-interceptor.service";
+import {FullComponent} from "./layouts/full/full.component";
+import {BlankComponent} from "./layouts/blank/blank.component";
+import {MaterialModule} from "./material.module";
+import {SidebarComponent} from "./layouts/full/sidebar/sidebar.component";
+import {BrandingComponent} from "./layouts/full/sidebar/branding.component";
+import {AppNavItemComponent} from "./layouts/full/sidebar/nav-item/nav-item.component";
+import {HeaderComponent} from "./layouts/full/header/header.component";
+import {TablerIconsModule} from "angular-tabler-icons";
+import * as TablerIcons from 'angular-tabler-icons/icons';
+import {StoreModule} from '@ngrx/store';
+import {pzReducer} from "./store/reducers/server.reducer";
+import {StoreDevtoolsModule} from '@ngrx/store-devtools';
+import {EffectsModule} from '@ngrx/effects';
+import {ServerEffects} from "./store/effects/server.effects";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    FullComponent,
+    BlankComponent,
+    SidebarComponent,
+    BrandingComponent,
+    AppNavItemComponent,
+    HeaderComponent
   ],
   imports: [
     AppRoutingModule,
-    AppLayoutModule,
-    SharedModule
+    SharedModule,
+    CommonModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    MaterialModule,
+    TablerIconsModule.pick(TablerIcons),
+    StoreModule.forRoot({pzStore: pzReducer}, {}),
+    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: !isDevMode()}),
+    EffectsModule.forRoot([ServerEffects]),
   ],
   providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
-    ModpackService
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}
   ],
   bootstrap: [AppComponent]
 })
