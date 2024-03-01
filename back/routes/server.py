@@ -34,7 +34,8 @@ async def command(cmd: str = Body()):
 async def status():
     return {
         "process_running": pzGame.is_process_running(),
-        "server_started": pzRcon.check_open()
+        "server_started": pzRcon.check_open(),
+        "running_since": pzGame.get_process_running_time()
     }
 
 
