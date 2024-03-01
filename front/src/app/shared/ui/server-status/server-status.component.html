@@ -2,7 +2,7 @@
   Serveur Started : {{status.server_started}}<br/>
   Process running : {{status.process_running}}<br/>
   Serveur Started since : {{status.running_since | runningTime | date:'medium'}}<br/>
-  Nb of players :<br/>
+  Nb of players : {{playerCount$ | async}}<br/>
 </ng-container>
 <ng-template #notconnected>
   <h1>NOT CONNECTED</h1>

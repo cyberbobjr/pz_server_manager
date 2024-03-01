@@ -1,0 +1,21 @@
+<div class="row">
+  <ng-container *ngIf="status$ | async as status">
+    <button *ngIf="status.process_running;else notstarted"
+            mat-raised-button
+            color="accent"
+            (click)="stop()">
+      stop
+    </button>
+    <ng-template #notstarted>
+      <button mat-raised-button
+              color="accent"
+              (click)="start()">
+        start
+      </button>
+    </ng-template>
+    <button mat-raised-button color="primary" (click)="restart()">
+      restart
+    </button>
+  </ng-container>
+  <button mat-raised-button color="warn" (click)="forceStop()">Force stop</button>
+</div>

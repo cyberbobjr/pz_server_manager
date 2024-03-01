@@ -11,19 +11,21 @@ import * as TablerIcons from 'angular-tabler-icons/icons';
 import {AppDashboardComponent} from './dashboard/dashboard.component';
 import {SharedModule} from "../shared/shared.module";
 import {ServerSendCommandComponent} from "../shared/ui/server-send-command/server-send-command.component";
+import {StopStartRestartComponent} from "../shared/ui/stop-start-restart/stop-start-restart.component";
 
 @NgModule({
   declarations: [AppDashboardComponent],
-  imports: [
-    CommonModule,
-    MaterialModule,
-    FormsModule,
-    NgApexchartsModule,
-    RouterModule.forChild(PagesRoutes),
-    TablerIconsModule.pick(TablerIcons),
-    SharedModule,
-    ServerSendCommandComponent
-  ],
+    imports: [
+        CommonModule,
+        MaterialModule,
+        FormsModule,
+        NgApexchartsModule,
+        RouterModule.forChild(PagesRoutes),
+        TablerIconsModule.pick(TablerIcons),
+        SharedModule,
+        ServerSendCommandComponent,
+        StopStartRestartComponent
+    ],
   exports: [TablerIconsModule],
 })
 export class PagesModule {
