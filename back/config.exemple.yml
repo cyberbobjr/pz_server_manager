@@ -1,18 +1,24 @@
 server:
+  host: 0.0.0.0
   port: 7777
 rcon:
-  port: 27015
-  password: ""
+  port: 27016
+  password: "yourrconpassword"
   host: "127.0.0.1"
 auth:
-  username: admin
-  password: admin
+  username: "admin"
+  password: "admin"
   secret: "123456"
 pz:
-  mod_path: ""
+  server_path: "D:\\Server"
+  pz_exe_path: "D:\\PZ_Server"
+  log_filename: "console.txt"
+  password: "YourPasswdXYZ"
 steam:
-  apikey: ""
+  apikey: "yourapisteamkey"
   steamcmd_path: "steamcmd_dir"
-  modpack_path: "modpacks"
   cache_folder: "mod_cache"
   appid: 108600
+discord:
+  apikey: "yourdiscordkey"
+  channel: 1234567890 # number only ! no ""

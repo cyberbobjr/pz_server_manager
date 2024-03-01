@@ -1,6 +1,8 @@
 import asyncio
 import signal
-
+import threading
+import os
+import keyboard
 import uvicorn
 from fastapi import FastAPI, Depends
 from starlette.middleware.cors import CORSMiddleware
@@ -37,6 +39,16 @@ async def startup_db_client():
         asyncio.create_task(monitor_mod_update())
 
 
+def stop_server():
+    print('stop server...')
+    os.kill(os.getpid(), signal.SIGTERM)
+
+
+def keyboard_listener():
+    keyboard.add_hotkey('q', stop_server)
+    keyboard.wait('q')
+
+
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
@@ -51,4 +63,8 @@ app.include_router(mods.router, dependencies=[Depends(decode_jwt)])
 # app.mount("/static", StaticFiles(directory=os.path.abspath(modpack_path)), name="static")
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=app_config["server"]["port"])
+    # Démarrer le thread d'écoute du clavier
+    keyboard_thread = threading.Thread(target=keyboard_listener)
+    keyboard_thread.start()
+
+    uvicorn.run(app, host=app_config["server"]["host"], port=app_config["server"]["port"])
