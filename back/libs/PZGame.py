@@ -80,6 +80,9 @@ class PZGame:
     def set_server_ini(self, key: str, value):
         return self.pz_config.write_value(key, value)
 
+    def save_server_ini(self, content: str):
+        return self.pz_config.put_content(content)
+
     def get_server_init(self, key=None):
         if key is None:
             return self.pz_config.get_content()

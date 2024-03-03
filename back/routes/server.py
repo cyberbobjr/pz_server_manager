@@ -171,7 +171,7 @@ async def add_mods_ini(Mods: List[str], WorkshopItems: List[str]):
         }
 
 
-@router.post("/server/settings", tags=["server"])
+@router.put("/server/settings", tags=["server"])
 async def save_server_settings(key: str, value):
     try:
         return {
@@ -191,6 +191,20 @@ async def get_settings():
         return {
             "success": True,
             "msg": pzGame.get_server_init()
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "msg": e
+        }
+
+
+@router.post("/server/full_settings", tags=["server"])
+async def save_server_settings(ini_file: str):
+    try:
+        return {
+            "success": True,
+            "msg": pzGame.set_server_ini(ini_file)
         }
     except Exception as e:
         return {

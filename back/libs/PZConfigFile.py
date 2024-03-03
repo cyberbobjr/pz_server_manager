@@ -10,6 +10,11 @@ class PZConfigFile:
         with open(self.file_name, 'r') as file:
             return file.read()
 
+    def put_content(self, content):
+        with open(self.file_name, 'w') as file:
+            file.write(content)
+        return self.get_content()
+
     def get_value(self, key) -> str:
         pattern = rf'\s*{re.escape(key.strip())}\s*=\s*(.*)'
         with open(self.file_name, 'r') as file:
