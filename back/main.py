@@ -1,17 +1,15 @@
 import asyncio
 import signal
-import threading
-import os
-import keyboard
+
 import uvicorn
 from fastapi import FastAPI, Depends
 from starlette.middleware.cors import CORSMiddleware
 
 from libs.Bootstrap import Bootstrap
+from libs.security import decode_jwt
 from pz_monitor import start_bot, monitor_process, monitor_mod_update, signal_handler
 from pz_setup import app_config, steamcmd, pzDiscord
 from routes import auth, mods, server
-from libs.security import decode_jwt
 
 if not Bootstrap.is_pzserver_installed(app_config["pz"]["pz_exe_path"]):
     Bootstrap.install_pzserver(app_config["pz"]["pz_exe_path"], steamcmd)
@@ -39,16 +37,6 @@ async def startup_db_client():
         asyncio.create_task(monitor_mod_update())
 
 
-def stop_server():
-    print('stop server...')
-    os.kill(os.getpid(), signal.SIGTERM)
-
-
-def keyboard_listener():
-    keyboard.add_hotkey('q', stop_server)
-    keyboard.wait('q')
-
-
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
@@ -64,7 +52,4 @@ app.include_router(mods.router, dependencies=[Depends(decode_jwt)])
 
 if __name__ == "__main__":
     # Démarrer le thread d'écoute du clavier
-    keyboard_thread = threading.Thread(target=keyboard_listener)
-    keyboard_thread.start()
-
     uvicorn.run(app, host=app_config["server"]["host"], port=app_config["server"]["port"])
