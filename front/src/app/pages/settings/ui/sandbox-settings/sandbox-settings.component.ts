@@ -1,24 +1,16 @@
-import {Component} from '@angular/core';
-import {SharedModule} from "@shared/shared.module";
+import {Component, OnInit} from '@angular/core';
 import {Observable, tap} from "rxjs";
 import {Store} from "@ngrx/store";
 import {PzStore} from "@pzstore/reducers/server.reducer";
 import {getSandboxSettings} from "@pzstore/actions/server.actions";
-import {CommonModule} from "@angular/common";
-import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormBuilder, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-sandbox-settings',
-  standalone: true,
-  imports: [
-    CommonModule,
-    SharedModule,
-    ReactiveFormsModule
-  ],
   templateUrl: './sandbox-settings.component.html',
   styleUrl: './sandbox-settings.component.scss'
 })
-export class SandboxSettingsComponent {
+export class SandboxSettingsComponent implements OnInit {
   sandboxSettings$: Observable<string | null> = this.store.select(store => store.pzStore.sandboxConfig)
     .pipe(
       tap(r => this.iniForm.patchValue({config: r as string}))

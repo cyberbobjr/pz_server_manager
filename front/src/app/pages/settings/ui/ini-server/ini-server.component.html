@@ -1,5 +1,21 @@
 <form [formGroup]="iniForm">
-  <ng-container *ngIf="iniConfig$ | async as iniConfig">
-    <app-lua-editor formControlName="config" [language]="'ini'"></app-lua-editor>
-  </ng-container>
+  <mat-toolbar>
+    <button mat-icon-button
+            type="submit"
+            [disabled]="!iniForm.valid"
+            class="favorite-icon"
+            aria-label="save icon"
+            (click)="saveConfig()">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button mat-icon-button
+            type="button"
+            class="favorite-icon"
+            aria-label="refresh icon"
+            (click)="refreshConfig()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </mat-toolbar>
+  <app-lua-editor formControlName="config"
+                  [language]="'ini'"></app-lua-editor>
 </form>

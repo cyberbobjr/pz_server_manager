@@ -1,3 +1,4 @@
 <ngx-monaco-editor class="my-code-editor"
+                   (ngModelChange)="onChange($event)"
                    [options]="editorOptions"
                    [(ngModel)]="code"></ngx-monaco-editor>

@@ -18,7 +18,9 @@ export class LuaEditorComponent implements ControlValueAccessor {
     this.editorOptions.language = language;
   }
 
+  // @ts-ignore
   onChange: (value: string) => void;
+  // @ts-ignore
   onTouched: () => void;
 
   writeValue(value: string): void {
