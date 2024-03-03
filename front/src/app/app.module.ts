@@ -21,6 +21,7 @@ import {pzReducer} from "./store/reducers/server.reducer";
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {EffectsModule} from '@ngrx/effects';
 import {ServerEffects} from "./store/effects/server.effects";
+import {MonacoEditorModule} from "ngx-monaco-editor-v2";
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import {ServerEffects} from "./store/effects/server.effects";
     BrowserAnimationsModule,
     HttpClientModule,
     MaterialModule,
+    MonacoEditorModule.forRoot(),
     TablerIconsModule.pick(TablerIcons),
     StoreModule.forRoot({pzStore: pzReducer}, {}),
     StoreDevtoolsModule.instrument({maxAge: 25, logOnly: !isDevMode()}),

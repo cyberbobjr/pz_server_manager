@@ -1,4 +1,4 @@
-<div class="row">
+<div class="flex-column">
   <ng-container *ngIf="status$ | async as status">
     <button *ngIf="status.process_running;else notstarted"
             mat-raised-button
