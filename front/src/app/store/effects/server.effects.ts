@@ -11,7 +11,7 @@ import {
   setCommandResult,
   setIniConfig,
   setPlayersCount,
-  setStatus
+  setStatus, getSandboxSettings, setSandboxSettings
 } from "../actions/server.actions";
 import {catchError, exhaustMap, filter, map, of} from "rxjs";
 import {PzStatus} from "../../core/interfaces/PzStatus";
@@ -65,7 +65,7 @@ export class ServerEffects {
     ))
   ))
 
-  getIniConfig = createEffect(() => this.actions$.pipe(
+  getIniConfig$ = createEffect(() => this.actions$.pipe(
     ofType(getIniConfig),
     exhaustMap(() => this.service.readIni()
       .pipe(
@@ -78,7 +78,20 @@ export class ServerEffects {
     )
   ))
 
-  forceStop = createEffect(() => this.actions$.pipe(
+  getSandboxSettings$ = createEffect(() => this.actions$.pipe(
+    ofType(getSandboxSettings),
+    exhaustMap(() => this.service.getSandboxSettings()
+      .pipe(
+        map((result: PzServerReturn) => setSandboxSettings({settings: result.msg})),
+        catchError(error => {
+          console.error(error);
+          return of(serverStatusError());
+        })
+      )
+    )
+  ))
+
+  forceStop$ = createEffect(() => this.actions$.pipe(
     ofType(sendServerAction),
     filter((command) => command.action == PzServerAction.FORCESTOP),
     exhaustMap(() => this.service.forceStop()
@@ -92,7 +105,7 @@ export class ServerEffects {
     )
   ))
 
-  restart = createEffect(() => this.actions$.pipe(
+  restart$ = createEffect(() => this.actions$.pipe(
     ofType(sendServerAction),
     filter((command) => command.action == PzServerAction.RESTART),
     exhaustMap(() => this.service.restart()
@@ -105,6 +118,7 @@ export class ServerEffects {
       )
     )
   ))
+
 
   constructor(
     private actions$: Actions,

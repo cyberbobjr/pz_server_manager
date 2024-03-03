@@ -1,1 +1,5 @@
-<app-lua-editor></app-lua-editor>
+<form [formGroup]="iniForm">
+  <ng-container *ngIf="sandboxSettings$ | async as sandboxSettings">
+    <app-lua-editor formControlName="config"></app-lua-editor>
+  </ng-container>
+</form>

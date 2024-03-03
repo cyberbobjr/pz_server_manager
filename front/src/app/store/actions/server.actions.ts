@@ -12,3 +12,5 @@ export const setPlayersCount = createAction('[PZ SERVER] - set number of players
 export const getIniConfig = createAction('[PZ SERVER] - get ini config');
 export const setIniConfig = createAction('[PZ SERVER] - set ini config', props<{ config: string }>());
 export const sendServerAction = createAction('[PZ SERVER] - send action', props<{ action: PzServerAction }>());
+export const getSandboxSettings = createAction('[PZ SERVER] - get sandbox settings')
+export const setSandboxSettings = createAction('[PZ SERVER] - set sandbox settings', props<{ settings: string }>())

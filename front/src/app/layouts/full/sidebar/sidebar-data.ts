@@ -10,6 +10,11 @@ export const navItems: NavItem[] = [
     route: '/dashboard',
   },
   {
+    displayName: 'Mods',
+    iconName: 'layout-dashboard',
+    route: '/mods',
+  },
+  {
     displayName: 'Settings',
     iconName: 'settings',
     route: '/settings',

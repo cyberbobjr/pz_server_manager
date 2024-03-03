@@ -26,6 +26,9 @@
     "paths": {
       "@pzstore/*": [
         "src/app/store/*"
+      ],
+      "@shared/*": [
+        "src/app/shared/*"
       ]
     }
   },

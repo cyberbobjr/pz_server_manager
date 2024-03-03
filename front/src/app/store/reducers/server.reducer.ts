@@ -1,19 +1,28 @@
 import {PzStatus} from "../../core/interfaces/PzStatus";
 import {createReducer, on} from "@ngrx/store";
-import {serverStatusError, setCommandResult, setIniConfig, setPlayersCount, setStatus} from "../actions/server.actions";
+import {
+  getSandboxSettings,
+  serverStatusError,
+  setCommandResult,
+  setIniConfig,
+  setPlayersCount, setSandboxSettings,
+  setStatus
+} from "../actions/server.actions";
 
 export interface PzStore {
   status: PzStatus | null;
   commandResult: string | null;
   playerCount: number;
   iniConfig: string | null;
+  sandboxConfig: string | null;
 }
 
 export const initialPzStore: PzStore = {
   status: null,
   commandResult: null,
   playerCount: 0,
-  iniConfig: null
+  iniConfig: null,
+  sandboxConfig: null,
 }
 
 export const pzReducer = createReducer(
@@ -23,4 +32,5 @@ export const pzReducer = createReducer(
   on(setCommandResult, (state, {result}) => ({...state, commandResult: result})),
   on(setIniConfig, (state, {config}) => ({...state, iniConfig: config})),
   on(setPlayersCount, (state, {count}) => ({...state, playerCount: count})),
+  on(setSandboxSettings, (state, {settings}) => ({...state, sandboxConfig: settings}))
 )

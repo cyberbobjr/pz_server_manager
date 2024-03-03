@@ -1,3 +1,5 @@
-<pre>
-  {{iniConfig$ | async}}
-</pre>
+<form [formGroup]="iniForm">
+  <ng-container *ngIf="iniConfig$ | async as iniConfig">
+    <app-lua-editor formControlName="config" [language]="'ini'"></app-lua-editor>
+  </ng-container>
+</form>
