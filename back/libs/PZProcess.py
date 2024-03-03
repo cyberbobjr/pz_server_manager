@@ -6,7 +6,7 @@ class PZProcess:
         self.pz_exe_path = pz_exe_path
 
     def get_process(self):
-        for process in psutil.process_iter():
+        for process in psutil.process_iter(['pid', 'name']):
             try:
                 psutil.Process(process.pid)
                 arguments = psutil.Process(process.pid).cmdline()
@@ -14,8 +14,8 @@ class PZProcess:
                     return process
                 if process.name() == "cmd.exe" and f'{self.pz_exe_path}\\StartServer64.bat' in arguments:
                     return process
-            except Exception as e:
-                continue
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
         return None
 
     def get_pid(self):

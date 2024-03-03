@@ -34,7 +34,7 @@ class PZRcon:
                     return text
                 except UnicodeDecodeError:
                     # If a decoding error occurs, move to the next decoding
-                    continue
+                    pass
             return False
         except Exception as e:
             print(e)

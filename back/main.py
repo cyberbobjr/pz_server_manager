@@ -51,5 +51,4 @@ app.include_router(mods.router, dependencies=[Depends(decode_jwt)])
 # app.mount("/static", StaticFiles(directory=os.path.abspath(modpack_path)), name="static")
 
 if __name__ == "__main__":
-    # Démarrer le thread d'écoute du clavier
     uvicorn.run(app, host=app_config["server"]["host"], port=app_config["server"]["port"])
