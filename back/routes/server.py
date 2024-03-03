@@ -200,11 +200,11 @@ async def get_settings():
 
 
 @router.post("/server/full_settings", tags=["server"])
-async def save_server_settings(ini_file: str):
+async def save_server_settings(ini_content: str):
     try:
         return {
             "success": True,
-            "msg": pzGame.set_server_ini(ini_file)
+            "msg": pzGame.set_server_ini(ini_content)
         }
     except Exception as e:
         return {
@@ -214,7 +214,7 @@ async def save_server_settings(ini_file: str):
 
 
 @router.post("/server/sandbox_settings", tags=["server"])
-async def save_sandbox_settings(sandbox_content):
+async def save_sandbox_settings(sandbox_content: str):
     try:
         return {
             "success": True,
@@ -228,7 +228,7 @@ async def save_sandbox_settings(sandbox_content):
 
 
 @router.get("/server/sandbox_settings", tags=["server"])
-async def save_sandbox_settings():
+async def get_sandbox_settings():
     try:
         return {
             "success": True,
