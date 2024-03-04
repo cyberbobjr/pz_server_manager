@@ -6,4 +6,7 @@ back/mod_cache
 back/steamcmd_dir
 back/test
 back/pz_python
+back/pz-python
+back/Frameworks
+back/steamcmd.tar.gz
 **/__pycache__/*
