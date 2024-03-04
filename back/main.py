@@ -5,20 +5,11 @@ import uvicorn
 from fastapi import FastAPI, Depends
 from starlette.middleware.cors import CORSMiddleware
 
-from libs.Bootstrap import Bootstrap
 from libs.security import decode_jwt
 from pz_monitor import start_bot, monitor_process, monitor_mod_update, signal_handler
-from pz_setup import app_config, steamcmd, pzDiscord
+from pz_setup import app_config, pzDiscord
 from routes import auth, mods, server
 
-if not Bootstrap.is_pzserver_installed(app_config["pz"]["pz_exe_path"]):
-    Bootstrap.install_pzserver(app_config["pz"]["pz_exe_path"], steamcmd)
-    '''
-    Server not installed, so we install it, and we ask for relaunching the server, 
-    that way the directory structure for server will be created
-    '''
-    print(f'Relaunch the server...')
-    exit(0)
 
 app = FastAPI()
 
