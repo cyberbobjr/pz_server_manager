@@ -9,8 +9,8 @@ import {
   sendCommand,
   sendServerAction,
   serverStatusError,
-  setCommandResult, setConfig,
-  setIniConfig,
+  setCommandResult,
+  setConfig,
   setPlayersCount,
   setStatus
 } from "../actions/server.actions";

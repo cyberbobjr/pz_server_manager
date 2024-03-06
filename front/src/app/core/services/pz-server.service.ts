@@ -4,7 +4,7 @@ import {environment} from "../../../environments/environment";
 import {Observable} from "rxjs";
 import {PzStatus} from "../interfaces/PzStatus";
 import {PzServerReturn} from "../interfaces/PzServerReturn";
-import {PzConfigFileType, PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
+import {PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
 
 @Injectable({
   providedIn: 'root'
@@ -41,11 +41,11 @@ export class PzServerService {
   saveSettings(content: string, filetype: PzConfigTypeEnum): Observable<PzServerReturn> {
     return this.httpClient.post<PzServerReturn>(`${environment.baseUrl}/server/config`, {
       content: content,
-      type: PzConfigFileType[filetype].url
+      type: filetype
     });
   }
 
   getSettings(filetype: PzConfigTypeEnum): Observable<PzServerReturn> {
-    return this.httpClient.get<PzServerReturn>(`${environment.baseUrl}/server/${PzConfigFileType[filetype].url}`);
+    return this.httpClient.get<PzServerReturn>(`${environment.baseUrl}/server/config?content_type=${filetype}`);
   }
 }

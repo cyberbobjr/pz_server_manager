@@ -34,7 +34,11 @@ class PZGame:
         self.pz_process = PZProcess(self.pz_exe_path)
         self.saveType = {
             "server_ini": self.pz_config.put_content,
-            "sandbox_settings": self.pz_luasandbox.put_content,
+            "lua_sandbox": self.pz_luasandbox.put_content,
+        }
+        self.loadType = {
+            "server_ini": self.pz_config.get_content,
+            "lua_sandbox": self.pz_luasandbox.get_content,
         }
 
     def scan_mods_in_server_dir(self):
@@ -90,6 +94,13 @@ class PZGame:
         if content_type in self.saveType:
             save_function = self.saveType[content_type]
             return save_function(content)
+        else:
+            raise ValueError("invalid type : {}".format(content_type))
+
+    def get_content(self, content_type: str):
+        if content_type in self.loadType:
+            load_function = self.loadType[content_type]
+            return load_function()
         else:
             raise ValueError("invalid type : {}".format(content_type))
 

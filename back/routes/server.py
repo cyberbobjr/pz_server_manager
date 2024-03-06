@@ -191,20 +191,6 @@ async def save_server_settings(key: str, value):
         }
 
 
-@router.get("/server/settings", tags=["server"])
-async def get_settings():
-    try:
-        return {
-            "success": True,
-            "msg": pzGame.get_server_init()
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "msg": e
-        }
-
-
 @router.post("/server/config", tags=["server"])
 async def save_server_settings(data: FileContent):
     try:
@@ -219,26 +205,12 @@ async def save_server_settings(data: FileContent):
         }
 
 
-@router.post("/server/sandbox_settings", tags=["server"])
-async def save_sandbox_settings(data: str):
+@router.get("/server/config", tags=["server"])
+async def get_server_settings(content_type: str):
     try:
         return {
             "success": True,
-            "msg": pzGame.save_content("lua_sandbox", data)
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "msg": e
-        }
-
-
-@router.get("/server/sandbox_settings", tags=["server"])
-async def get_sandbox_settings():
-    try:
-        return {
-            "success": True,
-            "msg": pzGame.get_sandbox_options()
+            "msg": pzGame.get_content(content_type)
         }
     except Exception as e:
         return {
