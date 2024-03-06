@@ -4,7 +4,7 @@ import {environment} from "../../../environments/environment";
 import {Observable} from "rxjs";
 import {PzStatus} from "../interfaces/PzStatus";
 import {PzServerReturn} from "../interfaces/PzServerReturn";
-import {getSandboxSettings, sendServerAction} from "@pzstore/actions/server.actions";
+import {PzConfigFileType, PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
 
 @Injectable({
   providedIn: 'root'
@@ -20,10 +20,6 @@ export class PzServerService {
 
   sendCommand(command: string): Observable<PzServerReturn> {
     return this.httpClient.post<PzServerReturn>(`${environment.baseUrl}/server/command`, command);
-  }
-
-  readIni(): Observable<PzServerReturn> {
-    return this.httpClient.get<PzServerReturn>(`${environment.baseUrl}/server/settings`);
   }
 
   forceStop(): Observable<PzServerReturn> {
@@ -42,11 +38,14 @@ export class PzServerService {
     return this.httpClient.get<PzServerReturn>(`${environment.baseUrl}/server/stop`);
   }
 
-  getSandboxSettings(): Observable<PzServerReturn> {
-    return this.httpClient.get<PzServerReturn>(`${environment.baseUrl}/server/sandbox_settings`);
+  saveSettings(content: string, filetype: PzConfigTypeEnum): Observable<PzServerReturn> {
+    return this.httpClient.post<PzServerReturn>(`${environment.baseUrl}/server/config`, {
+      content: content,
+      type: PzConfigFileType[filetype].url
+    });
   }
 
-  saveSettings(ini_content: string): Observable<PzServerReturn> {
-    return this.httpClient.post<PzServerReturn>(`${environment.baseUrl}/server/full_settings`, {ini_content});
+  getSettings(filetype: PzConfigTypeEnum): Observable<PzServerReturn> {
+    return this.httpClient.get<PzServerReturn>(`${environment.baseUrl}/server/${PzConfigFileType[filetype].url}`);
   }
 }

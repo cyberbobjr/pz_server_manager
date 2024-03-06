@@ -5,12 +5,18 @@ from typing import List
 
 from fastapi import Body, APIRouter
 from fastapi.security import OAuth2PasswordBearer
+from pydantic import BaseModel
 
 from pz_setup import pzRcon, pzGame, app_config
 
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+
+class FileContent(BaseModel):
+    content: str
+    type: str
 
 
 @router.post("/server/command", tags=["server"])
@@ -199,12 +205,12 @@ async def get_settings():
         }
 
 
-@router.post("/server/full_settings", tags=["server"])
-async def save_server_settings(ini_content: str):
+@router.post("/server/config", tags=["server"])
+async def save_server_settings(data: FileContent):
     try:
         return {
             "success": True,
-            "msg": pzGame.set_server_ini(ini_content)
+            "msg": pzGame.save_content(data.type, data.content)
         }
     except Exception as e:
         return {
@@ -214,11 +220,11 @@ async def save_server_settings(ini_content: str):
 
 
 @router.post("/server/sandbox_settings", tags=["server"])
-async def save_sandbox_settings(sandbox_content: str):
+async def save_sandbox_settings(data: str):
     try:
         return {
             "success": True,
-            "msg": pzGame.set_sandbox_options(sandbox_content)
+            "msg": pzGame.save_content("lua_sandbox", data)
         }
     except Exception as e:
         return {

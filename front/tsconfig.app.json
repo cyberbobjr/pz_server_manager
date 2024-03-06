@@ -10,6 +10,9 @@
       ],
       "@shared/*": [
         "src/app/shared/*"
+      ],
+      "@core/*": [
+        "src/app/core/*"
       ]
     }
   },
@@ -18,5 +21,12 @@
   ],
   "include": [
     "src/**/*.d.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "strictPropertyInitialization": false,
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false
+  }
 }

@@ -5,5 +5,7 @@ export const selectPzStore = createFeatureSelector<PzStore>('pzStore');
 
 export const selectIniConfig = createSelector(
   selectPzStore,
-  (state: PzStore) => state.iniConfig
+  (state: PzStore) => {
+    return {...state}.server_ini;
+  }
 );

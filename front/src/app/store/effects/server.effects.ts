@@ -1,22 +1,23 @@
 import {Injectable} from "@angular/core";
 import {Actions, createEffect, ofType} from "@ngrx/effects";
-import {PzServerService} from "../../core/services/pz-server.service";
+import {PzServerService} from "@core/services/pz-server.service";
 import {
-  sendServerAction,
-  getIniConfig,
+  getConfig,
   getPlayersCount,
   getStatus,
+  saveConfig,
   sendCommand,
+  sendServerAction,
   serverStatusError,
-  setCommandResult,
+  setCommandResult, setConfig,
   setIniConfig,
   setPlayersCount,
-  setStatus, getSandboxSettings, setSandboxSettings
+  setStatus
 } from "../actions/server.actions";
 import {catchError, exhaustMap, filter, map, of} from "rxjs";
-import {PzStatus} from "../../core/interfaces/PzStatus";
-import {PzServerReturn} from "../../core/interfaces/PzServerReturn";
-import {PzServerAction} from "../../core/interfaces/PzServerAction";
+import {PzStatus} from "@core/interfaces/PzStatus";
+import {PzServerReturn} from "@core/interfaces/PzServerReturn";
+import {PzServerAction} from "@core/interfaces/PzServerAction";
 
 @Injectable()
 export class ServerEffects {
@@ -65,11 +66,11 @@ export class ServerEffects {
     ))
   ))
 
-  getIniConfig$ = createEffect(() => this.actions$.pipe(
-    ofType(getIniConfig),
-    exhaustMap(() => this.service.readIni()
+  getConfig$ = createEffect(() => this.actions$.pipe(
+    ofType(getConfig),
+    exhaustMap((params) => this.service.getSettings(params.configType)
       .pipe(
-        map((result: PzServerReturn) => setIniConfig({config: result.msg})),
+        map((result: PzServerReturn) => setConfig({content: result.msg, configType: params.configType})),
         catchError(error => {
           console.error(error);
           return of(serverStatusError());
@@ -78,11 +79,11 @@ export class ServerEffects {
     )
   ))
 
-  getSandboxSettings$ = createEffect(() => this.actions$.pipe(
-    ofType(getSandboxSettings),
-    exhaustMap(() => this.service.getSandboxSettings()
+  saveConfig = createEffect(() => this.actions$.pipe(
+    ofType(saveConfig),
+    exhaustMap((params) => this.service.saveSettings(params.content, params.filetype)
       .pipe(
-        map((result: PzServerReturn) => setSandboxSettings({settings: result.msg})),
+        map(_ => getConfig({configType: params.filetype})),
         catchError(error => {
           console.error(error);
           return of(serverStatusError());

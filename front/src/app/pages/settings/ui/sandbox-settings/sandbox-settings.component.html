@@ -1,4 +1,21 @@
 <form [formGroup]="iniForm">
+  <mat-toolbar>
+    <button mat-icon-button
+            type="submit"
+            [disabled]="!iniForm.valid"
+            class="favorite-icon"
+            aria-label="save icon"
+            (click)="saveConfig()">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button mat-icon-button
+            type="button"
+            class="favorite-icon"
+            aria-label="refresh icon"
+            (click)="refreshConfig()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </mat-toolbar>
   <ng-container *ngIf="sandboxSettings$ | async as sandboxSettings">
     <app-lua-editor formControlName="config"></app-lua-editor>
   </ng-container>

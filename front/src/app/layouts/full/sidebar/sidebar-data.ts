@@ -11,7 +11,7 @@ export const navItems: NavItem[] = [
   },
   {
     displayName: 'Mods',
-    iconName: 'layout-dashboard',
+    iconName: 'box-model',
     route: '/mods',
   },
   {

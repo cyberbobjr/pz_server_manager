@@ -2,9 +2,10 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {PzStore} from "@pzstore/reducers/server.reducer";
 import {filter, Observable, Subscription} from "rxjs";
-import {getIniConfig, setIniConfig} from "@pzstore/actions/server.actions";
+import {getConfig, saveConfig} from "@pzstore/actions/server.actions";
 import {FormBuilder, Validators} from "@angular/forms";
 import {selectIniConfig} from "@pzstore/selectors/server.selectors";
+import {PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
 
 @Component({
   selector: 'app-ini-server',
@@ -17,6 +18,7 @@ export class IniServerComponent implements OnInit, OnDestroy {
   })
   iniConfig$: Observable<string | null> | null = null;
   subscription: Subscription = new Subscription();
+  initialConfig: string | null = null;
 
   constructor(private store: Store<{ pzStore: PzStore }>,
               private fb: FormBuilder) {
@@ -30,11 +32,12 @@ export class IniServerComponent implements OnInit, OnDestroy {
           filter(r => !!r)
         )
         .subscribe(r => {
+          this.initialConfig = r!;
           this.iniForm.patchValue({config: r});
           selectIniConfig.release();
         })
     )
-    this.store.dispatch(getIniConfig());
+    this.store.dispatch(getConfig({configType: PzConfigTypeEnum.server_ini}));
   }
 
   ngOnDestroy(): void {
@@ -42,10 +45,13 @@ export class IniServerComponent implements OnInit, OnDestroy {
   }
 
   saveConfig() {
-    this.store.dispatch(setIniConfig({config: (this.iniForm.get('config')!.value)!}))
+    this.store.dispatch(saveConfig({
+      content: (this.iniForm.get('config')!.value)!,
+      filetype: PzConfigTypeEnum.server_ini
+    }))
   }
 
   refreshConfig() {
-    this.store.dispatch(getIniConfig());
+    this.iniForm.patchValue({config: this.initialConfig});
   }
 }

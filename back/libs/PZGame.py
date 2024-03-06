@@ -7,6 +7,7 @@ from .Bootstrap import Bootstrap
 from .Mod import Mod
 from .PZConfigFile import PZConfigFile
 from .PZLog import PZLog
+from .PZLuaFile import PZLuaFile
 from .PZProcess import PZProcess
 
 MODINFO = "mod.info"
@@ -28,8 +29,13 @@ class PZGame:
         self.server_admin_password = server_admin_password
         self.pz_exe_path = pz_exe_path
         self.server_path = server_path
-        self.pz_config = PZConfigFile(self.server_path + '\\Zomboid\\Server\\' + self.server_name + '.ini')
+        self.pz_config = PZConfigFile(f'{self.server_path}\\Zomboid\\Server\\{self.server_name}.ini')
+        self.pz_luasandbox = PZLuaFile(f'{self.server_path}\\Zomboid\\Server\\{self.server_name}_SandboxVars.lua')
         self.pz_process = PZProcess(self.pz_exe_path)
+        self.saveType = {
+            "server_ini": self.pz_config.put_content,
+            "sandbox_settings": self.pz_luasandbox.put_content,
+        }
 
     def scan_mods_in_server_dir(self):
         self.mods = []
@@ -80,19 +86,17 @@ class PZGame:
     def set_server_ini(self, key: str, value):
         return self.pz_config.write_value(key, value)
 
-    def save_server_ini(self, content: str):
-        return self.pz_config.put_content(content)
+    def save_content(self, content_type: str, content: str):
+        if content_type in self.saveType:
+            save_function = self.saveType[content_type]
+            return save_function(content)
+        else:
+            raise ValueError("invalid type : {}".format(content_type))
 
     def get_server_init(self, key=None):
         if key is None:
             return self.pz_config.get_content()
         return self.pz_config.get_value(key)
-
-    def set_sandbox_options(self, sandbox_content):
-        sandbox_path = f'{self.server_path}\\Zomboid\\Server\\{self.server_name}_SandboxVars.lua'
-        with open(sandbox_path, 'w') as file:
-            file.write(sandbox_content)
-        return sandbox_content
 
     def get_sandbox_options(self):
         sandbox_path = f'{self.server_path}\\Zomboid\\Server\\{self.server_name}_SandboxVars.lua'
