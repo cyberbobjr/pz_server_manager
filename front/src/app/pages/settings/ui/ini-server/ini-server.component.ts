@@ -19,6 +19,7 @@ export class IniServerComponent implements OnInit, OnDestroy {
   iniConfig$: Observable<string | null> | null = null;
   subscription: Subscription = new Subscription();
   initialConfig: string | null = null;
+  loading$: Observable<boolean> = this.store.select((store) => store.pzStore.loading);
 
   constructor(private store: Store<{ pzStore: PzStore }>,
               private fb: FormBuilder) {
