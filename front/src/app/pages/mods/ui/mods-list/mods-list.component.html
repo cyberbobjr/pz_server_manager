@@ -1,0 +1,34 @@
+<table mat-table [dataSource]="mods$" class="mat-elevation-z8">
+  <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+  <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
+
+  <ng-container matColumnDef="WorkshopItems">
+    <th mat-header-cell *matHeaderCellDef>Workshop id</th>
+    <td mat-cell *matCellDef="let item" class="v-align-top">{{item.WorkshopItems}}</td>
+  </ng-container>
+  <ng-container matColumnDef="Mods">
+    <th mat-header-cell *matHeaderCellDef>Mods</th>
+    <td mat-cell *matCellDef="let item" class="v-align-top">
+      <span *ngFor="let mod of item.Mods">{{mod}}<br/></span>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="preview_url">
+    <th mat-header-cell *matHeaderCellDef>Preview</th>
+    <td mat-cell *matCellDef="let item" class="v-align-top">
+      <img class="preview_url" src="{{item.steam_data.preview_url}}"/>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="file_description">
+    <th mat-header-cell *matHeaderCellDef>Description</th>
+    <td mat-cell *matCellDef="let item" class="v-align-top">
+      <div class="description-container" [class.expanded]="isExpanded(item.WorkshopItems)">
+        <h2>{{item.steam_data.title}}</h2>
+        <div class="description-content" [innerHTML]="item.steam_data.file_description | bbodeToHtml"></div>
+      </div>
+      <button mat-icon-button (click)="toggleDescription(item.WorkshopItems)"
+              [class.expanded]="isExpanded(item.WorkshopItems)">
+        <mat-icon>{{ isExpanded(item.id) ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+</table>

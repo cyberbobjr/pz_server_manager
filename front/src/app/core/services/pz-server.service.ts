@@ -5,6 +5,7 @@ import {Observable} from "rxjs";
 import {PzStatus} from "../interfaces/PzStatus";
 import {PzServerReturn} from "../interfaces/PzServerReturn";
 import {PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
+import {loadModsIni} from "@pzstore/actions/server.actions";
 
 @Injectable({
   providedIn: 'root'
@@ -47,5 +48,9 @@ export class PzServerService {
 
   getSettings(filetype: PzConfigTypeEnum): Observable<PzServerReturn> {
     return this.httpClient.get<PzServerReturn>(`${environment.baseUrl}/server/config?content_type=${filetype}`);
+  }
+
+  getModsIni(): Observable<any> {
+    return this.httpClient.get<PzServerReturn>(`${environment.baseUrl}/mods/ini`);
   }
 }

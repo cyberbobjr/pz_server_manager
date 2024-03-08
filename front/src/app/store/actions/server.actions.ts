@@ -21,3 +21,5 @@ export const setConfig = createAction('[PZ SERVER] - set config', props<{
   configType: PzConfigTypeEnum
 }>())
 export const setIniConfig = createAction('[PZ SERVER] - set ini config', props<{ config: string }>());
+export const loadModsIni = createAction('[PZ SERVER] - get mods ini');
+export const setModsIni = createAction('[PZ SERVER] - set mods ini', props<{ mods: any }>());

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-branding',
@@ -15,5 +15,6 @@ import { Component } from '@angular/core';
   `,
 })
 export class BrandingComponent {
-  constructor() {}
+  constructor() {
+  }
 }

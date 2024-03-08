@@ -1,14 +1,15 @@
 import {PzStatus} from "@core/interfaces/PzStatus";
 import {createReducer, on} from "@ngrx/store";
 import {
-  getConfig,
+  getConfig, saveConfig,
   serverStatusError,
   setCommandResult,
   setConfig,
-  setIniConfig,
+  setIniConfig, setModsIni,
   setPlayersCount,
   setStatus
 } from "../actions/server.actions";
+import {PzModsIni} from "@core/interfaces/PzModsIni";
 
 export interface PzStore {
   status: PzStatus | null;
@@ -17,6 +18,7 @@ export interface PzStore {
   server_ini: string | null;
   lua_sandbox: string | null;
   loading: boolean;
+  mods_ini: PzModsIni | null;
 }
 
 export const initialPzStore: PzStore = {
@@ -25,7 +27,8 @@ export const initialPzStore: PzStore = {
   playerCount: 0,
   server_ini: null,
   lua_sandbox: null,
-  loading: false
+  loading: false,
+  mods_ini: null
 }
 
 export const pzReducer = createReducer(
@@ -33,8 +36,10 @@ export const pzReducer = createReducer(
   on(setStatus, (state, {newStatus}) => ({...state, status: newStatus})),
   on(serverStatusError, (state) => ({...state, status: null})),
   on(getConfig, (state) => ({...state, loading: true})),
+  on(saveConfig, (state) => ({...state, loading: true})),
   on(setCommandResult, (state, {result}) => ({...state, commandResult: result})),
   on(setIniConfig, (state, {config}) => ({...state, iniConfig: config})),
   on(setPlayersCount, (state, {count}) => ({...state, playerCount: count})),
-  on(setConfig, (state, {content, configType}) => ({...state, loading: false, [configType]: content}))
+  on(setConfig, (state, {content, configType}) => ({...state, loading: false, [configType]: content})),
+  on(setModsIni, (state: PzStore, {mods}) => ({...state, mods_ini: mods}))
 )

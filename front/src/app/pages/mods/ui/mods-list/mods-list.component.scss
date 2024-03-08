@@ -1,0 +1,25 @@
+.preview_url {
+  max-width: 150px;
+}
+
+.v-align-top {
+  vertical-align: top;
+}
+
+.description-container {
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  display: -webkit-box;
+  max-height: 100px;
+  -webkit-box-orient: vertical;
+
+  &.expanded {
+    max-height: 500px; /* Déplie le texte */
+    overflow-y: auto;
+  }
+}
+
+
+button.expanded {
+  transform: rotate(180deg); /* Change l'icône de dépliement */
+}

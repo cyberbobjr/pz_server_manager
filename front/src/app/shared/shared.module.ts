@@ -14,7 +14,7 @@ import {MaterialModule} from "../material.module";
   declarations: [
     NotfoundComponent,
     LuaEditorComponent,
-    SpinnerComponent
+    SpinnerComponent,
   ],
   imports: [
     CommonModule,

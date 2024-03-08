@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {Actions, createEffect, ofType} from "@ngrx/effects";
 import {PzServerService} from "@core/services/pz-server.service";
 import {
-  getConfig,
+  getConfig, loadModsIni,
   getPlayersCount,
   getStatus,
   saveConfig,
@@ -10,7 +10,7 @@ import {
   sendServerAction,
   serverStatusError,
   setCommandResult,
-  setConfig,
+  setConfig, setModsIni,
   setPlayersCount,
   setStatus
 } from "../actions/server.actions";
@@ -120,6 +120,16 @@ export class ServerEffects {
     )
   ))
 
+  getModsIni$ = createEffect(() => this.actions$.pipe(
+    ofType(loadModsIni),
+    exhaustMap(() => this.service.getModsIni().pipe(
+      map((result: PzServerReturn) => setModsIni({mods: result.msg})),
+      catchError(error => {
+        console.error(error);
+        return of(serverStatusError());
+      })
+    ))
+  ))
 
   constructor(
     private actions$: Actions,
