@@ -47,7 +47,13 @@ async def get_mod_ini():
                 "WorkshopItems": w,
                 "steam_data": steam.get_mod_info(w)
             })
-        return {"success": True, "Mods_ini": Mods, "Workshop_ini": workshop_items, "workshop_items": workshops}
+        return {"success": True,
+                "msg": {
+                    "Mods_ini": Mods,
+                    "Workshop_ini": workshop_items,
+                    "workshop_items": workshops
+                }
+                }
     except Exception as e:
         print(e)
         return {
@@ -76,4 +82,3 @@ async def search_mods(workshop_id: str):
     except Exception as e:
         print(e)
         return {"success": False, "message": f"Error {e}"}
-

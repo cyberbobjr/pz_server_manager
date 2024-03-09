@@ -1,21 +1,21 @@
-import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { MatSidenav } from '@angular/material/sidenav';
+import {BreakpointObserver} from '@angular/cdk/layout';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Subscription} from 'rxjs';
+import {MatSidenav} from '@angular/material/sidenav';
 
-const MOBILE_VIEW = 'screen and (max-width: 1080px)';
-const TABLET_VIEW = 'screen and (min-width: 1080px) and (max-width: 1366px)';
-const MONITOR_VIEW = 'screen and (min-width: 1366px)';
+const MOBILE_VIEW = 'screen and (max-width: 768px)';
+const TABLET_VIEW = 'screen and (min-width: 769px) and (max-width: 1024px)';
+const MONITOR_VIEW = 'screen and (min-width: 1024px)';
 
 @Component({
   selector: 'app-full',
   templateUrl: './full.component.html',
   styleUrls: [],
 })
-export class FullComponent implements OnInit {
+export class FullComponent implements OnInit, OnDestroy {
 
-  @ViewChild('leftsidenav')
-  public sidenav: MatSidenav;
+  // @ts-ignore
+  @ViewChild('leftsidenav') public sidenav: MatSidenav;
 
   //get options from service
   private layoutChangesSubscription = Subscription.EMPTY;
@@ -41,7 +41,8 @@ export class FullComponent implements OnInit {
       });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
   ngOnDestroy() {
     this.layoutChangesSubscription.unsubscribe();

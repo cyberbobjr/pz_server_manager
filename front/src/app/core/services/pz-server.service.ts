@@ -6,6 +6,7 @@ import {PzStatus} from "../interfaces/PzStatus";
 import {PzServerReturn} from "../interfaces/PzServerReturn";
 import {PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
 import {loadModsIni} from "@pzstore/actions/server.actions";
+import {SteamPublishedFileDetails} from "@core/interfaces/SteamPublishedFileDetails";
 
 @Injectable({
   providedIn: 'root'
@@ -52,5 +53,9 @@ export class PzServerService {
 
   getModsIni(): Observable<any> {
     return this.httpClient.get<PzServerReturn>(`${environment.baseUrl}/mods/ini`);
+  }
+
+  searchMods(text: string, cursor: string): Observable<SteamPublishedFileDetails> {
+    return this.httpClient.post<SteamPublishedFileDetails>(`${environment.baseUrl}/mods/search`, {text, cursor});
   }
 }

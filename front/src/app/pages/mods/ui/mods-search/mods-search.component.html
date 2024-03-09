@@ -1,0 +1,7 @@
+<form [formGroup]="formSearch">
+  <mat-form-field class="w-100">
+    <input matInput type="search" formControlName="search" placeholder="type to search mods..."/>
+  </mat-form-field>
+</form>
+<app-mods-list [mods$]="mods$"></app-mods-list>
+{{mods$ | async | json}}

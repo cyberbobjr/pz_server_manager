@@ -2,6 +2,7 @@ import {createAction, props} from "@ngrx/store";
 import {PzStatus} from "@core/interfaces/PzStatus";
 import {PzServerAction} from "@core/interfaces/PzServerAction";
 import {PzConfigFileType, PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
+import {WorkshopItems} from "@core/interfaces/PzModsIni";
 
 export const getStatus = createAction('[PZ SERVER] - get status');
 export const setStatus = createAction('[PZ SERVER] - set status', props<{ newStatus: PzStatus | null }>());
@@ -23,3 +24,6 @@ export const setConfig = createAction('[PZ SERVER] - set config', props<{
 export const setIniConfig = createAction('[PZ SERVER] - set ini config', props<{ config: string }>());
 export const loadModsIni = createAction('[PZ SERVER] - get mods ini');
 export const setModsIni = createAction('[PZ SERVER] - set mods ini', props<{ mods: any }>());
+export const searchMods = createAction('[PZ SERVER] - search mods', props<{ cursor?: string, text?: string }>())
+export const setSearchedMods = createAction('[PZ SERVER] - set searched mods', props<{ mods: WorkshopItems[] }>())
+

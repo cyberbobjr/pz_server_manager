@@ -12,7 +12,7 @@ import {
   setCommandResult,
   setConfig, setModsIni,
   setPlayersCount,
-  setStatus
+  setStatus, searchMods, setSearchedMods
 } from "../actions/server.actions";
 import {catchError, exhaustMap, filter, map, of} from "rxjs";
 import {PzStatus} from "@core/interfaces/PzStatus";
@@ -129,6 +129,18 @@ export class ServerEffects {
         return of(serverStatusError());
       })
     ))
+  ))
+
+  searchMods$ = createEffect(() => this.actions$.pipe(
+    ofType(searchMods),
+    exhaustMap(({text, cursor}) => this.service.searchMods(text!, cursor!)
+      .pipe(
+        map(r => setSearchedMods({mods: r.publishedfiledetails})),
+        catchError(error => {
+          console.error(error);
+          return of(serverStatusError());
+        })
+      ))
   ))
 
   constructor(

@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {map, Observable} from "rxjs";
+import {Component, Input, OnInit} from '@angular/core';
+import {Observable, of} from "rxjs";
 import {Store} from "@ngrx/store";
 import {PzStore} from "@pzstore/reducers/server.reducer";
 import {loadModsIni} from "@pzstore/actions/server.actions";
+import {WorkshopItems} from "@core/interfaces/PzModsIni";
 
 @Component({
   selector: 'app-mods-list',
@@ -10,23 +11,22 @@ import {loadModsIni} from "@pzstore/actions/server.actions";
   styleUrl: './mods-list.component.scss'
 })
 export class ModsListComponent implements OnInit {
-  mods$: Observable<any> = this.store.select((store) => store.pzStore.mods_ini)
-    .pipe(
-      map(r => r?.workshop_items)
-    );
+  @Input() mods$: Observable<WorkshopItems[]> = of([]);
+
   columnsToDisplay = [
     "WorkshopItems",
     "Mods",
+    "tags",
     "preview_url",
-    "file_description"
+    "file_description",
+    "actions"
   ];
   expandedStates: { [key: string]: boolean } = {}; // Utilisation d'un objet pour stocker l'état d'expansion par ligne
 
-  constructor(private store: Store<{ pzStore: PzStore }>) {
+  constructor() {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(loadModsIni())
   }
 
   toggleDescription(rowId: string) {

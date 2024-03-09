@@ -6,10 +6,10 @@ import {
   setCommandResult,
   setConfig,
   setIniConfig, setModsIni,
-  setPlayersCount,
+  setPlayersCount, setSearchedMods,
   setStatus
 } from "../actions/server.actions";
-import {PzModsIni} from "@core/interfaces/PzModsIni";
+import {PzModsIni, WorkshopItems} from "@core/interfaces/PzModsIni";
 
 export interface PzStore {
   status: PzStatus | null;
@@ -19,6 +19,7 @@ export interface PzStore {
   lua_sandbox: string | null;
   loading: boolean;
   mods_ini: PzModsIni | null;
+  mods_searched: WorkshopItems[];
 }
 
 export const initialPzStore: PzStore = {
@@ -28,7 +29,8 @@ export const initialPzStore: PzStore = {
   server_ini: null,
   lua_sandbox: null,
   loading: false,
-  mods_ini: null
+  mods_ini: null,
+  mods_searched: []
 }
 
 export const pzReducer = createReducer(
@@ -41,5 +43,6 @@ export const pzReducer = createReducer(
   on(setIniConfig, (state, {config}) => ({...state, iniConfig: config})),
   on(setPlayersCount, (state, {count}) => ({...state, playerCount: count})),
   on(setConfig, (state, {content, configType}) => ({...state, loading: false, [configType]: content})),
-  on(setModsIni, (state: PzStore, {mods}) => ({...state, mods_ini: mods}))
+  on(setModsIni, (state: PzStore, {mods}) => ({...state, mods_ini: mods})),
+  on(setSearchedMods, (state: PzStore, {mods}) => ({...state, mods_searched: mods}))
 )

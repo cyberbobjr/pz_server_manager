@@ -58,7 +58,6 @@ class Steam(object):
             "appid": self.app_id,
             "cursor": cursor,
             "match_all_tags": 1,
-            "return_short_description": 1,
             "return_children": 1,
             "return_tags": 1,
             "return_metadata": 1,
@@ -72,7 +71,7 @@ class Steam(object):
             query_params[f"requiredtags[{idx}]"] = tag
         response = requests.get(f"{self.baseUrl}{url}", params=query_params)
         if response.status_code == 200:
-            data = response.json()
+            data = response.json()['response']
             return data
         else:
             print("The request has been failed with the code:", response.status_code)

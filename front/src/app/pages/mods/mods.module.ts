@@ -6,20 +6,26 @@ import {ModsIndexComponent} from "./pages/mods-index/mods-index.component";
 import {ModsListComponent} from "./ui/mods-list/mods-list.component";
 import {MatTabsModule} from "@angular/material/tabs";
 import {MaterialModule} from "../../material.module";
-import {BbodeToHtmlPipe} from "@shared/pipes/bbode-to-html.pipe";
+import {BbcodeToHtmlPipe} from "@shared/pipes/bbode-to-html.pipe";
+import {ModsSearchComponent} from "./ui/mods-search/mods-search.component";
+import {ReactiveFormsModule} from "@angular/forms";
+import {ModsInstalledComponent} from "./ui/mods-installed/mods-installed.component";
 
 
 @NgModule({
   declarations: [
     ModsIndexComponent,
-    ModsListComponent
+    ModsListComponent,
+    ModsSearchComponent,
+    ModsInstalledComponent
   ],
   imports: [
     CommonModule,
     ModsRoutingModule,
     MatTabsModule,
     MaterialModule,
-    BbodeToHtmlPipe
+    BbcodeToHtmlPipe,
+    ReactiveFormsModule
   ]
 })
 export class ModsModule {
