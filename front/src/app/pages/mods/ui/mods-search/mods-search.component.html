@@ -3,5 +3,8 @@
     <input matInput type="search" formControlName="search" placeholder="type to search mods..."/>
   </mat-form-field>
 </form>
-<app-mods-list [mods$]="mods$"></app-mods-list>
-{{mods$ | async | json}}
+<app-mods-list [mods$]="mods$"
+               [actionsTemplate]="actionsTemplate"></app-mods-list>
+<ng-template #actionsTemplate let-item="item">
+  <button mat-button>Add</button>
+</ng-template>

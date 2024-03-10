@@ -29,7 +29,7 @@
   </ng-container>
   <ng-container matColumnDef="file_description">
     <th mat-header-cell *matHeaderCellDef>Description</th>
-    <td mat-cell *matCellDef="let item" class="v-align-top">
+    <td mat-cell *matCellDef="let item" class="v-align-top description_column">
       <div class="description-container" [class.expanded]="isExpanded(item.publishedfileid)">
         <h2>{{item.title}}</h2>
         <div class="description-content" [innerHTML]="item.file_description | bbcodeToHtml"></div>
@@ -43,8 +43,8 @@
   </ng-container>
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef></th>
-    <td mat-cell *matCellDef="let item" class="v-align-top">
-
+    <td mat-cell *matCellDef="let item" class="v-align-top action-column">
+      <ng-container *ngTemplateOutlet="actionsTemplate; context: { item: item }"></ng-container>
     </td>
   </ng-container>
 </table>

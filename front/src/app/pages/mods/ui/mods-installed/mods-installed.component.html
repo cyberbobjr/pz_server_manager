@@ -1,1 +1,7 @@
-<app-mods-list [mods$]="mods$"></app-mods-list>
+<app-mods-list [mods$]="mods$"
+               [actionsTemplate]="actionsTemplate">
+</app-mods-list>
+<ng-template #actionsTemplate let-item="item">
+  <button mat-button>Edit</button>
+  <button mat-button>Delete</button>
+</ng-template>

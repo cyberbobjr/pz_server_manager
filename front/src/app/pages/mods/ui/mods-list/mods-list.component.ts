@@ -1,8 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, TemplateRef} from '@angular/core';
 import {Observable, of} from "rxjs";
-import {Store} from "@ngrx/store";
-import {PzStore} from "@pzstore/reducers/server.reducer";
-import {loadModsIni} from "@pzstore/actions/server.actions";
 import {WorkshopItems} from "@core/interfaces/PzModsIni";
 
 @Component({
@@ -12,7 +9,8 @@ import {WorkshopItems} from "@core/interfaces/PzModsIni";
 })
 export class ModsListComponent implements OnInit {
   @Input() mods$: Observable<WorkshopItems[]> = of([]);
-
+  // @ts-ignore
+  @Input() actionsTemplate: TemplateRef<any>;
   columnsToDisplay = [
     "WorkshopItems",
     "Mods",
