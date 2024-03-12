@@ -2,6 +2,8 @@ import asyncio
 import glob
 import os
 import subprocess
+from pathlib import Path
+from typing import List
 
 from .Bootstrap import Bootstrap
 from .Mod import Mod
@@ -41,12 +43,21 @@ class PZGame:
             "lua_sandbox": self.pz_luasandbox.get_content,
         }
 
-    def scan_mods_in_server_dir(self):
+    def scan_mods_in_server_dir(self) -> List[Mod]:
         self.mods = []
         for file in glob.glob(f'{self.pz_exe_path}{self.mod_path}*\\mods\\*\\{MODINFO}'):
             mod = self.parse_info(file)
             if mod is not None:
                 self.mods.append(mod)
+        return self.mods
+
+    def is_workshop_exist_in_server_dir(self, workshop):
+        return os.path.exists(f'{self.pz_exe_path}{self.mod_path}\\{workshop}')
+
+    def parse_map(self, mod_path):
+        if os.path.exists(mod_path):
+            return True
+        return False
 
     def scan_mods_in_ini(self):
         mods = self.read_mods_ini()
@@ -58,6 +69,9 @@ class PZGame:
 
     def read_workshops_ini(self):
         return self.pz_config.get_value("WorkshopItems").split(";")
+
+    def read_maps_ini(self):
+        return self.pz_config.get_value("Map").split(";")
 
     def parse_info(self, file) -> Mod:
         workshop_id = None
@@ -83,9 +97,13 @@ class PZGame:
         for mod in self.mods:
             print(mod)
 
-    def build_server_mods_ini(self, Mods, WorkshopItems):
-        self.set_server_ini("Mods", ';'.join(Mods) + "\n")
-        self.set_server_ini("WorkshopItems", ';'.join(WorkshopItems) + "\n")
+    def build_server_mods_ini(self, Mods, WorkshopItems, Maps):
+        if Mods is not None:
+            self.set_server_ini("Mods", ';'.join(Mods) + "\n")
+        if WorkshopItems is not None:
+            self.set_server_ini("WorkshopItems", ';'.join(WorkshopItems) + "\n")
+        if Maps is not None:
+            self.set_server_ini("Map", ';'.join(Maps) + "\n")
 
     def set_server_ini(self, key: str, value):
         return self.pz_config.write_value(key, value)

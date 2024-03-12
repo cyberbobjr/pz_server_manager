@@ -32,6 +32,9 @@
       ],
       "@core/*": [
         "src/app/core/*"
+      ],
+      "@app-material/material.module": [
+        "src/app/material.module.ts"
       ]
     }
   },

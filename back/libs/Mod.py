@@ -1,5 +1,6 @@
 import glob
 import os
+from pathlib import Path
 
 REGEX_IMPORTS = "\\s*imports(.*)\\s+\\{([^}]+)\\}"
 REGEX_RECIPE = "\\s*recipe (.*)\\s+\\{([^}]+)\\}"
@@ -10,6 +11,7 @@ MODINFO = "mod.info"
 
 class Mod:
     id = str
+    maps = []
 
     def __init__(self, workshop_id, name, file):
         self.workshopId = workshop_id
@@ -30,6 +32,18 @@ class Mod:
                 if mod_id is not None:
                     ids.append(mod_id)
         return ids
+
+    def get_mapids_from_workshop_id(workshop_id, mod_path: str):
+        workshop_path = f'{mod_path}\\{workshop_id}'
+        if os.path.exists(workshop_path):
+            base_path = Path(workshop_path)
+            maps_dirs = base_path.rglob("media/maps/*")  # Modifier pour chercher dans "media/maps"
+            map_ids = []
+            for maps_dir in maps_dirs:
+                if maps_dir.is_dir():  # Vérifie que le chemin est bien un répertoire
+                    map_ids.append(maps_dir.name)  # Ajoute le nom du répertoire à la liste
+            return map_ids
+        return []
 
     @staticmethod
     def read_id_from_mod_info_file(file):

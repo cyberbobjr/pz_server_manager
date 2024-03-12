@@ -1,13 +1,15 @@
+import asyncio
 import os
 import signal
 import time
+from concurrent.futures import ThreadPoolExecutor
 from typing import List
 
-from fastapi import Body, APIRouter
+from fastapi import Body, APIRouter, BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 
-from pz_setup import pzRcon, pzGame, app_config
+from pz_setup import pzRcon, pzGame, app_config, steamcmd
 
 router = APIRouter()
 
@@ -148,9 +150,17 @@ async def force_stop():
 
 
 @router.post("/server/mods", tags=["server"])
-async def save_mods_ini(Mods: List[str], WorkshopItems: List[str]):
+async def save_mods_ini(Mods: List[str], WorkshopItems: List[str], Maps: List[str], background_tasks: BackgroundTasks):
     try:
-        pzGame.build_server_mods_ini(Mods, WorkshopItems)
+        appid = app_config["steam"]["appid"]
+        exePath = pzGame.get_exe_path()
+
+        for workshopItem in WorkshopItems:
+            if not pzGame.is_workshop_exist_in_server_dir(workshopItem):
+                # Ajouter la tâche d'installation en arrière-plan
+                background_tasks.add_task(background_install_workshopfiles, appid, workshopItem, exePath)
+
+        pzGame.build_server_mods_ini(Mods, WorkshopItems, Maps)
         return {
             "success": True,
             "msg": "ini file saved"
@@ -158,23 +168,19 @@ async def save_mods_ini(Mods: List[str], WorkshopItems: List[str]):
     except Exception as e:
         return {
             "success": False,
-            "msg": e
+            "msg": str(e)
         }
 
 
-@router.put("/server/mods", tags=["server"])
-async def add_mods_ini(Mods: List[str], WorkshopItems: List[str]):
-    try:
-        pzGame.build_server_mods_ini(Mods, WorkshopItems)
-        return {
-            "success": True,
-            "msg": "ini file saved"
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "msg": e
-        }
+def install_workshopfiles_async(appid: str, workshopItem: str, exePath: str):
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(steamcmd.install_workshopfiles, appid, workshopItem, exePath)
+        return future.result()
+
+
+async def background_install_workshopfiles(appid: str, workshopItem: str, exePath: str):
+    loop = asyncio.get_running_loop()
+    await loop.run_in_executor(None, install_workshopfiles_async, appid, workshopItem, exePath)
 
 
 @router.put("/server/settings", tags=["server"])

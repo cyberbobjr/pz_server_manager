@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Del mod/map confirmation</h2>
+<mat-dialog-content>
+  <p>
+    Are you sure you want to delete this mod? this action is irreversible.
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-raised-button color="warn" (click)="onOkClick()">I'm sure</button>
+</mat-dialog-actions>

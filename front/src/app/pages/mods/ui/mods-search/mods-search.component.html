@@ -1,3 +1,4 @@
+<app-spinner [isLoading]="loading$"></app-spinner>
 <form [formGroup]="formSearch">
   <mat-form-field class="w-100">
     <input matInput type="search" formControlName="search" placeholder="type to search mods..."/>
@@ -6,5 +7,5 @@
 <app-mods-list [mods$]="mods$"
                [actionsTemplate]="actionsTemplate"></app-mods-list>
 <ng-template #actionsTemplate let-item="item">
-  <button mat-button>Add</button>
+  <button mat-button (click)="addMod(item)">Add</button>
 </ng-template>

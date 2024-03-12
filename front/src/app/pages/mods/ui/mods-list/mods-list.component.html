@@ -7,10 +7,21 @@
     <td mat-cell *matCellDef="let item" class="v-align-top">{{item.publishedfileid}}</td>
   </ng-container>
 
-  <ng-container matColumnDef="Mods">
+  <ng-container matColumnDef="Installed">
     <th mat-header-cell *matHeaderCellDef>Mods</th>
     <td mat-cell *matCellDef="let item" class="v-align-top">
-      <span *ngFor="let mod of item.Mods">{{mod}}<br/></span>
+      <ng-container *ngIf="item.Mods.length > 0">
+        <span *ngFor="let mod of item.Mods">{{mod}}<br/></span>
+      </ng-container>
+      <ng-container *ngIf="item.Maps.length > 0">
+        <div *ngFor="let map of item.Maps" class="d-flex">
+          {{map}}
+          <i-tabler
+            name="map-cog"
+            matListItemIcon
+          ></i-tabler>
+          <br/></div>
+      </ng-container>
     </td>
   </ng-container>
 

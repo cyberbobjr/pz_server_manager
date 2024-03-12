@@ -8,12 +8,13 @@ import {WorkshopItems} from "@core/interfaces/PzModsIni";
   styleUrl: './mods-list.component.scss'
 })
 export class ModsListComponent implements OnInit {
+  @Input() displayModsInstalled: boolean = false;
   @Input() mods$: Observable<WorkshopItems[]> = of([]);
   // @ts-ignore
   @Input() actionsTemplate: TemplateRef<any>;
   columnsToDisplay = [
     "WorkshopItems",
-    "Mods",
+    "Installed",
     "tags",
     "preview_url",
     "file_description",
@@ -25,6 +26,9 @@ export class ModsListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (!this.displayModsInstalled) {
+      this.columnsToDisplay.splice(1, 1);
+    }
   }
 
   toggleDescription(rowId: string) {

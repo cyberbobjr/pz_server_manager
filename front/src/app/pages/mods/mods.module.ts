@@ -10,7 +10,8 @@ import {BbcodeToHtmlPipe} from "@shared/pipes/bbode-to-html.pipe";
 import {ModsSearchComponent} from "./ui/mods-search/mods-search.component";
 import {ReactiveFormsModule} from "@angular/forms";
 import {ModsInstalledComponent} from "./ui/mods-installed/mods-installed.component";
-
+import {SharedModule} from "@shared/shared.module";
+import {TablerIconsModule} from "angular-tabler-icons";
 
 @NgModule({
   declarations: [
@@ -19,14 +20,16 @@ import {ModsInstalledComponent} from "./ui/mods-installed/mods-installed.compone
     ModsSearchComponent,
     ModsInstalledComponent
   ],
-  imports: [
-    CommonModule,
-    ModsRoutingModule,
-    MatTabsModule,
-    MaterialModule,
-    BbcodeToHtmlPipe,
-    ReactiveFormsModule
-  ]
+    imports: [
+        CommonModule,
+        ModsRoutingModule,
+        MatTabsModule,
+        MaterialModule,
+        BbcodeToHtmlPipe,
+        ReactiveFormsModule,
+        SharedModule,
+        TablerIconsModule
+    ]
 })
 export class ModsModule {
 }

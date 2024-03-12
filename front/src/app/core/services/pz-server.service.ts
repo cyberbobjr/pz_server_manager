@@ -58,4 +58,12 @@ export class PzServerService {
   searchMods(text: string, cursor: string): Observable<SteamPublishedFileDetails> {
     return this.httpClient.post<SteamPublishedFileDetails>(`${environment.baseUrl}/mods/search`, {text, cursor});
   }
+
+  saveMods(Mods: string[], WorkshopItems: string[], Maps: string[]): Observable<any> {
+    return this.httpClient.post<SteamPublishedFileDetails>(`${environment.baseUrl}/server/mods`, {
+      Mods,
+      WorkshopItems,
+      Maps
+    });
+  }
 }

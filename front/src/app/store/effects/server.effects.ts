@@ -2,7 +2,8 @@ import {Injectable} from "@angular/core";
 import {Actions, createEffect, ofType} from "@ngrx/effects";
 import {PzServerService} from "@core/services/pz-server.service";
 import {
-  getConfig, loadModsIni,
+  getConfig,
+  loadModsIni,
   getPlayersCount,
   getStatus,
   saveConfig,
@@ -12,12 +13,18 @@ import {
   setCommandResult,
   setConfig, setModsIni,
   setPlayersCount,
-  setStatus, searchMods, setSearchedMods
+  setStatus,
+  searchMods,
+  setSearchedMods,
+  saveMods
 } from "../actions/server.actions";
-import {catchError, exhaustMap, filter, map, of} from "rxjs";
+import {catchError, exhaustMap, filter, map, of, withLatestFrom} from "rxjs";
 import {PzStatus} from "@core/interfaces/PzStatus";
 import {PzServerReturn} from "@core/interfaces/PzServerReturn";
 import {PzServerAction} from "@core/interfaces/PzServerAction";
+import {select, Store} from "@ngrx/store";
+import {PzStore} from "@pzstore/reducers/server.reducer";
+import {selectMapsIni, selectModsIni, selectWorkshopIni} from "@pzstore/selectors/server.selectors";
 
 @Injectable()
 export class ServerEffects {
@@ -143,9 +150,29 @@ export class ServerEffects {
       ))
   ))
 
+  saveMods$ = createEffect(() => this.actions$.pipe(
+    ofType(saveMods),
+    withLatestFrom(
+      this.store.pipe(select(selectModsIni)),
+      this.store.pipe(select(selectWorkshopIni)),
+      this.store.pipe(select(selectMapsIni))
+    ),
+    exhaustMap(([, modsId, workshopId, mapsId]) =>
+      this.service.saveMods(modsId, workshopId, mapsId)
+        .pipe(
+          map(() => loadModsIni()),
+          catchError(error => {
+            console.error(error);
+            return of(serverStatusError());
+          })
+        )
+    )
+  ));
+
   constructor(
     private actions$: Actions,
-    private service: PzServerService
+    private service: PzServerService,
+    private store: Store<{ pzStore: PzStore }>
   ) {
   }
 }

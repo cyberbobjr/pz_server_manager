@@ -1,7 +1,8 @@
 <app-mods-list [mods$]="mods$"
+               [displayModsInstalled]="true"
                [actionsTemplate]="actionsTemplate">
 </app-mods-list>
 <ng-template #actionsTemplate let-item="item">
   <button mat-button>Edit</button>
-  <button mat-button>Delete</button>
+  <button mat-button (click)="askDelete(item)">Delete</button>
 </ng-template>

@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Add mod/map confirmation</h2>
+<mat-dialog-content>
+  <ng-container *ngIf="data.mods">
+    <p>Please confirm the addition of the following mods:</p>
+    <div *ngFor="let mod of modsList">
+      <mat-checkbox [(ngModel)]="mod.selected">{{ mod.id }}</mat-checkbox>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="data.maps">
+    <p>Please confirm the addition of the following maps:</p>
+    <div *ngFor="let map of mapsList">
+      <mat-checkbox [(ngModel)]="map.selected">{{ map.id }}</mat-checkbox>
+    </div>
+  </ng-container>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button (click)="onOkClick()">Ok</button>
+</mat-dialog-actions>
