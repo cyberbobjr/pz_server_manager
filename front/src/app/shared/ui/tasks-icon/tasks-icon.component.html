@@ -1,0 +1,14 @@
+<ng-container *ngIf="tasks$ | async as tasks">
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="tasks.length >0 ? taskmenu:null"
+    aria-label="Notifications"
+  >
+    <mat-icon matBadge="{{ inProgressCount$ | async }}" matBadgeColor="accent">task</mat-icon>
+  </button>
+  <mat-menu #taskmenu="matMenu" class="topbar-dd cardWithShadow">
+    <mat-list>
+      <mat-list-item *ngFor="let task of tasks">{{task}}</mat-list-item>
+    </mat-list>
+  </mat-menu>
+</ng-container>

@@ -5,7 +5,6 @@ import {Observable} from "rxjs";
 import {PzStatus} from "../interfaces/PzStatus";
 import {PzServerReturn} from "../interfaces/PzServerReturn";
 import {PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
-import {loadModsIni} from "@pzstore/actions/server.actions";
 import {SteamPublishedFileDetails} from "@core/interfaces/SteamPublishedFileDetails";
 
 @Injectable({
@@ -65,5 +64,16 @@ export class PzServerService {
       WorkshopItems,
       Maps
     });
+  }
+
+  checkStatus(workshopItemId: string): Observable<{ workshopItem: string; status: string }> {
+    return this.httpClient.get<{
+      workshopItem: string;
+      status: string
+    }>(`${environment.baseUrl}/server/task/${workshopItemId}`)
+  }
+
+  getTasksInProgress(): Observable<string[]> {
+    return this.httpClient.get<string[]>(`${environment.baseUrl}/server/task/`);
   }
 }

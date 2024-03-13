@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LuaEditorComponent } from './lua-editor.component';
+import {LuaEditorComponent} from './lua-editor.component';
 
 describe('LuaEditorComponent', () => {
   let component: LuaEditorComponent;
@@ -11,7 +11,7 @@ describe('LuaEditorComponent', () => {
       imports: [LuaEditorComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(LuaEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -1,9 +1,13 @@
 import {PzStatus} from "@core/interfaces/PzStatus";
 import {createReducer, on} from "@ngrx/store";
 import {
-  addMods, deleteMods,
+  addMods,
+  deleteMods,
   getConfig,
-  saveConfig, saveMods,
+  loadInProgressTasksSuccess,
+  loadModsIni,
+  saveConfig,
+  saveMods,
   serverStatusError,
   setCommandResult,
   setConfig,
@@ -24,6 +28,8 @@ export interface PzStore {
   loading: boolean;
   mods_installed: PzModsIni | null;
   mods_searched: WorkshopItems[];
+  downloadInProgress: string[];
+  inProgressCount: number;
 }
 
 export const initialPzStore: PzStore = {
@@ -34,13 +40,16 @@ export const initialPzStore: PzStore = {
   lua_sandbox: null,
   loading: false,
   mods_installed: null,
-  mods_searched: []
+  mods_searched: [],
+  downloadInProgress: [],
+  inProgressCount: 0,
 }
 
 export const pzReducer = createReducer(
   initialPzStore,
   on(setStatus, (state, {newStatus}) => ({...state, status: newStatus})),
   on(serverStatusError, (state) => ({...state, status: null})),
+  on(loadModsIni, (state) => ({...state, loading: true})),
   on(getConfig, (state) => ({...state, loading: true})),
   on(saveMods, (state) => ({...state, loading: true})),
   on(saveConfig, (state) => ({...state, loading: true})),
@@ -143,5 +152,10 @@ export const pzReducer = createReducer(
     }
 
     return newState;
-  })
+  }),
+  on(loadInProgressTasksSuccess, (state, {tasks}) => ({
+    ...state,
+    inProgressCount: tasks.length,
+    downloadInProgress: tasks
+  }))
 )

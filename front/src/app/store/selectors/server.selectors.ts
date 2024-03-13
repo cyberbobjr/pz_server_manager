@@ -1,6 +1,5 @@
 import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {PzStore} from "@pzstore/reducers/server.reducer";
-import {PzModsIni} from "@core/interfaces/PzModsIni";
 
 export const selectPzStore = createFeatureSelector<PzStore>('pzStore');
 export const selectIniConfig = createSelector(
@@ -29,4 +28,8 @@ export const selectWorkshopIni = createSelector(
 export const selectMapsIni = createSelector(
   selectModsInstalled,
   (mods_installed) => mods_installed?.Maps_ini ?? [] // Remplacez 'Maps_ini' par le champ réel pour mapsId
+);
+export const selectInProgressCount = createSelector(
+  selectPzStore,
+  (pz: PzStore) => pz.inProgressCount
 );

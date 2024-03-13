@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ModsSearchComponent } from './mods-search.component';
+import {ModsSearchComponent} from './mods-search.component';
 
 describe('ModsSearchComponent', () => {
   let component: ModsSearchComponent;
@@ -11,7 +11,7 @@ describe('ModsSearchComponent', () => {
       imports: [ModsSearchComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(ModsSearchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

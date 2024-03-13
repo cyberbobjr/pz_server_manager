@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ServerSendCommandComponent } from './server-send-command.component';
+import {ServerSendCommandComponent} from './server-send-command.component';
 
 describe('ServerSendCommandComponent', () => {
   let component: ServerSendCommandComponent;
@@ -11,7 +11,7 @@ describe('ServerSendCommandComponent', () => {
       imports: [ServerSendCommandComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(ServerSendCommandComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

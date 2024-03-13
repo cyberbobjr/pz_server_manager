@@ -8,7 +8,6 @@ import {SharedModule} from "@shared/shared.module";
 import {MaterialModule} from "../../material.module";
 import {SandboxSettingsComponent} from "./ui/sandbox-settings/sandbox-settings.component";
 import {ReactiveFormsModule} from "@angular/forms";
-import {StoreModule} from "@ngrx/store";
 
 
 @NgModule({

@@ -1,4 +1,4 @@
-import { BbcodeToHtmlPipe } from './bbode-to-html.pipe';
+import {BbcodeToHtmlPipe} from './bbode-to-html.pipe';
 
 describe('BbodeToHtmlPipe', () => {
   it('create an instance', () => {

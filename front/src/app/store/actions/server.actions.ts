@@ -1,10 +1,9 @@
 import {createAction, props} from "@ngrx/store";
 import {PzStatus} from "@core/interfaces/PzStatus";
 import {PzServerAction} from "@core/interfaces/PzServerAction";
-import {PzConfigFileType, PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
+import {PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
 import {WorkshopItems} from "@core/interfaces/PzModsIni";
 import {editor} from "monaco-editor";
-import create = editor.create;
 
 export const getStatus = createAction('[PZ SERVER] - get status');
 export const setStatus = createAction('[PZ SERVER] - set status', props<{ newStatus: PzStatus | null }>());
@@ -39,3 +38,6 @@ export const deleteMods = createAction('[PZ SERVER] - delete mods', props<{
   mapsId: string,
 }>())
 export const saveMods = createAction('[PZ SERVER] - save mods');
+export const loadInProgressTasksSuccess = createAction('[PZ SERVER] - Load In Progress Tasks Success', props<{
+  tasks: string[]
+}>());

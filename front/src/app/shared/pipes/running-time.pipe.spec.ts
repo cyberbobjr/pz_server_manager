@@ -1,4 +1,4 @@
-import { RunningTimePipe } from './running-time.pipe';
+import {RunningTimePipe} from './running-time.pipe';
 
 describe('RunningTimePipe', () => {
   it('create an instance', () => {

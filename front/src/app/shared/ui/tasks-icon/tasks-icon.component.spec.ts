@@ -1,18 +1,18 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {ServerStatusComponent} from './server-status.component';
+import {TasksIconComponent} from './tasks-icon.component';
 
-describe('ServerStatusComponent', () => {
-  let component: ServerStatusComponent;
-  let fixture: ComponentFixture<ServerStatusComponent>;
+describe('TasksIconComponent', () => {
+  let component: TasksIconComponent;
+  let fixture: ComponentFixture<TasksIconComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ServerStatusComponent]
+      imports: [TasksIconComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ServerStatusComponent);
+    fixture = TestBed.createComponent(TasksIconComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

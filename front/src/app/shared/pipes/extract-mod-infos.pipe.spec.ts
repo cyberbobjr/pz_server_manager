@@ -1,4 +1,4 @@
-import { ExtractModInfosPipe } from './extract-mod-infos.pipe';
+import {ExtractModInfosPipe} from './extract-mod-infos.pipe';
 
 describe('ExtractModInfosPipe', () => {
   it('create an instance', () => {

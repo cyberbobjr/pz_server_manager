@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { DialogDelModConfirmationComponent } from './dialog-del-mod-confirmation.component';
+import {DialogDelModConfirmationComponent} from './dialog-del-mod-confirmation.component';
 
 describe('DialogDelModConfirmationComponent', () => {
   let component: DialogDelModConfirmationComponent;
@@ -11,7 +11,7 @@ describe('DialogDelModConfirmationComponent', () => {
       imports: [DialogDelModConfirmationComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(DialogDelModConfirmationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

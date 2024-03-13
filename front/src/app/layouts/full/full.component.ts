@@ -1,5 +1,5 @@
 import {BreakpointObserver} from '@angular/cdk/layout';
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {MatSidenav} from '@angular/material/sidenav';
 
@@ -12,7 +12,7 @@ const MONITOR_VIEW = 'screen and (min-width: 1024px)';
   templateUrl: './full.component.html',
   styleUrls: [],
 })
-export class FullComponent implements OnInit, OnDestroy {
+export class FullComponent implements OnDestroy {
 
   // @ts-ignore
   @ViewChild('leftsidenav') public sidenav: MatSidenav;
@@ -39,9 +39,6 @@ export class FullComponent implements OnInit, OnDestroy {
 
         this.isContentWidthFixed = state.breakpoints[MONITOR_VIEW];
       });
-  }
-
-  ngOnInit(): void {
   }
 
   ngOnDestroy() {

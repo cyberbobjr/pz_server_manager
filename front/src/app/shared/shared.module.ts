@@ -8,6 +8,7 @@ import {FormsModule} from "@angular/forms";
 import {MonacoEditorModule} from "ngx-monaco-editor-v2";
 import {SpinnerComponent} from "@shared/ui/spinner/spinner.component";
 import {MaterialModule} from "../material.module";
+import {TasksIconComponent} from "@shared/ui/tasks-icon/tasks-icon.component";
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import {MaterialModule} from "../material.module";
     NotfoundComponent,
     LuaEditorComponent,
     SpinnerComponent,
+    TasksIconComponent
   ],
   imports: [
     CommonModule,
@@ -27,7 +29,8 @@ import {MaterialModule} from "../material.module";
   exports: [
     ServerStatusComponent,
     LuaEditorComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    TasksIconComponent
   ]
 })
 export class SharedModule {

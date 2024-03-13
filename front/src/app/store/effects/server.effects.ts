@@ -3,28 +3,35 @@ import {Actions, createEffect, ofType} from "@ngrx/effects";
 import {PzServerService} from "@core/services/pz-server.service";
 import {
   getConfig,
-  loadModsIni,
   getPlayersCount,
   getStatus,
+  loadInProgressTasksSuccess,
+  loadModsIni,
   saveConfig,
+  saveMods,
+  searchMods,
   sendCommand,
   sendServerAction,
   serverStatusError,
   setCommandResult,
-  setConfig, setModsIni,
+  setConfig,
+  setModsIni,
   setPlayersCount,
-  setStatus,
-  searchMods,
   setSearchedMods,
-  saveMods
+  setStatus
 } from "../actions/server.actions";
-import {catchError, exhaustMap, filter, map, of, withLatestFrom} from "rxjs";
+import {catchError, EMPTY, exhaustMap, filter, interval, map, of, switchMap, withLatestFrom} from "rxjs";
 import {PzStatus} from "@core/interfaces/PzStatus";
 import {PzServerReturn} from "@core/interfaces/PzServerReturn";
 import {PzServerAction} from "@core/interfaces/PzServerAction";
 import {select, Store} from "@ngrx/store";
 import {PzStore} from "@pzstore/reducers/server.reducer";
-import {selectMapsIni, selectModsIni, selectWorkshopIni} from "@pzstore/selectors/server.selectors";
+import {
+  selectInProgressCount,
+  selectMapsIni,
+  selectModsIni,
+  selectWorkshopIni
+} from "@pzstore/selectors/server.selectors";
 
 @Injectable()
 export class ServerEffects {
@@ -168,6 +175,25 @@ export class ServerEffects {
         )
     )
   ));
+
+  loadInProgressTasks$ = createEffect(() =>
+    interval(5000).pipe(
+      withLatestFrom(this.store.pipe(select(selectInProgressCount))),
+      switchMap(([_, currentCount]) =>
+        this.service.getTasksInProgress().pipe(
+          map(tasks => {
+            // Compare le nouveau nombre de tâches "en cours" avec le précédent
+            if (tasks.length !== currentCount) {
+              // Si le nombre de tâches a changé, dispatcher l'action loadModsIni
+              this.store.dispatch(loadModsIni());
+            }
+            return loadInProgressTasksSuccess({tasks});
+          }),
+          catchError(() => EMPTY)
+        )
+      )
+    )
+  );
 
   constructor(
     private actions$: Actions,

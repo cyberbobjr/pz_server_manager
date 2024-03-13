@@ -14,8 +14,9 @@
   <!-- --------------------------------------------------------------- -->
   <!-- profile Dropdown -->
   <!-- --------------------------------------------------------------- -->
+  <app-tasks-icon></app-tasks-icon>
   <mat-icon aria-hidden="false"
-            color="{{ (status$ | async) ? 'accent':'warn'}}"
+            color="{{ (status$ | async) ? 'primary':'warn'}}"
             aria-label="status icon"
             matTooltip="{{ (status$ | async) ? 'server running':'server stopped'}}"
             fontIcon="{{ (status$ | async) ? 'link':'link_off'}}"

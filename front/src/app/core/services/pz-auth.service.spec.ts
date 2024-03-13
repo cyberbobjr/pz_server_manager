@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { PzAuthService } from './pz-auth.service';
+import {PzAuthService} from './pz-auth.service';
 
 describe('PzAuthService', () => {
   let service: PzAuthService;

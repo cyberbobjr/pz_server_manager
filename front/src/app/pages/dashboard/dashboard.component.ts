@@ -1,19 +1,19 @@
-import { Component, ViewEncapsulation, ViewChild } from '@angular/core';
+import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
 import {
+  ApexAxisChartSeries,
   ApexChart,
-  ChartComponent,
   ApexDataLabels,
+  ApexFill,
+  ApexGrid,
   ApexLegend,
+  ApexMarkers,
+  ApexPlotOptions,
+  ApexResponsive,
   ApexStroke,
   ApexTooltip,
-  ApexAxisChartSeries,
   ApexXAxis,
   ApexYAxis,
-  ApexGrid,
-  ApexPlotOptions,
-  ApexFill,
-  ApexMarkers,
-  ApexResponsive,
+  ChartComponent,
 } from 'ng-apexcharts';
 
 interface month {

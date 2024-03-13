@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ModsInstalledComponent } from './mods-installed.component';
+import {ModsInstalledComponent} from './mods-installed.component';
 
 describe('ModsInstalledComponent', () => {
   let component: ModsInstalledComponent;
@@ -11,7 +11,7 @@ describe('ModsInstalledComponent', () => {
       imports: [ModsInstalledComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(ModsInstalledComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

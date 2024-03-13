@@ -3,7 +3,7 @@ import os
 import signal
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import List
+from typing import List, Union
 
 from fastapi import Body, APIRouter, BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer
@@ -14,6 +14,8 @@ from pz_setup import pzRcon, pzGame, app_config, steamcmd
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+task_status = {}
 
 
 class FileContent(BaseModel):
@@ -159,6 +161,8 @@ async def save_mods_ini(Mods: List[str], WorkshopItems: List[str], Maps: List[st
             if not pzGame.is_workshop_exist_in_server_dir(workshopItem):
                 # Ajouter la tâche d'installation en arrière-plan
                 background_tasks.add_task(background_install_workshopfiles, appid, workshopItem, exePath)
+            else:
+                task_status[workshopItem] = "completed"
 
         pzGame.build_server_mods_ini(Mods, WorkshopItems, Maps)
         return {
@@ -173,14 +177,31 @@ async def save_mods_ini(Mods: List[str], WorkshopItems: List[str], Maps: List[st
 
 
 def install_workshopfiles_async(appid: str, workshopItem: str, exePath: str):
-    with ThreadPoolExecutor() as executor:
-        future = executor.submit(steamcmd.install_workshopfiles, appid, workshopItem, exePath)
-        return future.result()
+    task_status[workshopItem] = "in progress"
+    try:
+        with ThreadPoolExecutor() as executor:
+            future = executor.submit(steamcmd.install_workshopfiles, appid, workshopItem, exePath)
+            result = future.result()
+            # Update the task status to "completed"
+            task_status[workshopItem] = "completed"
+            return result
+    except Exception as e:
+        # Update the status with the error in case of an exception
+        task_status[workshopItem] = f"Error: {str(e)}"
 
 
 async def background_install_workshopfiles(appid: str, workshopItem: str, exePath: str):
     loop = asyncio.get_running_loop()
     await loop.run_in_executor(None, install_workshopfiles_async, appid, workshopItem, exePath)
+
+
+@router.get("/server/task/")
+async def get_task_status_or_in_progress(workshopItem: str = None) -> Union[List[str], dict]:
+    if workshopItem:
+        return {"workshopItem": workshopItem, "status": task_status.get(workshopItem, "Not found")}
+    else:
+        in_progress_tasks = [item for item, status in task_status.items() if status == "in progress"]
+        return in_progress_tasks
 
 
 @router.put("/server/settings", tags=["server"])

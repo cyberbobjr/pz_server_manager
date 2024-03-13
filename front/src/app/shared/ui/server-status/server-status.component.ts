@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {PzStore} from "@pzstore/reducers/server.reducer";
-import {PzStatus} from "../../../core/interfaces/PzStatus";
+import {PzStatus} from "@core/interfaces/PzStatus";
 import {interval, Observable, Subscription} from "rxjs";
 import {CommonModule} from "@angular/common";
 import {RunningTimePipe} from "../../pipes/running-time.pipe";

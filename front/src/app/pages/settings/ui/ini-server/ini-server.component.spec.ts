@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { IniServerComponent } from './ini-server.component';
+import {IniServerComponent} from './ini-server.component';
 
 describe('IniServerComponent', () => {
   let component: IniServerComponent;
@@ -11,7 +11,7 @@ describe('IniServerComponent', () => {
       imports: [IniServerComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(IniServerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

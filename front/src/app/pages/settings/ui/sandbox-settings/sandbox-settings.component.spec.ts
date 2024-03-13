@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SandboxSettingsComponent } from './sandbox-settings.component';
+import {SandboxSettingsComponent} from './sandbox-settings.component';
 
 describe('SandboxSettingsComponent', () => {
   let component: SandboxSettingsComponent;
@@ -11,7 +11,7 @@ describe('SandboxSettingsComponent', () => {
       imports: [SandboxSettingsComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(SandboxSettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

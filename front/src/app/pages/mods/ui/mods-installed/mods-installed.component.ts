@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {PzStore} from "@pzstore/reducers/server.reducer";
-import {deleteMods, loadModsIni} from "@pzstore/actions/server.actions";
+import {deleteMods, loadModsIni, saveMods} from "@pzstore/actions/server.actions";
 import {filter, map, Observable, take} from "rxjs";
 import {SteamData} from "@core/interfaces/PzModsIni";
 import {MatDialog} from "@angular/material/dialog";
@@ -13,6 +13,7 @@ import {DialogDelModConfirmationComponent} from "../dialog-del-mod-confirmation/
   styleUrl: './mods-installed.component.scss'
 })
 export class ModsInstalledComponent implements OnInit {
+  loading$: Observable<boolean> = this.store.select((store) => store.pzStore.loading);
   mods$: Observable<any> = this.store.select((store) => store.pzStore.mods_installed)
     .pipe(
       map(r => r?.workshop_items),
@@ -46,6 +47,7 @@ export class ModsInstalledComponent implements OnInit {
           mapsId: item.Maps!.join(";"),
           workShopdId: item.publishedfileid
         }));
+        this.store.dispatch(saveMods());
       });
   }
 }
