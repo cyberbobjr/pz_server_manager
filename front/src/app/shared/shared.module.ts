@@ -2,7 +2,6 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NotfoundComponent} from "./ui/notfound/notfound.component";
 import {RouterModule} from "@angular/router";
-import {ServerStatusComponent} from "./ui/server-status/server-status.component";
 import {LuaEditorComponent} from "./ui/lua-editor/lua-editor.component";
 import {FormsModule} from "@angular/forms";
 import {MonacoEditorModule} from "ngx-monaco-editor-v2";
@@ -23,11 +22,9 @@ import {TasksIconComponent} from "@shared/ui/tasks-icon/tasks-icon.component";
     FormsModule,
     MonacoEditorModule,
     RouterModule,
-    ServerStatusComponent,
     MaterialModule
   ],
   exports: [
-    ServerStatusComponent,
     LuaEditorComponent,
     SpinnerComponent,
     TasksIconComponent

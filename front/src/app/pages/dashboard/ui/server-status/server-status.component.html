@@ -1,7 +1,10 @@
 <ng-container *ngIf="status$ | async as status; else notconnected">
   Serveur Started : {{status.server_started}}<br/>
-  Process running : {{status.process_running}}<br/>
-  Serveur Started since : {{status.running_since | runningTime | date:'medium'}}<br/>
+  <span *ngIf="isServerMonitored$ | async">Process running : {{status.process_running}}<br/></span>
+  <span *ngIf="isServerMonitored$ | async">
+    Serveur Started since : {{status.running_since | runningTime | date:'medium'}}
+    <br/>
+  </span>
   Nb of players : {{playerCount$ | async}}<br/>
 </ng-container>
 <ng-template #notconnected>

@@ -59,7 +59,9 @@ get_discord_info()
 pzRcon = PZRcon(app_config["rcon"]["host"], app_config["rcon"]["port"], app_config["rcon"]["password"])
 pzGame.pz_rcon = pzRcon
 
-if app_config["discord"]["apikey"] and app_config["discord"]["channel"]:
+if app_config["discord"]["enable"] and app_config["discord"]["apikey"] and app_config["discord"]["channel"]:
     pzDiscord = PZDiscord(app_config["discord"]["apikey"], app_config["discord"]["channel"])
 else:
     pzDiscord = None
+
+pzMonitoring = app_config["pz"]["monitoring"]

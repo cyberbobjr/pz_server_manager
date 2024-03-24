@@ -14,7 +14,7 @@
   <!-- --------------------------------------------------------------- -->
   <!-- profile Dropdown -->
   <!-- --------------------------------------------------------------- -->
-  <app-tasks-icon></app-tasks-icon>
+  <app-tasks-icon *ngIf="isServerMonitored$ | async"></app-tasks-icon>
   <mat-icon aria-hidden="false"
             color="{{ (status$ | async) ? 'primary':'warn'}}"
             aria-label="status icon"

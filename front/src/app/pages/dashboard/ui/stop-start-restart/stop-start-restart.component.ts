@@ -2,19 +2,12 @@ import {Component} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {PzStore} from "@pzstore/reducers/server.reducer";
 import {Observable} from "rxjs";
-import {PzStatus} from "../../../core/interfaces/PzStatus";
-import {CommonModule} from "@angular/common";
-import {MaterialModule} from "../../../material.module";
-import {sendServerAction} from "../../../store/actions/server.actions";
-import {PzServerAction} from "../../../core/interfaces/PzServerAction";
+import {PzStatus} from "@core/interfaces/PzStatus";
+import {sendServerAction} from "@pzstore/actions/server.actions";
+import {PzServerAction} from "@core/interfaces/PzServerAction";
 
 @Component({
   selector: 'app-stop-start-restart',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MaterialModule
-  ],
   templateUrl: './stop-start-restart.component.html',
   styleUrl: './stop-start-restart.component.scss'
 })

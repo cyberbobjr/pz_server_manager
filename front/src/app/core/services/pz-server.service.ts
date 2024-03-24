@@ -6,6 +6,7 @@ import {PzStatus} from "../interfaces/PzStatus";
 import {PzServerReturn} from "../interfaces/PzServerReturn";
 import {PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
 import {SteamPublishedFileDetails} from "@core/interfaces/SteamPublishedFileDetails";
+import {PzServerManagerConfig} from "@core/interfaces/PzServerManagerConfig";
 
 @Injectable({
   providedIn: 'root'
@@ -75,5 +76,9 @@ export class PzServerService {
 
   getTasksInProgress(): Observable<string[]> {
     return this.httpClient.get<string[]>(`${environment.baseUrl}/server/task/`);
+  }
+
+  getConfig(): Observable<PzServerManagerConfig> {
+    return this.httpClient.get<PzServerManagerConfig>(`${environment.baseUrl}/config`);
   }
 }

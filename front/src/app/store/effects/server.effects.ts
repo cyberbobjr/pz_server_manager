@@ -7,6 +7,7 @@ import {
   getStatus,
   loadInProgressTasksSuccess,
   loadModsIni,
+  loadServerConfig,
   saveConfig,
   saveMods,
   searchMods,
@@ -18,6 +19,7 @@ import {
   setModsIni,
   setPlayersCount,
   setSearchedMods,
+  setServerConfig,
   setStatus
 } from "../actions/server.actions";
 import {catchError, EMPTY, exhaustMap, filter, interval, map, of, switchMap, withLatestFrom} from "rxjs";
@@ -194,6 +196,19 @@ export class ServerEffects {
       )
     )
   );
+
+  loadServerConfig$ = createEffect(() => this.actions$.pipe(
+      ofType(loadServerConfig),
+      exhaustMap(() => this.service.getConfig()
+        .pipe(
+          map(r => setServerConfig({serverConfig: r})),
+          catchError(error => {
+            console.error(error);
+            return of(serverStatusError());
+          })
+        ))
+    )
+  )
 
   constructor(
     private actions$: Actions,

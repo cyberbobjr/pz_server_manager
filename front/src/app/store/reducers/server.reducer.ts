@@ -14,10 +14,11 @@ import {
   setIniConfig,
   setModsIni,
   setPlayersCount,
-  setSearchedMods,
+  setSearchedMods, setServerConfig,
   setStatus
 } from "../actions/server.actions";
 import {PzModsIni, WorkshopItems} from "@core/interfaces/PzModsIni";
+import {PzServerManagerConfig} from "@core/interfaces/PzServerManagerConfig";
 
 export interface PzStore {
   status: PzStatus | null;
@@ -30,6 +31,7 @@ export interface PzStore {
   mods_searched: WorkshopItems[];
   downloadInProgress: string[];
   inProgressCount: number;
+  serverConfig: PzServerManagerConfig | null;
 }
 
 export const initialPzStore: PzStore = {
@@ -43,6 +45,7 @@ export const initialPzStore: PzStore = {
   mods_searched: [],
   downloadInProgress: [],
   inProgressCount: 0,
+  serverConfig: null
 }
 
 export const pzReducer = createReducer(
@@ -157,5 +160,6 @@ export const pzReducer = createReducer(
     ...state,
     inProgressCount: tasks.length,
     downloadInProgress: tasks
-  }))
+  })),
+  on(setServerConfig, (state, {serverConfig}) => ({...state, serverConfig}))
 )

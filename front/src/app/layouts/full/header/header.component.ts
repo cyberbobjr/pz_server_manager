@@ -2,8 +2,8 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsula
 import {MatDialog} from '@angular/material/dialog';
 import {Store} from "@ngrx/store";
 import {interval, Observable, Subscription} from "rxjs";
-import {getStatus} from "../../../store/actions/server.actions";
-import {PzStore} from "../../../store/reducers/server.reducer";
+import {getStatus} from "@pzstore/actions/server.actions";
+import {PzStore} from "@pzstore/reducers/server.reducer";
 
 
 @Component({
@@ -18,15 +18,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Output() toggleMobileFilterNav = new EventEmitter<void>();
   @Output() toggleCollapsed = new EventEmitter<void>();
 
-  showFiller = false;
   status$: Observable<boolean | undefined>;
   subscription: Subscription = new Subscription();
+  isServerMonitored$: Observable<boolean | undefined> = this.store.select((store) => store.pzStore.serverConfig?.pz.monitoring);
 
   constructor(public dialog: MatDialog,
               private store: Store<{ pzStore: PzStore }>) {
     this.store.dispatch(getStatus());
     this.status$ = this.store.select(store => {
-      return store.pzStore.status?.process_running;
+      return store.pzStore.status?.server_started;
     });
   }
 

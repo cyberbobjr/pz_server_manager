@@ -1,4 +1,5 @@
 from mcrcon import MCRcon
+from rcon.source import Client
 
 
 class PZRcon:
@@ -11,8 +12,8 @@ class PZRcon:
 
     def check_open(self):
         try:
-            with MCRcon(self.rcon_host, port=int(self.rcon_port), password=self.rcon_password) as client:
-                client.connect()
+            with Client(self.rcon_host, port=int(self.rcon_port), passwd=self.rcon_password) as client:
+                client.run("help")
                 return True
         except Exception as e:
             print(e)
@@ -20,10 +21,10 @@ class PZRcon:
 
     async def send_command(self, cmd: str):
         try:
-            with MCRcon(self.rcon_host, port=int(self.rcon_port), password=self.rcon_password) as client:
-                result = client.command(cmd)
+            with Client(self.rcon_host, port=int(self.rcon_port), passwd=self.rcon_password) as client:
+                result = client.run(cmd)
                 print(result)
-                client.disconnect()
+                # client.disconnect()
                 return result
         except UnicodeDecodeError as erreur_unicode:
             content = erreur_unicode.args[1]

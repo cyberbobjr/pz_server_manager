@@ -7,9 +7,8 @@ from starlette.middleware.cors import CORSMiddleware
 
 from libs.security import decode_jwt
 from pz_monitor import start_bot, monitor_process, monitor_mod_update, signal_handler
-from pz_setup import app_config, pzDiscord
-from routes import auth, mods, server
-
+from pz_setup import app_config, pzDiscord, pzMonitoring
+from routes import auth, mods, server, config
 
 app = FastAPI()
 
@@ -21,9 +20,7 @@ async def startup_db_client():
         asyncio.create_task(start_bot())
         while not pzDiscord.is_ready:
             await asyncio.sleep(10)
-        asyncio.create_task(monitor_process())
-        asyncio.create_task(monitor_mod_update())
-    else:
+    if pzMonitoring:
         asyncio.create_task(monitor_process())
         asyncio.create_task(monitor_mod_update())
 
@@ -39,6 +36,7 @@ app.add_middleware(CORSMiddleware,
 app.include_router(auth.router)
 app.include_router(server.router, dependencies=[Depends(decode_jwt)])
 app.include_router(mods.router, dependencies=[Depends(decode_jwt)])
+app.include_router(config.router, dependencies=[Depends(decode_jwt)])
 # app.mount("/static", StaticFiles(directory=os.path.abspath(modpack_path)), name="static")
 
 if __name__ == "__main__":
