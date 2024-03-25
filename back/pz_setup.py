@@ -43,8 +43,11 @@ def get_rcon_info_if_process_running():
 
 def get_discord_info():
     if "discord" in app_config and "apikey" in app_config["discord"] and "channel" in app_config["discord"]:
-        pzGame.set_server_ini("DiscordToken", app_config["discord"]["apikey"])
-        pzGame.set_server_ini("DiscordChannelID", app_config["discord"]["channel"])
+        try:
+            pzGame.set_server_ini("DiscordToken", app_config["discord"]["apikey"])
+            pzGame.set_server_ini("DiscordChannelID", app_config["discord"]["channel"])
+        except FileNotFoundError:
+            print(f'Ini file not found')
     else:
         app_config["discord"]["apikey"] = pzGame.pz_config.get_value("DiscordToken")
         app_config["discord"]["channel"] = pzGame.pz_config.get_value("DiscordChannelID")
