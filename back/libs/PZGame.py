@@ -16,7 +16,7 @@ MODINFO = "mod.info"
 
 class PZGame:
     mods: list[Mod] = []
-    mod_path = "\\steamapps\\workshop\\content\\108600\\"
+    mod_path = os.path.join("steamapps", "workshop", "content", "108600")  # Modifié pour la compatibilité
     memory = 8
     server_path = ""
     pz_exe_path = ""
@@ -30,8 +30,10 @@ class PZGame:
         self.server_admin_password = server_admin_password
         self.pz_exe_path = pz_exe_path
         self.server_path = server_path
-        self.pz_config = PZConfigFile(f'{self.server_path}\\Zomboid\\Server\\{self.server_name}.ini')
-        self.pz_luasandbox = PZLuaFile(f'{self.server_path}\\Zomboid\\Server\\{self.server_name}_SandboxVars.lua')
+        self.pz_config = PZConfigFile(
+            os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}.ini"))  # Modifié
+        self.pz_luasandbox = PZLuaFile(
+            os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}_SandboxVars.lua"))  # Modifié
         self.pz_process = PZProcess(self.pz_exe_path)
         self.saveType = {
             "server_ini": self.pz_config.put_content,
@@ -44,14 +46,16 @@ class PZGame:
 
     def scan_mods_in_server_dir(self) -> List[Mod]:
         self.mods = []
-        for file in glob.glob(f'{self.pz_exe_path}{self.mod_path}*\\mods\\*\\{MODINFO}'):
+        mod_search_path = os.path.join(self.pz_exe_path, self.mod_path, "*", "mods", "*", MODINFO)  # Modifié
+        for file in glob.glob(mod_search_path):
             mod = self.parse_info(file)
             if mod is not None:
                 self.mods.append(mod)
         return self.mods
 
     def is_workshop_exist_in_server_dir(self, workshop):
-        return os.path.exists(f'{self.pz_exe_path}{self.mod_path}\\{workshop}')
+        workshop_path = os.path.join(self.pz_exe_path, self.mod_path, str(workshop))  # Modifié
+        return os.path.exists(workshop_path)
 
     def parse_map(self, mod_path):
         if os.path.exists(mod_path):
@@ -127,7 +131,7 @@ class PZGame:
         return self.pz_config.get_value(key)
 
     def get_sandbox_options(self):
-        sandbox_path = f'{self.server_path}\\Zomboid\\Server\\{self.server_name}_SandboxVars.lua'
+        sandbox_path = os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}_SandboxVars.lua")  # Modifié
         with open(sandbox_path, 'r') as file:
             return file.read()
 

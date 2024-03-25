@@ -8,9 +8,8 @@ class Bootstrap:
 
     @staticmethod
     def is_pzserver_installed(pz_exe_path):
-        if os.path.exists(f'{pz_exe_path}\\java\\zombie\\network\\GameServer.class'):
-            return True
-        return False
+        game_server_path = os.path.join(pz_exe_path, "java", "zombie", "network", "GameServer.class")
+        return os.path.exists(game_server_path)
 
     @staticmethod
     def install_pzserver(pz_exe_path, steamcmd):
