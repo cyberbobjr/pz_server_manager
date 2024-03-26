@@ -1,7 +1,7 @@
-import {RouterModule, Routes} from '@angular/router';
-import {NgModule} from '@angular/core';
-import {FullComponent} from "./layouts/full/full.component";
-import {BlankComponent} from "./layouts/blank/blank.component";
+import { RouterModule, Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { FullComponent } from "./layouts/full/full.component";
+import { BlankComponent } from "./layouts/blank/blank.component";
 
 const routes: Routes = [
   {
@@ -32,7 +32,7 @@ const routes: Routes = [
     component: BlankComponent,
     children: [
       {
-        path: 'authentication',
+        path: 'auth',
         loadChildren: () =>
           import('./pages/authentication/authentication.module').then(
             (m) => m.AuthenticationModule
