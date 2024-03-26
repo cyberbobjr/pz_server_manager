@@ -11,6 +11,7 @@ from libs.Steamcmd import Steamcmd, SteamcmdException
 CONF_FILE = "config.yml"
 app_config = init_config(CONF_FILE)
 steamcmd_path = os.path.join(app_config["steam"]["steamcmd_path"])
+pz_exe_path = app_config["pz"]["pz_exe_path"]
 
 # check dirs
 if not os.path.isdir(steamcmd_path):
@@ -25,7 +26,8 @@ except SteamcmdException as e:
     print(e)
 
 if not Bootstrap.is_pzserver_installed(app_config["pz"]["pz_exe_path"]):
-    Bootstrap.install_pzserver(app_config["pz"]["pz_exe_path"], steamcmd)
+    print(f'Installing PZ Dedicated Server to {pz_exe_path}')
+    steamcmd.install_gamefiles(380870, pz_exe_path)
     '''
     Server not installed, so we install it, and we ask for relaunching the server, 
     that way the directory structure for server will be created
@@ -41,30 +43,17 @@ def get_rcon_info_if_process_running():
         app_config["rcon"]["port"] = pzGame.get_server_init("RCONPort")
 
 
-def get_discord_info():
-    if "discord" in app_config and "apikey" in app_config["discord"] and "channel" in app_config["discord"]:
-        try:
-            pzGame.set_server_ini("DiscordToken", app_config["discord"]["apikey"])
-            pzGame.set_server_ini("DiscordChannelID", app_config["discord"]["channel"])
-        except FileNotFoundError:
-            print(f'Ini file not found')
-    else:
-        app_config["discord"]["apikey"] = pzGame.pz_config.get_value("DiscordToken")
-        app_config["discord"]["channel"] = pzGame.pz_config.get_value("DiscordChannelID")
-
-
 steam = Steam(app_config["steam"]["apikey"], app_config["steam"]["cache_folder"], app_config["steam"]["appid"])
 pzGame = PZGame(app_config["pz"]["pz_exe_path"], app_config["pz"]["server_path"], app_config["pz"]["password"])
 
 get_rcon_info_if_process_running()
-get_discord_info()
 
 pzRcon = PZRcon(app_config["rcon"]["host"], app_config["rcon"]["port"], app_config["rcon"]["password"])
 pzGame.pz_rcon = pzRcon
 
-if app_config["discord"]["enable"] and app_config["discord"]["apikey"] and app_config["discord"]["channel"]:
+pzDiscord = None
+if "discord" in app_config and app_config["discord"].get("enable") is True:
+    # Assuming PZDiscord initialization requires an apikey and a channel ID
     pzDiscord = PZDiscord(app_config["discord"]["apikey"], app_config["discord"]["channel"])
-else:
-    pzDiscord = None
 
 pzMonitoring = app_config["pz"]["monitoring"]

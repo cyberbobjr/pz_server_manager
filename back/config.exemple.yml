@@ -1,6 +1,8 @@
 server:
   host: 0.0.0.0
   port: 7777
+  ssl_keyfile: "private_key.pem"
+  ssl_certfile: "certificate.pem"
 rcon:
   port: 27016
   password: "yourrconpassword"
@@ -22,3 +24,4 @@ steam:
 discord:
   apikey: "yourdiscordkey"
   channel: 1234567890 # number only ! no ""
+  enable: False
