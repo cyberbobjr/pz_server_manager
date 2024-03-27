@@ -10,16 +10,6 @@ async def start_bot():
     await pzDiscord.run()
 
 
-async def monitor_process():
-    while True:
-        is_process_running = pzGame.is_process_running()
-        should_be_always_start = pzGame.should_be_always_start()
-        if not is_process_running and should_be_always_start:
-            await PZLog.print("Start server")
-            await pzGame.start_server()
-        await asyncio.sleep(60 * 2)  # check every 2 minutes
-
-
 async def monitor_mod_update():
     while True:
         [_, workshop_ids] = pzGame.scan_mods_in_ini()
@@ -42,9 +32,6 @@ async def monitor_mod_update():
                         await pzRcon.send_command(f"servermsg {msg}")
                         time.sleep(60)
                         await pzGame.stop_server()
-                        # while pzGame.is_process_running():
-                        #     time.sleep(5)
-                        # await pzGame.start_server()
                         break
                 except Exception as e:
                     print(f'{e}')

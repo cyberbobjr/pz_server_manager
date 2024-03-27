@@ -1,5 +1,4 @@
 <ng-container *ngIf="status$ | async as status; else notconnected">
-  Serveur Started : {{status.server_started}}<br/>
   <span *ngIf="isServerMonitored$ | async">Process running : {{status.process_running}}<br/></span>
   <span *ngIf="isServerMonitored$ | async">
     Serveur Started since : {{status.running_since | runningTime | date:'medium'}}

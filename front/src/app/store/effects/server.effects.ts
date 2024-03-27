@@ -136,6 +136,34 @@ export class ServerEffects {
     )
   ))
 
+  stop$ = createEffect(() => this.actions$.pipe(
+    ofType(sendServerAction),
+    filter((command) => command.action == PzServerAction.STOP),
+    exhaustMap(() => this.service.stop()
+      .pipe(
+        map((result: PzServerReturn) => setStatus({newStatus: null})),
+        catchError(error => {
+          console.error(error);
+          return of(serverStatusError());
+        })
+      )
+    )
+  ))
+
+  start$ = createEffect(() => this.actions$.pipe(
+    ofType(sendServerAction),
+    filter((command) => command.action == PzServerAction.START),
+    exhaustMap(() => this.service.start()
+      .pipe(
+        map((result: PzServerReturn) => setStatus({newStatus: null})),
+        catchError(error => {
+          console.error(error);
+          return of(serverStatusError());
+        })
+      )
+    )
+  ))
+
   restart$ = createEffect(() => this.actions$.pipe(
     ofType(sendServerAction),
     filter((command) => command.action == PzServerAction.RESTART),
