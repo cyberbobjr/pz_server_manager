@@ -25,7 +25,7 @@ async def startup_db_client():
         while not pzDiscord.is_ready:
             await asyncio.sleep(10)
     if pzMonitoring:
-        asyncio.create_task(monitor_process())
+        # asyncio.create_task(monitor_process())
         asyncio.create_task(monitor_mod_update())
 
 signal.signal(signal.SIGINT, signal_handler)
