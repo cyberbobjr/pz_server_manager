@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {PzStore} from "@pzstore/reducers/server.reducer";
-import {loadServerConfig} from "@pzstore/actions/server.actions";
+import {loadServerManagerConfig} from "@pzstore/actions/server.actions";
 
 @Component({
   selector: 'app-root',
@@ -10,7 +10,7 @@ import {loadServerConfig} from "@pzstore/actions/server.actions";
 export class AppComponent implements OnInit {
 
   constructor(private store: Store<{ pzStore: PzStore }>) {
-    this.store.dispatch(loadServerConfig());
+    this.store.dispatch(loadServerManagerConfig());
   }
 
   ngOnInit() {

@@ -14,7 +14,8 @@ import {
   setIniConfig,
   setModsIni,
   setPlayersCount,
-  setSearchedMods, setServerConfig,
+  setSearchedMods,
+  setServerConfig,
   setStatus
 } from "../actions/server.actions";
 import {PzModsIni, WorkshopItems} from "@core/interfaces/PzModsIni";

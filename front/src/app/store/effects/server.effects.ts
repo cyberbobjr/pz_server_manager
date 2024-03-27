@@ -7,9 +7,10 @@ import {
   getStatus,
   loadInProgressTasksSuccess,
   loadModsIni,
-  loadServerConfig,
+  loadServerManagerConfig,
   saveConfig,
   saveMods,
+  saveServerManagerConfig,
   searchMods,
   sendCommand,
   sendServerAction,
@@ -108,6 +109,19 @@ export class ServerEffects {
     )
   ))
 
+  saveManagerConfig = createEffect(() => this.actions$.pipe(
+    ofType(saveServerManagerConfig),
+    exhaustMap((params) => this.service.saveManagerConfig(params.content)
+      .pipe(
+        map(_ => loadServerManagerConfig()),
+        catchError(error => {
+          console.error(error);
+          return of(serverStatusError());
+        })
+      )
+    )
+  ))
+
   forceStop$ = createEffect(() => this.actions$.pipe(
     ofType(sendServerAction),
     filter((command) => command.action == PzServerAction.FORCESTOP),
@@ -198,7 +212,7 @@ export class ServerEffects {
   );
 
   loadServerConfig$ = createEffect(() => this.actions$.pipe(
-      ofType(loadServerConfig),
+      ofType(loadServerManagerConfig),
       exhaustMap(() => this.service.getConfig()
         .pipe(
           map(r => setServerConfig({serverConfig: r})),

@@ -41,5 +41,6 @@ export const saveMods = createAction('[PZ SERVER] - save mods');
 export const loadInProgressTasksSuccess = createAction('[PZ SERVER] - Load In Progress Tasks Success', props<{
   tasks: string[]
 }>());
-export const loadServerConfig = createAction('[PZ SERVER] - Load server config');
+export const loadServerManagerConfig = createAction('[PZ SERVER] - Load server config');
 export const setServerConfig = createAction('[PZ SERVER] - Set server config', props<{ serverConfig: any }>());
+export const saveServerManagerConfig = createAction('[PZ SERVER] - Save server manager config', props<{ content: any }>());

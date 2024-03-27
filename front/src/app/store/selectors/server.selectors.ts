@@ -8,6 +8,12 @@ export const selectIniConfig = createSelector(
     return {...state}.server_ini;
   }
 );
+export const selectManagerConfig = createSelector(
+  selectPzStore,
+  (state: PzStore) => {
+    return {...state}.serverConfig;
+  }
+);
 export const selectModsInstalled = createSelector(
   selectPzStore,
   (state: PzStore) => state.mods_installed

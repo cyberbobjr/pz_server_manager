@@ -37,9 +37,9 @@ app.add_middleware(CORSMiddleware,
                    allow_methods=["*"],
                    allow_headers=["*"])
 app.include_router(auth.router, prefix="/api")
+app.include_router(config.router, prefix="/api", dependencies=[Depends(decode_jwt)])
 app.include_router(server.router, prefix="/api", dependencies=[Depends(decode_jwt)])
 app.include_router(mods.router, prefix="/api", dependencies=[Depends(decode_jwt)])
-app.include_router(config.router, prefix="/api", dependencies=[Depends(decode_jwt)])
 # app.mount("/static", StaticFiles(directory=os.path.abspath(modpack_path)), name="static")
 app.mount("/", StaticFiles(directory=angular_static_path, html=True), name="static")
 

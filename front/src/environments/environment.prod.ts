@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: "http://127.0.0.1:7777/api"
+  baseUrl: "https://sophie.pzomboid.net:7777/api"
 };

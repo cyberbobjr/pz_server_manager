@@ -1,4 +1,5 @@
-<form [formGroup]="iniForm">
+<app-spinner [isLoading]="loading$"></app-spinner>
+<form *ngIf="iniForm" [formGroup]="iniForm">
   <mat-toolbar>
     <button mat-icon-button
             type="submit"
@@ -16,7 +17,7 @@
       <mat-icon>refresh</mat-icon>
     </button>
   </mat-toolbar>
-  <ng-container *ngIf="sandboxSettings$ | async">
-    <app-lua-editor formControlName="config"></app-lua-editor>
+  <ng-container *ngIf="iniConfig$ | async">
+    <app-lua-editor formControlName="config" [language]="'json'"></app-lua-editor>
   </ng-container>
 </form>
