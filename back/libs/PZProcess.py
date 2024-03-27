@@ -14,6 +14,10 @@ class PZProcess:
                     return process
                 if process.name() == "cmd.exe" and f'{self.pz_exe_path}\\StartServer64.bat' in arguments:
                     return process
+                if process.name() == "ProjectZomboid64":
+                    return process
+                if process.name() == "ProjectZomboid32":
+                    return process
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 pass
         return None
