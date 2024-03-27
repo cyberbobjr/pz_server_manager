@@ -1,7 +1,6 @@
 import logging
-from socket import socket
 
-from rcon import Console
+from libs.console import Console
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -16,24 +15,23 @@ class PZRcon:
 
     def check_open(self):
         try:
-            with Console(self.rcon_host, port=int(self.rcon_port), password=self.rcon_password) as client:
-                client.command("help")
-                client.close()
-                return True
+            client = Console(self.rcon_host, port=int(self.rcon_port), password=self.rcon_password)
+            client.command("help")
+            client.close()
+            return True
         except Exception as e:
             logging.debug(f"Exception : {e}")
             print(e)
-        finally:
             return False
 
     async def send_command(self, cmd: str):
         try:
-            with Console(self.rcon_host, port=int(self.rcon_port), password=self.rcon_password) as client:
-                result = client.command(cmd)
-                client.close()
-                print(result)
-                # client.disconnect()
-                return result
+            client = Console(self.rcon_host, port=int(self.rcon_port), password=self.rcon_password)
+            result = client.command(cmd)
+            client.close()
+            print(result)
+            # client.disconnect()
+            return result
         except UnicodeDecodeError as erreur_unicode:
             content = erreur_unicode.args[1]
             for decoding in self.possible_decodings:

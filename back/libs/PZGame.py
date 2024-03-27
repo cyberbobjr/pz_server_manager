@@ -25,7 +25,8 @@ class PZGame:
     pz_process: PZProcess
     pz_rcon = None
 
-    def __init__(self, pz_exe_path: str, server_path: str, server_admin_password: str, server_name: str):
+    def __init__(self, pz_exe_path: str, server_path: str, server_admin_password: str, server_name: str,
+                 pzMonitoring: bool):
         self.must_restart = True
         self.server_admin_password = server_admin_password
         self.pz_exe_path = pz_exe_path
@@ -35,7 +36,7 @@ class PZGame:
             os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}.ini"))  # Modifié
         self.pz_luasandbox = PZLuaFile(
             os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}_SandboxVars.lua"))  # Modifié
-        self.pz_process = PZProcess(self.pz_exe_path)
+        self.pz_process = PZProcess(self.pz_exe_path, pzMonitoring)
         self.saveType = {
             "server_ini": self.pz_config.put_content,
             "lua_sandbox": self.pz_luasandbox.put_content,

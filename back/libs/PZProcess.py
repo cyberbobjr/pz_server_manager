@@ -1,13 +1,18 @@
 import logging
+
 import psutil
+
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class PZProcess:
-    def __init__(self, pz_exe_path):
+    def __init__(self, pz_exe_path, pzMonitoring):
         self.pz_exe_path = pz_exe_path
+        self.pzMonitoring = pzMonitoring
 
     def get_process(self):
+        if not self.pzMonitoring:
+            return None
         logging.debug("Recherche du processus de Project Zomboid en cours...")
         for process in psutil.process_iter(['pid', 'name', 'cmdline']):
             try:

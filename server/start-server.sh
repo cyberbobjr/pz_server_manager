@@ -14,18 +14,18 @@ if "${INSTDIR}/jre64/bin/java" -version > /dev/null 2>&1; then
         export PATH="${INSTDIR}/jre64/bin:$PATH"
         export LD_LIBRARY_PATH="${INSTDIR}/linux64:${INSTDIR}/natives:${INSTDIR}:${INSTDIR}/jre64/lib/amd64:${LD_LIBRARY_PATH}"
         JSIG="libjsig.so"
-        LD_PRELOAD="${LD_PRELOAD}:${JSIG}" ./ProjectZomboid64 -servername server-sophie-1-11-2 -adminpassword {self.server_admin_password} "$@"
+        LD_PRELOAD="${LD_PRELOAD}:${JSIG}" exec ./ProjectZomboid64 -servername server-sophie-1-11-2 -adminpassword {adminpassword} "$@"
 elif "${INSTDIR}/jre/bin/java" -client -version > /dev/null 2>&1; then
         echo "32-bit java detected"
         export PATH="${INSTDIR}/jre/bin:$PATH"
         export LD_LIBRARY_PATH="${INSTDIR}/linux32:${INSTDIR}/natives:${INSTDIR}:${INSTDIR}/jre/lib/i386:${LD_LIBRARY_PATH}"
         JSIG="libjsig.so"
-        LD_PRELOAD="${LD_PRELOAD}:${JSIG}" ./ProjectZomboid32 "$@"
+        LD_PRELOAD="${LD_PRELOAD}:${JSIG}" exec ./ProjectZomboid32 "$@"
 else
         echo "couldn't determine 32/64 bit of java"
 fi
-exit 0
 
+# La ligne `exit 0` a été supprimée pour permettre au script de continuer à exécuter le serveur en avant-plan
 #
 # EOF
 #

@@ -45,7 +45,7 @@ def get_rcon_info_if_process_running():
 
 steam = Steam(app_config["steam"]["apikey"], app_config["steam"]["cache_folder"], app_config["steam"]["appid"])
 pzGame = PZGame(app_config["pz"]["pz_exe_path"], app_config["pz"]["server_path"], app_config["pz"]["password"],
-                app_config["pz"]["server_name"])
+                app_config["pz"]["server_name"], app_config["pz"]["monitoring"])
 
 get_rcon_info_if_process_running()
 
