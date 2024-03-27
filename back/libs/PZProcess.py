@@ -1,9 +1,6 @@
 import logging
 import psutil
 
-# Configuration du logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-
 
 class PZProcess:
     def __init__(self, pz_exe_path):

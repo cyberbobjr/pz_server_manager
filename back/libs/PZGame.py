@@ -25,7 +25,7 @@ class PZGame:
     pz_process: PZProcess
     pz_rcon = None
 
-    def __init__(self, pz_exe_path: str, server_path: str, server_admin_password: str, server_name:str):
+    def __init__(self, pz_exe_path: str, server_path: str, server_admin_password: str, server_name: str):
         self.must_restart = True
         self.server_admin_password = server_admin_password
         self.pz_exe_path = pz_exe_path
@@ -132,7 +132,8 @@ class PZGame:
         return self.pz_config.get_value(key)
 
     def get_sandbox_options(self):
-        sandbox_path = os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}_SandboxVars.lua")  # Modifié
+        sandbox_path = os.path.join(self.server_path, "Zomboid", "Server",
+                                    f"{self.server_name}_SandboxVars.lua")  # Modifié
         with open(sandbox_path, 'r') as file:
             return file.read()
 

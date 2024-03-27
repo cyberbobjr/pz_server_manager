@@ -1,4 +1,6 @@
-from mcrcon import MCRcon
+import logging
+from socket import socket
+
 from rcon.source import Client
 
 
@@ -15,8 +17,12 @@ class PZRcon:
             with Client(self.rcon_host, port=int(self.rcon_port), passwd=self.rcon_password) as client:
                 client.run("help")
                 return True
+        except socket.timeout as timeout:
+            logging.debug(f"socket.timeout : {timeout}")
         except Exception as e:
+            logging.debug(f"Exception : {e}")
             print(e)
+        finally:
             return False
 
     async def send_command(self, cmd: str):
@@ -37,6 +43,8 @@ class PZRcon:
                     # If a decoding error occurs, move to the next decoding
                     pass
             return False
+        except socket.timeout as timeout:
+            logging.debug(f"socket.timeout : {timeout}")
         except Exception as e:
             print(e)
             return False

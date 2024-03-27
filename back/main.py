@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import signal
 
@@ -12,6 +13,7 @@ from pz_setup import pzDiscord, pzMonitoring
 from routes import auth, mods, server, config
 
 angular_static_path = os.path.join(os.path.dirname(__file__), 'front')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = FastAPI()
 
