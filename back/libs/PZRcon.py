@@ -2,6 +2,7 @@ import logging
 from socket import socket
 
 from rcon.source import Client
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class PZRcon:
