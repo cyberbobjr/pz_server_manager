@@ -29,7 +29,7 @@ class PZRcon:
     async def send_command(self, cmd: str):
         try:
             with Console(self.rcon_host, port=int(self.rcon_port), password=self.rcon_password) as client:
-                result = client.run(cmd)
+                result = client.command(cmd)
                 client.close()
                 print(result)
                 # client.disconnect()
