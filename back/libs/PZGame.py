@@ -1,6 +1,7 @@
 import asyncio
 import glob
 import os
+import platform
 import subprocess
 from typing import List
 
@@ -151,21 +152,28 @@ class PZGame:
         return self.pz_process.get_running_time()
 
     async def start_server(self):
-        from main import app_config
-        if "log_filename" not in app_config["pz"]:
-            app_config["pz"]["log_filename"] = "output.txt"
-        java_command = f'"{self.get_exe_path()}\\jre64\\bin\\java.exe"'
-        java_options = f'-Djava.awt.headless=true -Dzomboid.steam=1 -Dzomboid.znetlog=1 -XX:+UseZGC -XX:-CreateCoredumpOnCrash -XX:-OmitStackTraceInFastThrow -Xms{self.memory}g -Xmx{self.memory}g -Djava.library.path=natives/;natives/win64/;. -Duser.home="{self.server_path}" '
-        classpath = f'-cp java/istack-commons-runtime.jar;java/jassimp.jar;java/javacord-2.0.17-shaded.jar;java/javax.activation-api.jar;java/jaxb-api.jar;java/jaxb-runtime.jar;java/lwjgl.jar;java/lwjgl-natives-windows.jar;java/lwjgl-glfw.jar;java/lwjgl-glfw-natives-windows.jar;java/lwjgl-jemalloc.jar;java/lwjgl-jemalloc-natives-windows.jar;java/lwjgl-opengl.jar;java/lwjgl-opengl-natives-windows.jar;java/lwjgl_util.jar;java/sqlite-jdbc-3.27.2.1.jar;java/trove-3.0.3.jar;java/uncommons-maths-1.2.3.jar;java/commons-compress-1.18.jar;java/'
-        main_class = 'zombie.network.GameServer'
-        additional_args = f'-statistic 0 -adminpassword {self.server_admin_password}'
+        process = None
+        os_name = platform.system()
 
-        command = f'{java_command} {java_options} {classpath} {main_class} {additional_args}'
-        await PZLog.print(f'Server is starting...')
-        process = subprocess.Popen(command,
-                                   creationflags=subprocess.CREATE_NEW_CONSOLE,
-                                   cwd=self.get_exe_path())
-        asyncio.create_task(self.check_when_server_ready())
+        if os_name == "Windows":
+            java_command = f'"{self.get_exe_path()}\\jre64\\bin\\java.exe"'
+            java_options = f'-Djava.awt.headless=true -Dzomboid.steam=1 -Dzomboid.znetlog=1 -XX:+UseZGC -XX:-CreateCoredumpOnCrash -XX:-OmitStackTraceInFastThrow -Xms{self.memory}g -Xmx{self.memory}g -Djava.library.path=natives/;natives/win64/;. -Duser.home="{self.server_path}" '
+            classpath = f'-cp java/istack-commons-runtime.jar;java/jassimp.jar;java/javacord-2.0.17-shaded.jar;java/javax.activation-api.jar;java/jaxb-api.jar;java/jaxb-runtime.jar;java/lwjgl.jar;java/lwjgl-natives-windows.jar;java/lwjgl-glfw.jar;java/lwjgl-glfw-natives-windows.jar;java/lwjgl-jemalloc.jar;java/lwjgl-jemalloc-natives-windows.jar;java/lwjgl-opengl.jar;java/lwjgl-opengl-natives-windows.jar;java/lwjgl_util.jar;java/sqlite-jdbc-3.27.2.1.jar;java/trove-3.0.3.jar;java/uncommons-maths-1.2.3.jar;java/commons-compress-1.18.jar;java/'
+            main_class = 'zombie.network.GameServer'
+            additional_args = f'-statistic 0 -adminpassword {self.server_admin_password}'
+
+            command = f'{java_command} {java_options} {classpath} {main_class} {additional_args}'
+            await PZLog.print(f'Server is starting...')
+            process = subprocess.Popen(command,
+                                       creationflags=subprocess.CREATE_NEW_CONSOLE,
+                                       cwd=self.get_exe_path())
+            asyncio.create_task(self.check_when_server_ready())
+        elif os_name == "Linux":
+            command = ['sudo', 'systemctl', 'start', 'projectzomboid.service']
+            process = subprocess.Popen(command)
+            asyncio.create_task(self.check_when_server_ready())
+        else:
+            print(f"Automatic startup is not supported on this operating system: {os_name}.")
         return process
 
     async def check_when_server_ready(self):
@@ -174,6 +182,10 @@ class PZGame:
         await PZLog.print(f"Server is ready")
 
     async def stop_server(self):
+        os_name = platform.system()
+        if os_name == "Linux":
+            command = ['sudo', 'systemctl', 'stop', 'projectzomboid.service']
+            subprocess.Popen(command)
         await PZLog.print(f'Server stopped')
         return await self.pz_rcon.send_command("quit")
 
