@@ -25,10 +25,11 @@ class PZGame:
     pz_process: PZProcess
     pz_rcon = None
 
-    def __init__(self, pz_exe_path: str, server_path: str, server_admin_password: str):
+    def __init__(self, pz_exe_path: str, server_path: str, server_admin_password: str, server_name:str):
         self.must_restart = True
         self.server_admin_password = server_admin_password
         self.pz_exe_path = pz_exe_path
+        self.server_name = server_name
         self.server_path = server_path
         self.pz_config = PZConfigFile(
             os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}.ini"))  # Modifié

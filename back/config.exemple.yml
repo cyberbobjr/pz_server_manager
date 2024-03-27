@@ -12,6 +12,7 @@ auth:
   password: "admin"
   secret: "123456"
 pz:
+  server_name: servertest
   server_path: "D:\\Server"
   pz_exe_path: "D:\\PZ_Server"
   log_filename: "console.txt"
