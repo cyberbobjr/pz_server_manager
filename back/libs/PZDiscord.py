@@ -1,6 +1,8 @@
+import re
 import time
-
 import discord
+
+from libs.DatetimeHelper import DatetimeHelper
 
 
 class PZDiscord:
@@ -8,6 +10,8 @@ class PZDiscord:
         self.token = token
         self.channel_id = channel_id
         intents = discord.Intents.default()
+        intents.messages = True
+        intents.message_content = True
         self.client = discord.Client(intents=intents)
         self.is_ready = False
 
@@ -23,7 +27,7 @@ class PZDiscord:
     async def start(self):
         @self.client.event
         async def on_ready():
-            print(f'Logged in as {self.client.user}')
+            print(f'Logged in as {self.client.user.name}')
             self.is_ready = True
 
         @self.client.event
@@ -31,13 +35,35 @@ class PZDiscord:
             if message.author == self.client.user:
                 return
             if message.content.startswith('!players'):
-                await self.handle_message(message)
+                await self.send_player_count(message)
+            if message.content.startswith('!reboot'):
+                await self.last_reboot(message)
 
         await self.client.start(self.token)
 
-    async def handle_message(self, message):
-        await message.channel.send(
-            'Il y a actuellement X joueurs en ligne.')  # Remplacer X par le nombre réel de joueurs en ligne
+    async def send_player_count(self, message):
+        player_count = await self.get_players()
+        if player_count <= 1:
+            await message.channel.send(f'Il y a actuellement {player_count} joueur en ligne.')
+        else:
+            await message.channel.send(f'Il y a actuellement {player_count} joueurs en ligne.')
+
+    async def last_reboot(self, message):
+        from pz_setup import pzGame
+        running_time = pzGame.get_process_running_time()
+        msg = f'Dernier reboot du serveur : {DatetimeHelper.epoch_to_iso(running_time)}'
+        await message.channel.send(msg)
+
+    @staticmethod
+    async def get_players():
+        from pz_setup import pzRcon
+        players = await pzRcon.send_command("players")
+        regex = r"\((\d+)\)"
+        match = re.search(regex, players)
+        player_count = 0
+        if match:
+            player_count = int(match.group(1))
+        return player_count
 
     def stop_bot(self):
         print("Stopping bot...")

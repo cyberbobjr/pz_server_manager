@@ -15,8 +15,6 @@ async def monitor_mod_update():
         [_, workshop_ids] = pzGame.scan_mods_in_ini()
         running_time = pzGame.get_process_running_time()
         if running_time is not None:
-            msg = f'Last reboot (not wipe) : {DatetimeHelper.epoch_to_iso(running_time)}'
-            await PZLog.print(msg)
             for workshop_id in workshop_ids:
                 try:
                     last_update = steam.get_lastupdate_mod(workshop_id)

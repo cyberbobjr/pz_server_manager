@@ -220,24 +220,24 @@ export class ServerEffects {
     )
   ));
 
-  loadInProgressTasks$ = createEffect(() =>
-    interval(5000).pipe(
-      withLatestFrom(this.store.pipe(select(selectInProgressCount))),
-      switchMap(([_, currentCount]) =>
-        this.service.getTasksInProgress().pipe(
-          map(tasks => {
-            // Compare le nouveau nombre de tâches "en cours" avec le précédent
-            if (tasks.length !== currentCount) {
-              // Si le nombre de tâches a changé, dispatcher l'action loadModsIni
-              this.store.dispatch(loadModsIni());
-            }
-            return loadInProgressTasksSuccess({tasks});
-          }),
-          catchError(() => EMPTY)
-        )
-      )
-    )
-  );
+  // loadInProgressTasks$ = createEffect(() =>
+  //   interval(5000).pipe(
+  //     withLatestFrom(this.store.pipe(select(selectInProgressCount))),
+  //     switchMap(([_, currentCount]) =>
+  //       this.service.getTasksInProgress().pipe(
+  //         map(tasks => {
+  //           // Compare le nouveau nombre de tâches "en cours" avec le précédent
+  //           if (tasks.length !== currentCount) {
+  //             // Si le nombre de tâches a changé, dispatcher l'action loadModsIni
+  //             this.store.dispatch(loadModsIni());
+  //           }
+  //           return loadInProgressTasksSuccess({tasks});
+  //         }),
+  //         catchError(() => EMPTY)
+  //       )
+  //     )
+  //   )
+  // );
 
   loadServerConfig$ = createEffect(() => this.actions$.pipe(
       ofType(loadServerManagerConfig),

@@ -2,7 +2,7 @@ from rcon.connection import Connection
 from rcon.packet import Packet, PacketType
 
 
-class Console():
+class Console:
     def __init__(self, host, password, port=25575, timeout=10):
         self._conn = Connection(host, port, timeout)
         self._id = 0

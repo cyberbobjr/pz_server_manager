@@ -35,19 +35,9 @@ if not Bootstrap.is_pzserver_installed(app_config["pz"]["pz_exe_path"]):
     print(f'Relaunch the server...')
     exit(0)
 
-
-def get_rcon_info_if_process_running():
-    if pzGame.is_process_running():
-        # if PZ Server launched, we get the rcon port & rcon password from server.ini
-        app_config["rcon"]["password"] = pzGame.get_server_init("RCONPassword")
-        app_config["rcon"]["port"] = pzGame.get_server_init("RCONPort")
-
-
 steam = Steam(app_config["steam"]["apikey"], app_config["steam"]["cache_folder"], app_config["steam"]["appid"])
 pzGame = PZGame(app_config["pz"]["pz_exe_path"], app_config["pz"]["server_path"], app_config["pz"]["password"],
                 app_config["pz"]["server_name"], app_config["pz"]["monitoring"])
-
-get_rcon_info_if_process_running()
 
 pzRcon = PZRcon(app_config["rcon"]["host"], app_config["rcon"]["port"], app_config["rcon"]["password"])
 pzGame.pz_rcon = pzRcon
