@@ -11,8 +11,6 @@ class PZProcess:
         self.pzMonitoring = pzMonitoring
 
     def get_process(self):
-        if not self.pzMonitoring:
-            return None
         logging.debug("Recherche du processus de Project Zomboid en cours...")
         for process in psutil.process_iter(['pid', 'name', 'cmdline']):
             try:
