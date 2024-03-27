@@ -1,7 +1,8 @@
 import logging
 from socket import socket
 
-from rcon.source import Client
+from rcon import Console
+
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
@@ -15,8 +16,9 @@ class PZRcon:
 
     def check_open(self):
         try:
-            with Client(self.rcon_host, port=int(self.rcon_port), passwd=self.rcon_password) as client:
-                client.run("help")
+            with Console(self.rcon_host, port=int(self.rcon_port), password=self.rcon_password) as client:
+                client.command("help")
+                client.close()
                 return True
         except socket.timeout as timeout:
             logging.debug(f"socket.timeout : {timeout}")
@@ -28,8 +30,9 @@ class PZRcon:
 
     async def send_command(self, cmd: str):
         try:
-            with Client(self.rcon_host, port=int(self.rcon_port), passwd=self.rcon_password) as client:
+            with Console(self.rcon_host, port=int(self.rcon_port), password=self.rcon_password) as client:
                 result = client.run(cmd)
+                client.close()
                 print(result)
                 # client.disconnect()
                 return result
