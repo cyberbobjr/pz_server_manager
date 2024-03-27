@@ -3,13 +3,13 @@ Description=Project Zomboid Server Manager
 After=network.target
 
 [Service]
-Type=forking
+Type=simple
 ExecStart=/home/ubuntu/pz_server_manager/start.sh
 ExecStop=/bin/kill $(/bin/cat /home/ubuntu/pz_server_manager/back/pidfile)
 WorkingDirectory=/home/ubuntu/pz_server_manager/back
-User=ubuntu
-Group=ubuntu
-Restart=on-failure
+User=root
+Group=root
+Restart=always
 RestartSec=5s
 
 [Install]
