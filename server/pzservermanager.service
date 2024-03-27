@@ -5,7 +5,6 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/home/ubuntu/pz_server_manager/start.sh
-ExecStop=/bin/kill $(/bin/cat /home/ubuntu/pz_server_manager/back/pidfile)
 WorkingDirectory=/home/ubuntu/pz_server_manager/back
 User=root
 Group=root

@@ -17,4 +17,4 @@ source "${SCRIPT_DIR}/back/pz_python/bin/activate"
 cd "${SCRIPT_DIR}/back" || { echo "The 'back' directory was not found."; exit 1; }
 
 # Start the application
-python3 main.py & echo $! > "${SCRIPT_DIR}/back/pidfile"
+uvicorn main:app --host 0.0.0.0 --port 7777 & echo $! > "${SCRIPT_DIR}/back/pidfile"
