@@ -3,10 +3,18 @@
 # Absolute path to the script directory
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
-# Check if pidfile exists and stop the previous process
+# Check if pidfile exists
 if [ -f "${SCRIPT_DIR}/back/pidfile" ]; then
     PID=$(cat "${SCRIPT_DIR}/back/pidfile")
-    kill "$PID"
+    # Check if the process is running by sending a signal 0
+    # If the process exists, kill will succeed, otherwise it will fail
+    if kill -0 "$PID" 2>/dev/null; then
+        # If the process exists, kill it
+        kill "$PID"
+    else
+        echo "Process with PID $PID not found."
+    fi
+    # Remove the pidfile
     rm "${SCRIPT_DIR}/back/pidfile"
 fi
 
