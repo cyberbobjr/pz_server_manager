@@ -20,8 +20,6 @@ class PZRcon:
                 client.command("help")
                 client.close()
                 return True
-        except socket.timeout as timeout:
-            logging.debug(f"socket.timeout : {timeout}")
         except Exception as e:
             logging.debug(f"Exception : {e}")
             print(e)
@@ -47,8 +45,6 @@ class PZRcon:
                     # If a decoding error occurs, move to the next decoding
                     pass
             return False
-        except socket.timeout as timeout:
-            logging.debug(f"socket.timeout : {timeout}")
         except Exception as e:
             print(e)
             return False
