@@ -26,7 +26,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
               private store: Store<{ pzStore: PzStore }>) {
     this.store.dispatch(getStatus());
     this.status$ = this.store.select(store => {
-      return store.pzStore.status?.process_running;
+      return store.pzStore.status?.server_started;
     });
   }
 

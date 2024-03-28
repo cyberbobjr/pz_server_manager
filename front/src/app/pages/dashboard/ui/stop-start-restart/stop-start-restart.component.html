@@ -1,6 +1,6 @@
 <div class="flex-column">
   <ng-container *ngIf="status$ | async as status">
-    <button *ngIf="status.process_running;else notstarted"
+    <button *ngIf="status.server_started;else notstarted"
             mat-raised-button
             color="accent"
             (click)="stop()">
