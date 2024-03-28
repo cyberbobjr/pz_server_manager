@@ -51,7 +51,10 @@ class PZDiscord:
     async def last_reboot(self, message):
         from pz_setup import pzGame
         running_time = pzGame.get_process_running_time()
-        msg = f'Dernier reboot du serveur : {DatetimeHelper.epoch_to_iso(running_time)}'
+        if running_time is None:
+            msg = f'Le serveur n\'est pas démarré'
+        else:
+            msg = f'Dernier reboot du serveur : {DatetimeHelper.epoch_to_iso(running_time)}'
         await message.channel.send(msg)
 
     @staticmethod
