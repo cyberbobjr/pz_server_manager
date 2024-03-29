@@ -15,10 +15,10 @@ def load_rcon_config(config_path):
 def stop_project_zomboid_server():
     try:
         host, port, password = load_rcon_config(CONFIG_FILE_PATH)
-        rcon = Console((host, port), password)
-        response = rcon.command("quit")
-        response.close()
-        print("Réponse RCON:", response)
+        rcon = Console(host, port=port, password=password)
+        rcon.command("quit")
+        rcon.close()
+        print("Server stopped")
     except Exception as e:
         print("Erreur lors de la tentative de stopper le serveur via RCON:", e)
 
