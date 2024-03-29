@@ -34,8 +34,6 @@ class PZDiscord:
         async def on_message(message):
             if message.author == self.client.user:
                 return
-            if message.content.startswith('!players'):
-                await self.send_player_count(message)
             if message.content.startswith('!reboot'):
                 await self.last_reboot(message)
 

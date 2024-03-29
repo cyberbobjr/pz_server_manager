@@ -36,7 +36,7 @@ class UserHandler(commands.Cog):
         self.logPath = logPath
         self.lastUpdateTimestamp = datetime.now()
         self.users = {}
-        self.notifyDisconnect = os.getenv("DISCONNECTS", "True") == "True"
+        self.notifyDisconnect = os.getenv("DISCONNECTS", "True") == "False"
         self.loadHistory()
         self.update.start()
         self.onlineCount = None
@@ -149,7 +149,7 @@ class UserHandler(commands.Cog):
                 self.bot.log.debug(f"Ignored: {message}")
 
     @commands.command()
-    async def users(self, ctx, arg: str = None):
+    async def players(self, ctx, arg: str = None):
         """
         Return a list of users on the server with basic info
         If the user is online -- print all online users
