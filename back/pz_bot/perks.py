@@ -98,19 +98,19 @@ class PerkHandler(commands.Cog):
             if timestamp > self.lastUpdateTimestamp:
                 self.bot.log.info(f"{user.name} died")
                 if self.notifyDeath:
-                    return f":zombie: {user.name} {log_char_string}died after surviving {user.hoursAlive} hours :dizzy_face:"
+                    return f":zombie: {user.name} {log_char_string}est mort après avoir survécu {user.hoursAlive} heures :dizzy_face:"
         elif type == "Login":
             if timestamp > self.lastUpdateTimestamp:
                 user.online = True
                 self.bot.log.info(f"{user.name} login")
                 if self.notifyJoin:
-                    return f":person_doing_cartwheel: {user.name} {log_char_string}has arrived, survived for {user.hoursAlive} hours so far..."
+                    return f":person_doing_cartwheel: {user.name} {log_char_string}est arrivé, {user.hoursAlive} heure(s) de survie jusque là ..."
         elif "Created Player" in type:
             if timestamp > self.lastUpdateTimestamp:
                 user.online = True
                 self.bot.log.info(f"{user.name} new character")
                 if self.notifyCreateChar:
-                    return f":person_raising_hand: {user.name} {log_char_string}just woke up in the Apocalypse..."
+                    return f":person_raising_hand: {user.name} {log_char_string}se réveille en pleine apocalypse..."
         elif type == "Level Changed":
             match = re.search(r"\[(\w+)\]\[(\d+)\]", message)
             perk = match.group(1)
@@ -119,7 +119,7 @@ class PerkHandler(commands.Cog):
             if timestamp > self.lastUpdateTimestamp:
                 self.bot.log.info(f"{user.name} {perk} changed to {level}")
                 if self.notifyPerk:
-                    return f":chart_with_upwards_trend: {user.name} {log_char_string}reached {perk} level {level}"
+                    return f":chart_with_upwards_trend: {user.name} {log_char_string}a atteind le niveau {level} en {perk}"
         else:
             # Must be a list of perks following a login/player creation
             for (name, value) in re.findall(r"(\w+)=(\d+)", type):
