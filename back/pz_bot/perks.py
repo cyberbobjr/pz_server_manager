@@ -49,6 +49,7 @@ class PerkHandler(commands.Cog):
         self.bot.log.info("Loading Perk history...")
 
         # Go through each user file in the log folder and subfolders
+        print(self.logPath)
         files = glob.glob(self.logPath + "/**/*PerkLog.txt", recursive=True)
         files.sort(key=os.path.getmtime)
         for file in files:
