@@ -2,17 +2,21 @@
 
 import logging
 import os
-
+import sys
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+from pathlib import Path
 
-from libs.Config import init_config
 from maps import MapHandler
 from perks import PerkHandler
 from users import UserHandler
 
-CONF_FILE = "config.yml"
+chemin_repertoire_frere = Path(__file__).resolve().parent.parent / 'libs'
+sys.path.append(str(chemin_repertoire_frere))
+from libs.Config import init_config
+
+CONF_FILE = Path(__file__).resolve().parent.parent / "config.yml"
 app_config = init_config(CONF_FILE)
 mapPath = os.path.join(app_config["pz"]["pz_exe_path"], "media", "maps")
 savePath = os.path.join(app_config["pz"]["server_path"], "Zomboid", "db")
