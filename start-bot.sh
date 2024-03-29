@@ -7,7 +7,7 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 source "${SCRIPT_DIR}/back/pz_python/bin/activate"
 
 # Change working directory
-cd "${SCRIPT_DIR}/back/pz_bot" || { echo "The 'back/pz_bot' directory was not found."; exit 1; }
+cd "${SCRIPT_DIR}/back" || { echo "The 'back/pz_bot' directory was not found."; exit 1; }
 
 # Start the application
-python3 pz_bot.py
+python3 back/pz_bot.py
