@@ -10,4 +10,4 @@ source "${SCRIPT_DIR}/back/pz_python/bin/activate"
 cd "${SCRIPT_DIR}/back" || { echo "The 'back/pz_bot' directory was not found."; exit 1; }
 
 # Start the application
-python3 back/pz_bot.py
+python3 pz_bot/pz_bot.py
