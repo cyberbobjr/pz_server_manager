@@ -4,6 +4,7 @@ from file_read_backwards import FileReadBackwards
 import glob
 import os
 import re
+import random
 
 
 class PerkHandler(commands.Cog):
@@ -98,13 +99,13 @@ class PerkHandler(commands.Cog):
             if timestamp > self.lastUpdateTimestamp:
                 self.bot.log.info(f"{user.name} died")
                 if self.notifyDeath:
-                    return f":zombie: {user.name} {log_char_string}est mort après avoir survécu {user.hoursAlive} heures :dizzy_face:"
+                    return self.get_death_message(user.name, log_char_string, user.hoursAlive)
         elif type == "Login":
             if timestamp > self.lastUpdateTimestamp:
                 user.online = True
                 self.bot.log.info(f"{user.name} login")
                 if self.notifyJoin:
-                    return f":person_doing_cartwheel: {user.name} {log_char_string}est arrivé, {user.hoursAlive} heure(s) de survie jusque là ..."
+                    return self.get_welcome_message(user.name, log_char_string, user.hoursAlive)
         elif "Created Player" in type:
             if timestamp > self.lastUpdateTimestamp:
                 user.online = True
@@ -119,8 +120,106 @@ class PerkHandler(commands.Cog):
             if timestamp > self.lastUpdateTimestamp:
                 self.bot.log.info(f"{user.name} {perk} changed to {level}")
                 if self.notifyPerk:
-                    return f":chart_with_upwards_trend: {user.name} {log_char_string}a atteind le niveau {level} en {perk}"
+                    return self.get_level_up_message(user.name, perk, level, log_char_string)
         else:
             # Must be a list of perks following a login/player creation
             for (name, value) in re.findall(r"(\w+)=(\d+)", type):
                 user.perks[name] = value
+
+    def get_death_message(self, user_name, hoursAlive, log_char_string):
+        if hoursAlive < 10:
+            messages = [
+                f":skull: {user_name} {log_char_string}a rejoint les morts-vivants après seulement {hoursAlive} heure(s). La dure loi de l'apocalypse.",
+                f":ghost: {user_name} {log_char_string}est tombé au combat! {hoursAlive} heure(s) de survie, mais chaque seconde compte.",
+                f":zombie: À peine le temps de découvrir le monde, {user_name} {log_char_string}est déjà un souvenir, après {hoursAlive} heure(s) de lutte.",
+                f":coffin: Fin tragique pour {user_name} {log_char_string}qui a survécu {hoursAlive} heure(s). Repose en paix, brave âme."
+            ]
+        elif hoursAlive < 100:
+            messages = [
+                f":broken_heart: {user_name} {log_char_string}nous a quittés après {hoursAlive} courageuses heures. Une perte déchirante.",
+                f":sob: Le monde est un peu plus sombre sans {user_name} {log_char_string}et ses {hoursAlive} heures de survie.",
+                f":boom: {user_name} {log_char_string}a explosé en héros, avec {hoursAlive} heures au compteur. Quelle fin spectaculaire!",
+                f":cry: C'est la fin de l'aventure pour {user_name} {log_char_string}après {hoursAlive} heures. Trop tôt pour dire au revoir."
+            ]
+        elif hoursAlive < 500:
+            messages = [
+                f":clap: {user_name} {log_char_string}a fait un voyage impressionnant, survivant {hoursAlive} heures. Applaudissements éternels.",
+                f":star_struck: {user_name} {log_char_string}, une légende après {hoursAlive} heures, s'est éteinte. Son étoile brille toujours.",
+                f":thunder_cloud_and_rain: Après la tempête de {hoursAlive} heures, {user_name} {log_char_string}trouve le repos. Une fin mémorable."
+            ]
+        else:  # 500 heures et plus
+            messages = [
+                f":crown: {user_name} {log_char_string}, avec plus de {hoursAlive} heures de survie, a finalement rejoint le panthéon des héros.",
+                f":sparkles: Une épopée s'achève. {user_name} {log_char_string}, après {hoursAlive} heures, laisse un héritage inoubliable.",
+                f":dizzy: La légende de {user_name} {log_char_string}, qui a survécu {hoursAlive} heures, continuera d'inspirer.",
+                f":fireworks: {user_name} {log_char_string}a survécu {hoursAlive} heures. Quelle vie! Célébrons cette aventure extraordinaire."
+            ]
+
+        # Choose a random message from the appropriate list
+        return random.choice(messages)
+
+    def get_welcome_message(self, user_name, hoursAlive, log_char_string):
+        if hoursAlive == 0:
+            messages = [
+                f":hatching_chick: {user_name} {log_char_string}vient d'entrer dans le monde apocalyptique. Bienvenue dans la zone de survie!",
+                f":baby: Nouveau survivant détecté! {user_name} {log_char_string}se prépare pour ses premières heures de survie.",
+                f":sparkles: {user_name} {log_char_string}est fraîchement débarqué(e)! Prépare-toi à affronter les hordes!",
+                f":seedling: Bienvenue à {user_name} {log_char_string}qui fait ses premiers pas dans cet univers impitoyable.",
+                f":new: {user_name} {log_char_string}a rejoint la résistance! Le début d'une longue aventure."
+            ]
+        elif hoursAlive < 500:
+            messages = [
+                f":runner: {user_name} {log_char_string}est de retour, avec {hoursAlive} heure(s) de survie au compteur. On progresse!",
+                f":muscle: {user_name} {log_char_string}continue son aventure, fort de {hoursAlive} heure(s) d'expérience.",
+                f":wrench: Après {hoursAlive} heure(s) de survie, {user_name} {log_char_string}est prêt(e) pour plus d'action!",
+                f":camping: {user_name} {log_char_string}a survécu {hoursAlive} heure(s). Quelle sera la prochaine étape?",
+                f":walking: {user_name} {log_char_string}a brisé le silence, {hoursAlive} heure(s) après avoir commencé. Continuons ainsi!"
+            ]
+        elif hoursAlive > 1000:  # Plus de 1000 heures de survie
+            messages = [
+                f":star2: {user_name} {log_char_string}est un maître de la survie avec plus de 1000 heures au compteur! Respect.",
+                f":fire: {user_name} {log_char_string}a dépassé les 1000 heures de survie! Un véritable phénix parmi nous.",
+                f":comet: Avec plus de 1000 heures de survie, {user_name} {log_char_string}brille plus fort que jamais dans le ciel apocalyptique.",
+                f":wizard: {user_name} {log_char_string}est un sorcier de la survie! Plus de 1000 heures d'expériences et de secrets à partager.",
+                f":alien: {user_name} {log_char_string}a exploré des territoires que peu ont vu, survivant plus de 1000 heures. Légendaire!"
+            ]
+        else:  # 500 heures et plus
+            messages = [
+                f":crown: Une légende revient parmi nous! {user_name} {log_char_string}avec plus de 500 heures de survie à son actif.",
+                f":sunglasses: {user_name} {log_char_string}est un véritable vétéran, ayant survécu plus de 500 heures. Chapeau bas!",
+                f":shield: Attention, {user_name} {log_char_string}est là. Avec plus de 500 heures de survie, c'est un pilier de la communauté.",
+                f":crossed_swords: {user_name} {log_char_string}le survivant légendaire est de retour, prêt à ajouter plus d'heures à son palmarès!",
+                f":trophy: {user_name} {log_char_string}a franchi le cap des 500 heures! Un exploit à célébrer."
+            ]
+
+        # Choose a random message from the appropriate list
+        return random.choice(messages)
+
+    def get_level_up_message(self, user_name, perk, level, log_char_string):
+        if level == 1:
+            messages = [
+                f":star2: Incroyable, {user_name} {log_char_string}a débuté son voyage en {perk}, atteignant le niveau {level}!",
+                f":baby: {user_name} {log_char_string}fait ses premiers pas en {perk}! Niveau {level} atteint, que l'aventure commence.",
+                f":hatching_chick: {user_name} {log_char_string}éclot en {perk}! Niveau {level} déjà en poche.",
+            ]
+        elif level < 5:
+            messages = [
+                f":muscle: {user_name} {log_char_string}gagne en puissance en {perk}, atteignant le niveau {level}!",
+                f":running_man: Avec détermination, {user_name} {log_char_string}progresse en {perk} et atteint le niveau {level}.",
+                f":hammer_and_wrench: {user_name} {log_char_string}construit ses compétences en {perk}, arrivant au niveau {level}.",
+            ]
+        elif level < 10:
+            messages = [
+                f":fire: {user_name} {log_char_string}est en feu! Niveau {level} atteint en {perk}. La maîtrise se rapproche.",
+                f":rocket: {user_name} {log_char_string}décolle vers les étoiles en {perk}, atteignant fièrement le niveau {level}.",
+                f":zap: Électrisant! {user_name} {log_char_string}frappe fort en {perk} avec le niveau {level} désormais atteint.",
+            ]
+        else:  # Niveau 10
+            messages = [
+                f":trophy: {user_name} {log_char_string}est un maître incontesté en {perk}, ayant atteint le niveau {level}! Félicitations!",
+                f":crown: Royauté! {user_name} {log_char_string}domine le domaine de {perk}, parvenu au niveau {level}.",
+                f":sparkles: {user_name} {log_char_string}brille de mille feux en {perk}, avec le niveau {level} atteint. La perfection.",
+            ]
+
+        # Choose a random message from the appropriate list
+        return random.choice(messages)
