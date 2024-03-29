@@ -156,7 +156,7 @@ class UserHandler(commands.Cog):
         if the arg "all" is supplied, show all users
         """
         table = []
-        headers = ["Nom", "En ligne", "Dernière connexion", "Tient le coup depuis"]
+        headers = ["Nom", "En ligne", "Dernière connexion", "Tient le coup depuis (heures)"]
         # if the number of users is over 28 (two messages), then only show online users
         num_users = len(self.users.values())
         show_all = True if arg and arg.lower() == 'all' else False
