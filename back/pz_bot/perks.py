@@ -126,7 +126,7 @@ class PerkHandler(commands.Cog):
             for (name, value) in re.findall(r"(\w+)=(\d+)", type):
                 user.perks[name] = value
 
-    def get_death_message(self, user_name, hoursAlive, log_char_string):
+    def get_death_message(self, user_name, log_char_string, hoursAlive):
         if hoursAlive < 10:
             messages = [
                 f":skull: {user_name} {log_char_string}a rejoint les morts-vivants après seulement {hoursAlive} heure(s). La dure loi de l'apocalypse.",
@@ -158,7 +158,7 @@ class PerkHandler(commands.Cog):
         # Choose a random message from the appropriate list
         return random.choice(messages)
 
-    def get_welcome_message(self, user_name, hoursAlive, log_char_string):
+    def get_welcome_message(self, user_name, log_char_string, hoursAlive):
         if hoursAlive == 0:
             messages = [
                 f":hatching_chick: {user_name} {log_char_string}vient d'entrer dans le monde apocalyptique. Bienvenue dans la zone de survie!",
