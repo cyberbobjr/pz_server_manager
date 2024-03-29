@@ -26,6 +26,8 @@ load_dotenv(override=True)
 
 # Verify the log path
 logPath = os.path.join(app_config["pz"]["server_path"], "Zomboid", "Logs")
+print(f'Log path : {logPath}')
+
 if logPath is None or len(logPath) == 0:
     logging.error("Zomboid log path not set and unable to find default")
     exit()
