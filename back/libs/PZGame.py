@@ -37,7 +37,7 @@ class PZGame:
             os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}.ini"))  # Modifié
         self.pz_luasandbox = PZLuaFile(
             os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}_SandboxVars.lua"))  # Modifié
-        self.pz_process = PZProcess(self.pz_exe_path, pzMonitoring)
+        self.pz_process = PZProcess(self.pz_exe_path)
         self.saveType = {
             "server_ini": self.pz_config.put_content,
             "lua_sandbox": self.pz_luasandbox.put_content,
