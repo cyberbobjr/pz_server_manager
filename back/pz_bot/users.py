@@ -197,16 +197,16 @@ class UserHandler(commands.Cog):
         if name in self.users:
             user = self.users[name]
             table = []
-            table.append(["Name", user.name])
+            table.append(["Nom", user.name])
             table.append(
                 [
-                    "Hours survived",
+                    "Heures de survie",
                     f"{user.hoursAlive} (record: {user.recordHoursAlive})",
                 ]
             )
-            table.append(["Online", "Yes" if user.online else "No"])
-            table.append(["Last Seen", user.lastSeen.strftime("%d/%m at %H:%M")])
-            table.append(["Deaths", len(user.died)])
+            table.append(["En ligne", "Oui" if user.online else "Non"])
+            table.append(["Dernière connexion", user.lastSeen.strftime("%d/%m à %H:%M")])
+            table.append(["Morts", len(user.died)])
             for perk in user.perks:
                 if int(user.perks[perk]) != 0:
                     table.append([perk, user.perks[perk]])
