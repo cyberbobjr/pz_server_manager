@@ -23,6 +23,7 @@ source "${SCRIPT_DIR}/back/pz_python/bin/activate"
 
 # Change working directory
 cd "${SCRIPT_DIR}/back" || { echo "The 'back' directory was not found."; exit 1; }
+LOGFILE="${SCRIPT_DIR}/back/logs/app.log"
 
 # Start the application
-uvicorn main:app --host 0.0.0.0 --port 7777 --ssl-keyfile=/etc/letsencrypt/live/sophie.pzomboid.net/privkey.pem --ssl-certfile=/etc/letsencrypt/live/sophie.pzomboid.net/cert.pem & echo $! > "${SCRIPT_DIR}/back/pidfile"
+uvicorn main:app --host 0.0.0.0 --port 7777 --ssl-keyfile=/etc/letsencrypt/live/sophie.pzomboid.net/privkey.pem --ssl-certfile=/etc/letsencrypt/live/sophie.pzomboid.net/cert.pem >> "$LOGFILE" 2>&1 & echo $! > "${SCRIPT_DIR}/back/pidfile"
