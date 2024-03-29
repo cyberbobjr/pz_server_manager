@@ -8,13 +8,13 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from pathlib import Path
 
-from maps import MapHandler
-from perks import PerkHandler
-from users import UserHandler
-
 chemin_repertoire_frere = Path(__file__).resolve().parent.parent
 sys.path.append(str(chemin_repertoire_frere))
 
+from maps import MapHandler
+from perks import PerkHandler
+from server import ServerHandler
+from users import UserHandler
 from libs.Config import init_config
 
 CONF_FILE = Path(__file__).resolve().parent.parent / "config.yml"
@@ -78,6 +78,7 @@ async def on_ready():
     await zomboi.add_cog(PerkHandler(zomboi, logPath))
     # await zomboi.add_cog(RCONAdapter(zomboi))
     await zomboi.add_cog(MapHandler(zomboi, mapPath))
+    await zomboi.add_cog(ServerHandler(zomboi, app_config["pz"]["pz_exe_path"]))
     # await zomboi.add_cog(AdminLogHandler(zomboi, logPath))
 
 

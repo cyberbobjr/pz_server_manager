@@ -6,9 +6,8 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 
 
 class PZProcess:
-    def __init__(self, pz_exe_path, pzMonitoring):
+    def __init__(self, pz_exe_path):
         self.pz_exe_path = pz_exe_path
-        self.pzMonitoring = pzMonitoring
 
     def get_process(self):
         logging.debug("Recherche du processus de Project Zomboid en cours...")
