@@ -12,8 +12,9 @@ from maps import MapHandler
 from perks import PerkHandler
 from users import UserHandler
 
-chemin_repertoire_frere = Path(__file__).resolve().parent.parent / 'libs'
+chemin_repertoire_frere = Path(__file__).resolve().parent.parent
 sys.path.append(str(chemin_repertoire_frere))
+
 from libs.Config import init_config
 
 CONF_FILE = Path(__file__).resolve().parent.parent / "config.yml"
