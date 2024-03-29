@@ -34,7 +34,7 @@ async def monitor_mod_update():
                 except Exception as e:
                     print(f'{e}')
                     continue
-        await asyncio.sleep(10 * 60)  # check every hour
+        await asyncio.sleep(30 * 60)  # check every demihour
 
 
 def signal_handler(sig, frame):
