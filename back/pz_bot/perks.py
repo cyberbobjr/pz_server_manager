@@ -99,13 +99,13 @@ class PerkHandler(commands.Cog):
             if timestamp > self.lastUpdateTimestamp:
                 self.bot.log.info(f"{user.name} died")
                 if self.notifyDeath:
-                    return self.get_death_message(user.name, log_char_string, user.hoursAlive)
+                    return self.get_death_message(user.name, log_char_string, int(user.hoursAlive))
         elif type == "Login":
             if timestamp > self.lastUpdateTimestamp:
                 user.online = True
                 self.bot.log.info(f"{user.name} login")
                 if self.notifyJoin:
-                    return self.get_welcome_message(user.name, log_char_string, user.hoursAlive)
+                    return self.get_welcome_message(user.name, log_char_string, int(user.hoursAlive))
         elif "Created Player" in type:
             if timestamp > self.lastUpdateTimestamp:
                 user.online = True
@@ -120,7 +120,7 @@ class PerkHandler(commands.Cog):
             if timestamp > self.lastUpdateTimestamp:
                 self.bot.log.info(f"{user.name} {perk} changed to {level}")
                 if self.notifyPerk:
-                    return self.get_level_up_message(user.name, perk, level, log_char_string)
+                    return self.get_level_up_message(user.name, perk, int(level), log_char_string)
         else:
             # Must be a list of perks following a login/player creation
             for (name, value) in re.findall(r"(\w+)=(\d+)", type):
