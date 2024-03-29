@@ -24,7 +24,7 @@ async def monitor_mod_update():
                         msg = f'servermsg The server will reboot in 5 minutes for updating mods...'
                         await PZLog.print(msg)
                         await pzRcon.send_command(f"servermsg {msg}")
-                        time.sleep(60 * 5)
+                        time.sleep(60 * 4)
                         msg = f'servermsg The server will reboot in 1 minute for updating mods...'
                         await PZLog.print(msg)
                         await pzRcon.send_command(f"servermsg {msg}")
