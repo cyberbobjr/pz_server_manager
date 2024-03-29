@@ -31,3 +31,4 @@ if ps -p "$PID" > /dev/null 2>&1; then
 else
     echo "Le processus $PID n'est pas en cours d'exécution."
     # Remove
+fi
