@@ -13,6 +13,7 @@ import sqlite3
 
 DISCORD_MAX_CHAR = 2000
 
+
 @dataclass
 class User:
     """A class representing a user"""
@@ -30,7 +31,8 @@ class User:
 class UserHandler(commands.Cog):
     """Handles all the info we get from the user log files"""
 
-    def __init__(self, bot, logPath, savePath):
+    def __init__(self, bot, logPath, savePath, authorized_channels):
+        self.authorized_channels = authorized_channels
         self.bot = bot
         self.savePath = savePath
         self.logPath = logPath
@@ -60,7 +62,8 @@ class UserHandler(commands.Cog):
         from time import sleep
         sleep(5)
         try:
-            playerdb = Path(self.savePath).joinpath("players.db") if self.savePath else Path.home().joinpath("Zomboid/Saves/Multiplayer/pzserver").joinpath("players.db")
+            playerdb = Path(self.savePath).joinpath("players.db") if self.savePath else Path.home().joinpath(
+                "Zomboid/Saves/Multiplayer/pzserver").joinpath("players.db")
             if not playerdb.is_file():
                 self.bot.log.error("Zomboid saves path was set incorrectly. Please check your environment variables")
                 return ''
@@ -155,6 +158,8 @@ class UserHandler(commands.Cog):
         If the user is online -- print all online users
         if the arg "all" is supplied, show all users
         """
+        if ctx.channel.id not in self.authorized_channels:
+            return
         table = []
         headers = ["Nom", "En ligne", "Dernière connexion", "Tient le coup depuis (heures)"]
         # if the number of users is over 28 (two messages), then only show online users
@@ -179,7 +184,7 @@ class UserHandler(commands.Cog):
             while len(f'```\n{tabulate(messages[x], headers=headers, tablefmt="fancy_grid")}\n```') > DISCORD_MAX_CHAR:
                 if x == len(messages) - 1:
                     messages.append([])
-                messages[x+1].append(messages[x][-1])
+                messages[x + 1].append(messages[x][-1])
                 messages[x] = messages[x][0:-1]
             await ctx.send(
                 f'```\n{tabulate(messages[x], headers=headers, tablefmt="fancy_grid")}\n```'

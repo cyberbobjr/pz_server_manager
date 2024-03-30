@@ -59,6 +59,11 @@ handler.setLevel(logging.DEBUG)
 zomboi.log.addHandler(handler)
 zomboi.log.setLevel(logging.DEBUG)
 
+authorized_channels = [
+    1222662954449633311,
+    1204837110318899260
+]
+
 
 @zomboi.event
 async def on_ready():
@@ -73,12 +78,12 @@ async def on_ready():
         zomboi.log.warning("Unable to get channel, will not be enabled")
     else:
         zomboi.log.info("channel connected")
-    await zomboi.add_cog(UserHandler(zomboi, logPath, savePath))
+    await zomboi.add_cog(UserHandler(zomboi, logPath, savePath, authorized_channels))
     # await zomboi.add_cog(ChatHandler(zomboi, logPath))
-    await zomboi.add_cog(PerkHandler(zomboi, logPath))
+    await zomboi.add_cog(PerkHandler(zomboi, logPath, authorized_channels))
     # await zomboi.add_cog(RCONAdapter(zomboi))
     await zomboi.add_cog(MapHandler(zomboi, mapPath))
-    await zomboi.add_cog(ServerHandler(zomboi, app_config["pz"]["pz_exe_path"]))
+    await zomboi.add_cog(ServerHandler(zomboi, app_config["pz"]["pz_exe_path"], authorized_channels))
     # await zomboi.add_cog(AdminLogHandler(zomboi, logPath))
 
 

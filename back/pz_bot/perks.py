@@ -10,9 +10,10 @@ import random
 class PerkHandler(commands.Cog):
     """Class which handles the Perk log files"""
 
-    def __init__(self, bot, logPath):
+    def __init__(self, bot, logPath, authorized_channels):
         self.lastMessageTime = {}
         self.bot = bot
+        self.authorized_channels = authorized_channels
         self.logPath = logPath
         self.lastUpdateTimestamp = datetime.now()
         self.loadHistory()
