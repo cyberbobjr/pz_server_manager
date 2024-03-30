@@ -193,9 +193,10 @@ class UserHandler(commands.Cog):
     @commands.command()
     async def info(self, ctx, name=None):
         """Get detailed user info
-
         Provide a username, or leave blank to show the user matching your discord name
         """
+        if ctx.channel.id not in self.authorized_channels:
+            return
         if name is None:
             name = ctx.author.name
         if name in self.users:
