@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from libs.security import decode_jwt
-from pz_monitor import monitor_mod_update, signal_handler
+from pz_monitor import monitor_mod_update
 from pz_setup import pzMonitoring
 from routes import auth, mods, server, config
 
@@ -17,12 +17,25 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 
 app = FastAPI()
 
+ongoing_tasks = []
+
+
+def signal_handler(sig, frame):
+    logging.info("Signal received, initiating graceful shutdown...")
+    for task in ongoing_tasks:
+        task.cancel()
+    asyncio.get_event_loop().run_until_complete(asyncio.gather(*ongoing_tasks))
+    logging.info("All tasks completed, exiting.")
+    exit(0)  # Utilisez os._exit pour assurer une sortie immédiate après la fin des tâches.
+
+
 
 @app.on_event("startup")
 async def startup_db_client():
     print("Startup: FastAPI application is starting...")
     if pzMonitoring:
-        asyncio.create_task(monitor_mod_update())
+        task = asyncio.create_task(monitor_mod_update())
+        ongoing_tasks.append(task)
 
 
 signal.signal(signal.SIGINT, signal_handler)

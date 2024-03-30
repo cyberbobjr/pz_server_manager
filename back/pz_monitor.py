@@ -1,5 +1,4 @@
 import asyncio
-import time
 
 from libs.DatetimeHelper import DatetimeHelper
 from libs.PZLog import PZLog
@@ -20,18 +19,14 @@ async def monitor_mod_update():
                         msg = f'servermsg The server will reboot in 5 minutes for updating mods...'
                         await PZLog.print(msg)
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
-                        time.sleep(60 * 4)
+                        await asyncio.sleep(60 * 4)
                         msg = f'servermsg The server will reboot in 1 minute for updating mods...'
                         await PZLog.print(msg)
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
-                        time.sleep(60)
+                        await asyncio.sleep(60)
                         await pzGame.stop_server()
                         break
                 except Exception as e:
                     print(f'{e}')
                     continue
         await asyncio.sleep(30 * 60)  # check every demihour
-
-
-def signal_handler(sig, frame):
-    exit(-1)

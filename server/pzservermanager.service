@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/ubuntu/pz_server_manager/start.sh
-WorkingDirectory=/home/ubuntu/pz_server_manager/back
+ExecStart=/home/ubuntu/pz_server_manager/start-manager.sh
+WorkingDirectory=/home/ubuntu/pz_server_manager
 User=root
 Group=root
 Restart=always
