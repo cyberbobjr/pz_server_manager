@@ -1,3 +1,5 @@
+import time
+
 import yaml
 
 from libs.console import Console
@@ -16,6 +18,8 @@ def stop_project_zomboid_server():
     try:
         host, port, password = load_rcon_config(CONFIG_FILE_PATH)
         rcon = Console(host, port=port, password=password)
+        rcon.command("save")
+        time.sleep(15)
         rcon.command("quit")
         rcon.close()
         print("Server stopped")
