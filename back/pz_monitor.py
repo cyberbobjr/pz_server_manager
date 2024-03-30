@@ -29,7 +29,10 @@ async def monitor_mod_update():
                         await PZLog.print(msg)
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
                         await asyncio.sleep(60)
+                        await pzGame.save_server()
+                        await asyncio.sleep(30)
                         await pzGame.stop_server()
+                        await asyncio.sleep(10)
                         break
                 except Exception as e:
                     logging.error(f'Error checking mod update for {workshop_id}: {e}')

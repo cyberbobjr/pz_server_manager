@@ -180,6 +180,9 @@ class PZGame:
             await asyncio.sleep(10)
         await PZLog.print(f"Server is ready")
 
+    async def save_server(self):
+        return self.pz_rcon.send_command("save")
+
     async def stop_server(self):
         os_name = platform.system()
         if os_name == "Linux":
