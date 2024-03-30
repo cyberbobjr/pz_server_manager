@@ -11,6 +11,7 @@ class PerkHandler(commands.Cog):
     """Class which handles the Perk log files"""
 
     def __init__(self, bot, logPath):
+        self.lastMessageTime = {}
         self.bot = bot
         self.logPath = logPath
         self.lastUpdateTimestamp = datetime.now()
@@ -20,8 +21,6 @@ class PerkHandler(commands.Cog):
         self.notifyDeath = os.getenv("DEATHS", "True") == "True"
         self.notifyPerk = os.getenv("PERKS", "True") == "True"
         self.notifyCreateChar = os.getenv("CREATECHAR", "True") == "True"
-        self.lastUpdateTimestamp = datetime.now()
-        self.lastMessageTime = {}
 
     def splitLine(self, line: str):
         """Split a log line into a timestamp and the remaining message"""
