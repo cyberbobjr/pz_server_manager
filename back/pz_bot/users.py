@@ -62,7 +62,7 @@ class UserHandler(commands.Cog):
         from time import sleep
         sleep(5)
         try:
-            playerdb = Path(self.savePath).joinpath("players.db")
+            playerdb = Path(self.savePath).joinpath("server-sophie-1-11-2.db")
             if not playerdb.is_file():
                 self.bot.log.error("Zomboid saves path was set incorrectly. Please check your environment variables")
                 return ''
