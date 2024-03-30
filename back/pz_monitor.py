@@ -3,11 +3,7 @@ import time
 
 from libs.DatetimeHelper import DatetimeHelper
 from libs.PZLog import PZLog
-from pz_setup import pzDiscord, pzGame, steam, pzRcon
-
-
-async def start_bot():
-    await pzDiscord.run()
+from pz_setup import pzGame, steam, pzRcon
 
 
 async def monitor_mod_update():
@@ -38,7 +34,4 @@ async def monitor_mod_update():
 
 
 def signal_handler(sig, frame):
-    if pzDiscord:
-        pzDiscord.stop_bot()
-        print("Bot stopped.")
     exit(-1)

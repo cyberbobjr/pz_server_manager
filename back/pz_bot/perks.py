@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from discord.ext import tasks, commands
 from file_read_backwards import FileReadBackwards
 import glob
@@ -20,6 +20,8 @@ class PerkHandler(commands.Cog):
         self.notifyDeath = os.getenv("DEATHS", "True") == "True"
         self.notifyPerk = os.getenv("PERKS", "True") == "True"
         self.notifyCreateChar = os.getenv("CREATECHAR", "True") == "True"
+        self.lastUpdateTimestamp = datetime.now()
+        self.lastMessageTime = {}
 
     def splitLine(self, line: str):
         """Split a log line into a timestamp and the remaining message"""
@@ -93,6 +95,11 @@ class PerkHandler(commands.Cog):
         user.hoursAlive = hours
         if int(hours) > int(user.recordHoursAlive):
             user.recordHoursAlive = hours
+
+        cooldown_period = timedelta(seconds=10)  # Définissez votre période de cooldown
+        now = datetime.now()
+        if user.name in self.lastMessageTime and now - self.lastMessageTime[user.name] < cooldown_period:
+            return None  # Sortez de la fonction si le dernier message est trop récent
 
         if type == "Died":
             user.died.append(timestamp)

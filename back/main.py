@@ -9,7 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from libs.security import decode_jwt
 from pz_monitor import start_bot, monitor_mod_update, signal_handler
-from pz_setup import pzDiscord, pzMonitoring
+from pz_setup import pzMonitoring
 from routes import auth, mods, server, config
 
 angular_static_path = os.path.join(os.path.dirname(__file__), 'front')
@@ -21,10 +21,6 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup_db_client():
     print("Startup: FastAPI application is starting...")
-    if pzDiscord:
-        asyncio.create_task(start_bot())
-        while not pzDiscord.is_ready:
-            await asyncio.sleep(10)
     if pzMonitoring:
         asyncio.create_task(monitor_mod_update())
 

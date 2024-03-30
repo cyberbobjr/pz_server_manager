@@ -9,7 +9,7 @@ from fastapi import Body, APIRouter, BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 
-from pz_setup import pzRcon, pzGame, app_config, steamcmd, pzDiscord
+from pz_setup import pzRcon, pzGame, app_config, steamcmd
 
 router = APIRouter()
 
@@ -91,7 +91,6 @@ async def start():
         }
     try:
         pz_process = await pzGame.start_server()
-        pzDiscord.send_message(f'Server is starting...')
         pzGame.set_be_always_start(True)
         return_code = pz_process.returncode
         if return_code == 0:
@@ -114,7 +113,6 @@ async def start():
 @router.get("/server/stop", tags=["server"])
 async def stop():
     try:
-        pzDiscord.send_message(f'Server is stopping...')
         if not await pzGame.stop_server():
             return {
                 "success": False,
