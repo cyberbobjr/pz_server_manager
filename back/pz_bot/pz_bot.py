@@ -21,12 +21,13 @@ CONF_FILE = Path(__file__).resolve().parent.parent / "config.yml"
 app_config = init_config(CONF_FILE)
 mapPath = os.path.join(app_config["pz"]["pz_exe_path"], "media", "maps")
 savePath = os.path.join(app_config["pz"]["server_path"], "Zomboid", "db")
+logPath = os.path.join(app_config["pz"]["server_path"], "Zomboid", "Logs")
 
 load_dotenv(override=True)
 
 # Verify the log path
-logPath = os.path.join(app_config["pz"]["server_path"], "Zomboid", "Logs")
 print(f'Log path : {logPath}')
+print(f'Save path : {savePath}')
 
 if logPath is None or len(logPath) == 0:
     logging.error("Zomboid log path not set and unable to find default")
