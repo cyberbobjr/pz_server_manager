@@ -11,6 +11,7 @@ if [ -f "${SCRIPT_DIR}/back/pidfile" ]; then
     if kill -0 "$PID" 2>/dev/null; then
         # If the process exists, kill it
         kill "$PID"
+        sleep 2
     else
         echo "Process with PID $PID not found."
     fi
