@@ -1,8 +1,26 @@
 import asyncio
+import logging
+import signal
 
 from libs.DatetimeHelper import DatetimeHelper
 from libs.PZLog import PZLog
 from pz_setup import pzGame, steam, pzRcon
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+ongoing_tasks = []
+
+
+def signal_handler(sig, frame):
+    logging.info("Signal received, initiating graceful shutdown...")
+    for task in ongoing_tasks:
+        task.cancel()
+    asyncio.get_event_loop().run_until_complete(asyncio.gather(*ongoing_tasks))
+    logging.info("All tasks completed, exiting.")
+    exit(0)
+
+
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 
 async def monitor_mod_update():
@@ -30,3 +48,9 @@ async def monitor_mod_update():
                     print(f'{e}')
                     continue
         await asyncio.sleep(30 * 60)  # check every demihour
+
+
+if __name__ == "__main__":
+    print("Startup: Launching mods monitor...")
+    task = asyncio.create_task(monitor_mod_update())
+    ongoing_tasks.append(task)
