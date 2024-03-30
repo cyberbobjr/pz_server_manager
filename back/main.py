@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from libs.security import decode_jwt
-from pz_monitor import start_bot, monitor_mod_update, signal_handler
+from pz_monitor import monitor_mod_update, signal_handler
 from pz_setup import pzMonitoring
 from routes import auth, mods, server, config
 
