@@ -1,4 +1,4 @@
-from discord.ext import tasks, commands
+from discord.ext import commands
 
 from libs.DatetimeHelper import DatetimeHelper
 from libs.PZProcess import PZProcess
@@ -20,4 +20,4 @@ class ServerHandler(commands.Cog):
             msg = f':computer: Dernier reboot du serveur : {DatetimeHelper.epoch_to_iso(running_time)}'
 
         if msg is not None and self.bot.channel is not None:
-            await self.bot.channel.send(msg)
+            await ctx.send(msg)

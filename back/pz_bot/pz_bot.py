@@ -11,9 +11,9 @@ from pathlib import Path
 chemin_repertoire_frere = Path(__file__).resolve().parent.parent
 sys.path.append(str(chemin_repertoire_frere))
 
+from servers import ServerHandler
 from maps import MapHandler
 from perks import PerkHandler
-from server import ServerHandler
 from users import UserHandler
 from libs.Config import init_config
 
