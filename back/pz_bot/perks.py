@@ -211,7 +211,7 @@ class PerkHandler(commands.Cog):
         elif level < 5:
             messages = [
                 f":muscle: {user_name} {log_char_string}gagne en puissance en {perk}, atteignant le niveau {level}!",
-                f":running_man: Avec détermination, {user_name} {log_char_string}progresse en {perk} et atteint le niveau {level}.",
+                f":man_running: Avec détermination, {user_name} {log_char_string}progresse en {perk} et atteint le niveau {level}.",
                 f":hammer_and_wrench: {user_name} {log_char_string}construit ses compétences en {perk}, arrivant au niveau {level}.",
             ]
         elif level < 10:
