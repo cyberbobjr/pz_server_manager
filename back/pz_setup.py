@@ -36,7 +36,7 @@ if not Bootstrap.is_pzserver_installed(app_config["pz"]["pz_exe_path"]):
 
 steam = Steam(app_config["steam"]["apikey"], app_config["steam"]["cache_folder"], app_config["steam"]["appid"])
 pzGame = PZGame(app_config["pz"]["pz_exe_path"], app_config["pz"]["server_path"], app_config["pz"]["password"],
-                app_config["pz"]["server_name"], app_config["pz"]["monitoring"])
+                app_config["pz"]["server_name"])
 
 pzRcon = PZRcon(app_config["rcon"]["host"], app_config["rcon"]["port"], app_config["rcon"]["password"])
 pzGame.pz_rcon = pzRcon

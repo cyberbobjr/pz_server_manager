@@ -26,8 +26,7 @@ class PZGame:
     pz_process: PZProcess
     pz_rcon = None
 
-    def __init__(self, pz_exe_path: str, server_path: str, server_admin_password: str, server_name: str,
-                 pzMonitoring: bool):
+    def __init__(self, pz_exe_path: str, server_path: str, server_admin_password: str, server_name: str):
         self.must_restart = True
         self.server_admin_password = server_admin_password
         self.pz_exe_path = pz_exe_path
@@ -185,9 +184,11 @@ class PZGame:
         os_name = platform.system()
         if os_name == "Linux":
             command = ['sudo', 'systemctl', 'stop', 'projectzomboid.service']
-            subprocess.Popen(command)
-        await PZLog.print(f'Server stopped')
-        return await self.pz_rcon.send_command("quit")
+            await PZLog.print(f'Server stopped')
+            return subprocess.Popen(command)
+        else:
+            await PZLog.print(f'Server stopped')
+            return await self.pz_rcon.send_command("quit")
 
     def should_be_always_start(self):
         return self.must_restart
