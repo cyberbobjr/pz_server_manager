@@ -4,20 +4,20 @@
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 # Check if pidfile exists
-#if [ -f "${SCRIPT_DIR}/back/pidfile" ]; then
-#    PID=$(cat "${SCRIPT_DIR}/back/pidfile")
-#    # Check if the process is running by sending a signal 0
-#    # If the process exists, kill will succeed, otherwise it will fail
-#    if kill -0 "$PID" 2>/dev/null; then
-#        # If the process exists, kill it
-#        kill "$PID"
-#        sleep 10
-#    else
-#        echo "Process with PID $PID not found."
-#    fi
-#    # Remove the pidfile
-#    rm "${SCRIPT_DIR}/back/pidfile"
-#fi
+if [ -f "${SCRIPT_DIR}/back/pidfile" ]; then
+    PID=$(cat "${SCRIPT_DIR}/back/pidfile")
+    # Check if the process is running by sending a signal 0
+    # If the process exists, kill will succeed, otherwise it will fail
+    if kill -0 "$PID" 2>/dev/null; then
+        # If the process exists, kill it
+        kill "$PID"
+        sleep 10
+    else
+        echo "Process with PID $PID not found."
+    fi
+    # Remove the pidfile
+    rm "${SCRIPT_DIR}/back/pidfile"
+fi
 
 # Activate the Python virtual environment
 source "${SCRIPT_DIR}/back/pz_python/bin/activate"
