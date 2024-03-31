@@ -1,16 +1,20 @@
 [Unit]
 Description=Project Zomboid Server
+Requires=projectzomboid.socket
 After=network.target
 
 [Service]
-Type=simple
+PrivateTmp=true
+Type=exec
 User=ubuntu
-Group=ubuntu
+WorkingDirectory=/app/pz_server/
 ExecStart=/app/pz_server/start-server.sh
-ExecStop=/home/ubuntu/pz_server_manager/stop-server.sh
-WorkingDirectory=/app/pz_server
-Restart=on-failure
-RestartSec=10
+ExecStop=/bin/sh -c "echo quit > /run/zomboid.sock"
+StandardInput=socket
+StandardOutput=journal
+StandardError=journal
+Sockets=projectzomboid.socket
+KillSignal=SIGCONT
 
 [Install]
 WantedBy=multi-user.target

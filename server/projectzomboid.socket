@@ -1,0 +1,12 @@
+[Unit]
+BindsTo=projectzomboid.service
+
+[Socket]
+ListenFIFO=%t/zomboid.sock
+FileDescriptorName=control
+RemoveOnStop=true
+SocketMode=0660
+SocketUser=ubuntu
+
+[Install]
+WantedBy=sockets.target
