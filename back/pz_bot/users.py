@@ -38,7 +38,7 @@ class UserHandler(commands.Cog):
         self.logPath = logPath
         self.lastUpdateTimestamp = datetime.now()
         self.users = {}
-        self.notifyDisconnect = os.getenv("DISCONNECTS", "True") == "False"
+        self.notifyDisconnect = os.getenv("DISCONNECTS", "True") == "True"
         self.loadHistory()
         self.update.start()
         self.onlineCount = None
@@ -133,7 +133,7 @@ class UserHandler(commands.Cog):
             if timestamp > self.lastUpdateTimestamp:
                 self.bot.log.info(f"{user.name} disconnected")
                 if self.notifyDisconnect:
-                    return f":person_running: {user.name} has left"
+                    return f":person_running: {user.name} est parti"
 
         elif "fully connected" in message:
             matches = re.search(r"\"(.*)\".*\((\d+),(\d+)", message)
@@ -144,7 +144,7 @@ class UserHandler(commands.Cog):
                 user.lastSeen = timestamp
                 user.lastLocation = (matches.group(2), matches.group(3))
             if timestamp > self.lastUpdateTimestamp:
-                self.bot.log.info(f"{user.name} connected")
+                self.bot.log.info(f"{user.name} est arrrivé")
         else:
             # Ignore but mirror log if it's new
             if timestamp > self.lastUpdateTimestamp:

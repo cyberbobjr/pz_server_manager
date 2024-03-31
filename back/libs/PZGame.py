@@ -1,8 +1,12 @@
 import asyncio
 import glob
+import logging
 import os
 import platform
+import sqlite3
 import subprocess
+from pathlib import Path
+from time import sleep
 from typing import List
 
 from .Bootstrap import Bootstrap
@@ -13,6 +17,8 @@ from .PZLuaFile import PZLuaFile
 from .PZProcess import PZProcess
 
 MODINFO = "mod.info"
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class PZGame:
@@ -37,6 +43,7 @@ class PZGame:
         self.pz_luasandbox = PZLuaFile(
             os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}_SandboxVars.lua"))  # Modifié
         self.pz_process = PZProcess(self.pz_exe_path)
+        self.savePath = os.path.join(server_path, "Zomboid", "db")
         self.saveType = {
             "server_ini": self.pz_config.put_content,
             "lua_sandbox": self.pz_luasandbox.put_content,
@@ -58,11 +65,6 @@ class PZGame:
     def is_workshop_exist_in_server_dir(self, workshop):
         workshop_path = os.path.join(self.pz_exe_path, self.mod_path, str(workshop))  # Modifié
         return os.path.exists(workshop_path)
-
-    def parse_map(self, mod_path):
-        if os.path.exists(mod_path):
-            return True
-        return False
 
     def scan_mods_in_ini(self):
         mods = self.read_mods_ini()
@@ -193,14 +195,25 @@ class PZGame:
             await PZLog.print(f'Server stopped')
             return await self.pz_rcon.send_command("quit")
 
-    def should_be_always_start(self):
-        return self.must_restart
-
-    def set_be_always_start(self, state: bool):
-        self.must_restart = state
-
     def get_exe_path(self) -> str:
         return f'{self.pz_exe_path}'
 
     def get_mod_path(self) -> str:
         return f'{self.pz_exe_path}{self.mod_path}'
+
+    def get_players(self):
+        sleep(5)
+        try:
+            playerdb = Path(self.savePath).joinpath("server-sophie-1-11-2.db")
+            if not playerdb.is_file():
+                return ''
+            # Connect to the sqlite player db
+            con = sqlite3.connect(str(playerdb))
+            cur = con.cursor()
+            # check the networkPlayers table
+            cur.execute('SELECT name FROM networkPlayers')
+            result = cur.fetchall()
+            con.close()
+            return result
+        except Exception as e:
+            print(f"Erreur lors de la recherche des joueurs : {str(e)}")

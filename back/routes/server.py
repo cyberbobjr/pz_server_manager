@@ -70,7 +70,6 @@ async def restart():
         while pzGame.is_process_running():
             time.sleep(5)
         pz_process = pzGame.start_server()
-        pzGame.set_be_always_start(True)
         return {
             "success": True,
             "msg": f'Server restarted with the pid {pz_process.pid}'
@@ -91,7 +90,6 @@ async def start():
         }
     try:
         pz_process = await pzGame.start_server()
-        pzGame.set_be_always_start(True)
         return_code = pz_process.returncode
         if return_code == 0:
             return {
@@ -118,7 +116,6 @@ async def stop():
                 "success": False,
                 "msg": "Server not responding"
             }
-        pzGame.set_be_always_start(False)
         return {
             "success": True,
             "msg": "Server stopped"
@@ -137,7 +134,6 @@ async def force_stop():
             pid = pzGame.get_pid()
             os.kill(pid, signal.SIGTERM)
             print("Process with PID", pid, "has been successfully stopped.")
-            pzGame.set_be_always_start(False)
             return {
                 "success": True,
                 "msg": f'Process with PID {pid} has been successfully stopped.'
