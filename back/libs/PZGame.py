@@ -21,7 +21,7 @@ class PZGame:
     memory = 8
     server_path = ""
     pz_exe_path = ""
-    server_name = "servertest"
+    server_name = ""
     pz_config: PZConfigFile
     pz_process: PZProcess
     pz_rcon = None
