@@ -19,8 +19,18 @@ class PZRcon:
             client.command("help")
             client.close()
             return True
+        except UnicodeDecodeError as erreur_unicode:
+            content = erreur_unicode.args[1]
+            for decoding in self.possible_decodings:
+                try:
+                    text = content.decode(decoding)
+                    print(f'decoding with {decoding}')
+                    return True
+                except UnicodeDecodeError:
+                    # If a decoding error occurs, move to the next decoding
+                    pass
+            return False
         except Exception as e:
-            logging.debug(f"Exception : {e}")
             print(e)
             return False
 

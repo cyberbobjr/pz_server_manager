@@ -239,3 +239,17 @@ async def get_server_settings(content_type: str):
             "success": False,
             "msg": e
         }
+
+
+@router.get("/server/players", tags=["server"])
+async def get_server_players():
+    try:
+        return {
+            "success": True,
+            "msg": pzGame.get_players()
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "msg": e
+        }

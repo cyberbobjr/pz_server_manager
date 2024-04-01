@@ -31,7 +31,7 @@ async def monitor_mod_update():
                         await asyncio.sleep(60)
                         await pzGame.save_server()
                         await asyncio.sleep(30)
-                        await pzGame.stop_server()
+                        await pzGame.restart_server()
                         await asyncio.sleep(10)
                         break
                 except Exception as e:

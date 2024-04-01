@@ -43,7 +43,7 @@ class PZGame:
         self.pz_luasandbox = PZLuaFile(
             os.path.join(self.server_path, "Zomboid", "Server", f"{self.server_name}_SandboxVars.lua"))  # Modifié
         self.pz_process = PZProcess(self.pz_exe_path)
-        self.savePath = os.path.join(server_path, "Zomboid", "db")
+        self.savePath = os.path.join(server_path, "Zomboid")
         self.saveType = {
             "server_ini": self.pz_config.put_content,
             "lua_sandbox": self.pz_luasandbox.put_content,
@@ -195,23 +195,33 @@ class PZGame:
             await PZLog.print(f'Server stopped')
             return await self.pz_rcon.send_command("quit")
 
+    async def restart_server(self):
+        os_name = platform.system()
+        if os_name == "Linux":
+            command = ['sudo', 'systemctl', 'restart', 'projectzomboid.service']
+            await PZLog.print(f'Server stopped')
+            return subprocess.Popen(command)
+        else:
+            await PZLog.print(f'Server stopped')
+            return await self.pz_rcon.send_command("quit")
+
     def get_exe_path(self) -> str:
         return f'{self.pz_exe_path}'
 
     def get_mod_path(self) -> str:
         return f'{self.pz_exe_path}{self.mod_path}'
 
-    def get_players(self):
+    def get_players(self) -> List:
         sleep(5)
         try:
-            playerdb = Path(self.savePath).joinpath("server-sophie-1-11-2.db")
+            playerdb = Path(self.savePath).joinpath("Saves", "Multiplayer", self.server_name, "players.db")
             if not playerdb.is_file():
-                return ''
+                return None
             # Connect to the sqlite player db
             con = sqlite3.connect(str(playerdb))
             cur = con.cursor()
             # check the networkPlayers table
-            cur.execute('SELECT name FROM networkPlayers')
+            cur.execute('SELECT username FROM networkPlayers')
             result = cur.fetchall()
             con.close()
             return result
