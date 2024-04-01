@@ -20,7 +20,8 @@ from libs.Config import init_config
 CONF_FILE = Path(__file__).resolve().parent.parent / "config.yml"
 app_config = init_config(CONF_FILE)
 mapPath = os.path.join(app_config["pz"]["pz_exe_path"], "media", "maps")
-savePath = os.path.join(app_config["pz"]["server_path"], "Zomboid", "db")
+savePath = os.path.join(app_config["pz"]["server_path"], "Zomboid", "Saves", "Multiplayer",
+                        app_config["pz"]["server_name"])
 logPath = os.path.join(app_config["pz"]["server_path"], "Zomboid", "Logs")
 
 load_dotenv(override=True)
