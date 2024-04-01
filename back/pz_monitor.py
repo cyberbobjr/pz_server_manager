@@ -7,7 +7,7 @@ from libs.PZLog import PZLog
 from pz_setup import pzGame, steam, pzRcon
 
 # Configuration du logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 async def monitor_mod_update():
@@ -20,13 +20,13 @@ async def monitor_mod_update():
                     last_update = steam.get_lastupdate_mod(workshop_id)
                     if last_update is not None and last_update > running_time:
                         msg = f'workshop item {workshop_id} was updated {DatetimeHelper.epoch_to_iso(last_update)} since {DatetimeHelper.epoch_to_iso(running_time)}, server rebooting'
-                        await PZLog.print(msg)
+                        logging.info(msg)
                         msg = f'servermsg The server will reboot in 5 minutes for updating mods...'
-                        await PZLog.print(msg)
+                        logging.info(msg)
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
                         await asyncio.sleep(60 * 4)
                         msg = f'servermsg The server will reboot in 1 minute for updating mods...'
-                        await PZLog.print(msg)
+                        logging.info(msg)
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
                         await asyncio.sleep(60)
                         await pzGame.save_server()
