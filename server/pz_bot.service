@@ -1,0 +1,16 @@
+[Unit]
+Description=PZ Bot Service
+After=network.target
+
+[Service]
+Type=forking
+User=ubuntu
+WorkingDirectory=/home/ubuntu/pz_server_manager
+ExecStart=/home/ubuntu/pz_server_manager/start-bot.sh
+ExecStop=/home/ubuntu/pz_server_manager/stop-bot.sh
+Restart=on-failure
+RestartSec=5s
+PIDFile=/home/ubuntu/pz_server_manager/back/pidfile_bot
+
+[Install]
+WantedBy=multi-user.target
