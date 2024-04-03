@@ -1,3 +1,4 @@
+import shlex
 import sys
 import os
 import platform
@@ -134,7 +135,7 @@ class Steamcmd(object):
         except subprocess.CalledProcessError:
             raise SteamcmdException("Steamcmd was unable to run. Did you install your 32-bit libraries?")
 
-    def install_workshopfiles(self, gameid, workshop_id, game_install_dir, user='anonymous', password=None,
+    def install_workshopfiles(self, gameid, workshop_id, game_install_dir, user='anonymous', password='',
                               validate=False):
         """
         Installs gamefiles for dedicated server. This can also be used to update the gameserver.
@@ -147,20 +148,27 @@ class Steamcmd(object):
         :return: subprocess call to steamcmd
         """
         if validate:
-            validate = 'validate'
+            validate_cmd = 'validate'
         else:
-            validate = None
+            validate_cmd = ''
 
-        steamcmd_params = (
-            self.steamcmd_exe,
-            '+force_install_dir {}'.format(game_install_dir),
-            '+login {} {}'.format(user, password),
+        steamcmd_params = [self.steamcmd_exe]
+
+        if game_install_dir is not None:
+            # Échapper le chemin d'installation du jeu
+            escaped_game_install_dir = shlex.quote(game_install_dir)
+            steamcmd_params.append('+force_install_dir {}'.format(escaped_game_install_dir))
+
+        steamcmd_params.extend([
+            '+login {} {}'.format(user, '' if password is None else shlex.quote(password)),
             '+workshop_download_item {} {}'.format(gameid, workshop_id),
-            '{}'.format(validate),
-            '+quit',
-        )
+            validate_cmd,
+            '+quit'
+        ])
+
+        command = ' '.join(filter(None, steamcmd_params))
         try:
-            return subprocess.check_call(steamcmd_params)
+            return subprocess.run(command, shell=True, check=True)
         except subprocess.CalledProcessError:
             raise SteamcmdException("Steamcmd was unable to run. Did you install your 32-bit libraries?")
 

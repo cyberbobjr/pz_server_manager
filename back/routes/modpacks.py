@@ -1,13 +1,16 @@
-from fastapi import APIRouter, HTTPException
+from datetime import datetime
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.security import OAuth2PasswordBearer
 import os
-import configparser
 import json
-import re
 import shutil
 from pydantic import BaseModel
+from setuptools import glob
 
-from libs.Mod import Mod
+from libs.modpack_utils import modify_mod_info, get_subdirectories, build_server_ini_file
+from pz_setup import app_config, steam, steamcmd
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -18,186 +21,297 @@ This class will manage modpack for server (scan, build, check for update)
 """
 
 
-class BuildPackRequest(BaseModel):
-    mods: list[str]
+class WorkshopOrderRequest(BaseModel):
     packname: str
+    workshop_id: str
+    new_position: int
+
+
+class ModOrderRequest(BaseModel):
+    packname: str
+    workshop_id: str
+    mod_id: str
+    new_position: int
+
+
+class ModAddRequest(BaseModel):
+    packname: str
+    workshopIds: list[str]  # Liste d'ID de workshop
     prefix: str
 
 
-@router.get("/mods/modpack")
-async def get_build_pack(packname: str = None):
-    from main import app_config
-    from main import steam
+class ModpackCreateRequest(BaseModel):
+    packname: str
+
+
+class ModToggleRequest(BaseModel):
+    packname: str  # Nom du modpack
+    workshop_id: str  # ID du workshop Steam pour le mod
+    mod_id: str  # ID du mod à toggler
+    enabled: bool  # État cible (True pour activer, False pour désactiver)
+
+
+@router.post("/modpack/change_workshop_order", tags=["modpack"])
+async def change_workshop_order(request: WorkshopOrderRequest):
+    dst_packname = os.path.join(app_config["steam"]["modpack_path"], request.packname)
+    modpack_info_path = os.path.join(dst_packname, "modpackinfo.json")
+
+    if not os.path.exists(modpack_info_path):
+        raise HTTPException(status_code=404, detail="Modpack does not exist")
+
+    with open(modpack_info_path) as f:
+        modpack_info = json.load(f)
+
+    mods_list = modpack_info.get("mods", [])
+    workshop_index = next((i for i, item in enumerate(mods_list) if item["workshop_id"] == request.workshop_id), None)
+
+    if workshop_index is None:
+        raise HTTPException(status_code=404, detail="Workshop ID not found in modpack.")
+
+    # Reorder the workshop_id
+    workshop_item = mods_list.pop(workshop_index)
+    mods_list.insert(request.new_position, workshop_item)
+
+    modpack_info["mods"] = mods_list
+    modpack_info["last_updated"] = datetime.now().isoformat()
+
+    with open(modpack_info_path, "w") as f:
+        json.dump(modpack_info, f, indent=4)
+
+    return {"message": "Workshop order updated successfully."}
+
+
+@router.post("/modpack/change_mod_order", tags=["modpack"])
+async def change_mod_order(request: ModOrderRequest):
+    dst_packname = os.path.join(app_config["steam"]["modpack_path"], request.packname)
+    modpack_info_path = os.path.join(dst_packname, "modpackinfo.json")
+
+    if not os.path.exists(modpack_info_path):
+        raise HTTPException(status_code=404, detail="Modpack or modpack info file not found.")
+
+    with open(modpack_info_path, "r") as f:
+        modpack_info = json.load(f)
+
+    # Vérification de l'existence du workshop_id et du mod_id
+    if request.workshop_id in modpack_info["mods"]:
+        mods_list = modpack_info["mods"][request.workshop_id]["modIds"]
+        mod_index = next((index for (index, d) in enumerate(mods_list) if d["id"] == request.mod_id), None)
+
+        # Vérifier si le mod_id a été trouvé
+        if mod_index is None:
+            raise HTTPException(status_code=404, detail="Specified mod_id not found in the modpack.")
+
+        # Changement de l'ordre du mod_id
+        mod_to_move = mods_list.pop(mod_index)
+        mods_list.insert(request.new_position, mod_to_move)
+        modpack_info["last_updated"] = datetime.now().isoformat()
+
+        with open(modpack_info_path, "w") as f:
+            json.dump(modpack_info, f, indent=4)
+
+        return {"message": "Mod order updated successfully."}
+    else:
+        raise HTTPException(status_code=404, detail="Specified workshop_id not found in the modpack.")
+
+
+@router.get("/modpack/{packname}/mods", tags=["modpack"])
+async def get_mod_ids(packname: str):
+    dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
+    modpack_info_path = os.path.join(dst_packname, "modpackinfo.json")
+
+    # Vérifier si le modpack et son fichier d'info existent
+    if not os.path.exists(modpack_info_path):
+        raise HTTPException(status_code=404, detail="Modpack or modpack info file not found.")
+
+    # Lire les informations du modpack
+    with open(modpack_info_path, "r") as f:
+        modpack_info = json.load(f)
+
+    # Collecter tous les mod_id activés
+    mod_ids = []
+    for workshop_id, mod_data in modpack_info["mods"].items():
+        for mod in mod_data["modIds"]:
+            if mod.get("enabled", False):  # Assurer que le mod est activé
+                mod_ids.append(mod["id"])
+
+    # Joindre les mod_id avec des points-virgules pour le retour
+    mods_string = ";".join(mod_ids)
+
+    return {"mods": mods_string}
+
+
+@router.get("/modpacks", tags=["modpack"])
+async def list_modpacks(details: Optional[bool] = Query(default=False)):
     modpack_path = app_config["steam"]["modpack_path"]
-    if packname is None:
-        return get_subdirectories(modpack_path)
-    with open(os.path.join(modpack_path, packname, "modpack.info"), "r") as cache_file:
-        mods = []
-        modpack_content = json.load(cache_file)
-        for key, mod in modpack_content.items():
-            mod_info = open(os.path.join(modpack_path, packname, key, "mod.info"), "r")
-            mods.append({
-                "mod_info": Mod.convert_modinfo_to_json(mod_info.readlines(), key),
-                "steam_data": steam.get_mod_info(mod)
+    modpacks = os.listdir(modpack_path)
+
+    modpack_list = []
+    for modpack in modpacks:
+        modpack_dir = os.path.join(modpack_path, modpack)
+        modpack_info_path = os.path.join(modpack_dir, "modpackinfo.json")
+
+        if os.path.exists(modpack_info_path):
+            with open(modpack_info_path, "r") as f:
+                modpack_info = json.load(f)
+
+                # Récupérer les détails des mods si demandé
+                if details and "mods" in modpack_info:
+                    for workshop_id, mod_data in modpack_info["mods"].items():
+                        mod_details = steam.get_mod_info(workshop_id)
+                        if mod_details:
+                            mod_data["details"] = mod_details
+
+                modpack_list.append({
+                    "name": modpack,
+                    "info": modpack_info
+                })
+        else:
+            modpack_list.append({
+                "name": modpack,
+                "info": "No modpackinfo.json found"
             })
-        return mods
+
+    return modpack_list
 
 
-@router.delete("/mods/modpack")
-async def get_build_pack(packname: str, modname: str):
-    from main import app_config
-    modpack_path = os.path.join(app_config["steam"]["modpack_path"], packname)
-    if not os.path.exists(modpack_path):
-        raise HTTPException(status_code=404, detail="Le modpack n'existe pas")
-    if not os.path.exists(os.path.join(modpack_path, modname)):
-        raise HTTPException(status_code=404, detail="Le mod n'existe pas")
-    with open(os.path.join(modpack_path, "modpack.info"), "r") as cache_file:
-        modpack_content = json.load(cache_file)
-        del modpack_content[modname]
-    with open(os.path.join(modpack_path, "modpack.info"), "w") as cache_file:
-        json.dump(modpack_content, cache_file, indent=4)
-    shutil.rmtree(os.path.join(modpack_path, modname))
-    mods = get_subdirectories(modpack_path)
-    build_server_ini_file(modpack_path, mods)
-    return modpack_content
+@router.post("/modpack/create", tags=["modpack"])
+async def create_modpack(request: ModpackCreateRequest):
+    packname = request.packname
+    dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
+
+    if os.path.exists(dst_packname):
+        raise HTTPException(status_code=400, detail="Modpack already exists")
+
+    os.makedirs(dst_packname)
+
+    modpack_info = {
+        "created_at": datetime.now().isoformat(),
+        "last_updated": datetime.now().isoformat(),
+        "mods": []
+    }
+
+    with open(os.path.join(dst_packname, "modpackinfo.json"), "w") as f:
+        json.dump(modpack_info, f, indent=4)
+
+    return {"message": f"Modpack '{packname}' created successfully."}
 
 
-@router.post("/mods/modpack")
-async def build_pack(request: BuildPackRequest):
+@router.delete("/modpack/{packname}", tags=["modpack"])
+async def delete_modpack(packname: str):
+    dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
+
+    # Vérifier si le répertoire du modpack existe
+    if not os.path.exists(dst_packname):
+        raise HTTPException(status_code=404, detail="Modpack not found.")
+
+    # Effacer le répertoire du modpack et son contenu
     try:
-        pack_info = {}
-        mods = request.mods
-        packname = request.packname
-        prefix = request.prefix
-        from main import app_config
-        dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
-        # Créer le répertoire du pack
-        if not os.path.exists(dst_packname):
-            os.makedirs(dst_packname)
-        ids = []
-        # Parcourir chaque répertoire dans mods et copier son contenu dans le répertoire packname
-        for mod_dir in mods:
-            workshop_id = get_workshop_id(mod_dir)
-            # mod_dir_name = os.path.basename(mod_dir)
-            mod_id = parse_mod_info(os.path.join(mod_dir, 'mod.info'))
-            pack_info[mod_id] = workshop_id
-            dst_dir = os.path.join(dst_packname, mod_id)
-            if os.path.exists(mod_dir) and os.path.isdir(mod_dir) and not os.path.exists(dst_dir):
-                # Copier le contenu du répertoire et de ses sous-répertoires dans packname
-                shutil.copytree(mod_dir, dst_dir, dirs_exist_ok=True)
-            mod_info_path = os.path.join(dst_packname, mod_id, "mod.info")
-            if os.path.exists(mod_info_path):
-                modify_mod_info(mod_info_path, prefix + "_")
-                ids.append(prefix + "_" + mod_id)
-            else:
-                return HTTPException(status_code=400, detail=f"Le répertoire {mod_info_path} n'existe pas.")
-        build_server_ini_file(dst_packname, ids)
-        build_modpack_info(dst_packname, pack_info)
-        return {"message": f"Le pack '{packname}' a été construit avec succès."}
+        shutil.rmtree(dst_packname)
+        return {"message": f"Modpack '{packname}' has been successfully deleted."}
     except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"An error occurred while deleting modpack '{packname}': {e}")
 
 
-def get_subdirectories(directory):
-    subdirectories = []
+@router.post("/modpack/add_mods", tags=["modpack"])
+async def build_pack(request: ModAddRequest):
+    packname = request.packname
+    prefix = request.prefix
+    dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
+    modpack_info_path = os.path.join(dst_packname, "modpackinfo.json")
 
-    try:
-        for item in os.listdir(directory):
-            item_path = os.path.join(directory, item)
-            if os.path.isdir(item_path):
-                subdirectories.append(item)
+    if not os.path.exists(dst_packname):
+        raise HTTPException(status_code=404, detail="Modpack does not exist")
 
-        return subdirectories
-
-    except Exception as e:
-        print("Une erreur s'est produite :", e)
-        return []
-
-
-def build_server_ini_file(packname, mod_ids: list[str]):
-    filename = os.path.join(packname, "server.ini")
-    config = configparser.ConfigParser()
-    value = ";".join(mod_ids)
-    if config.read(filename):
-        if "Mods" in config:
-            existing_values = config["Mods"]["Mods"]
-            new_values = existing_values + ";" + value
-            config["Mods"]["Mods"] = new_values
+    if not os.path.exists(modpack_info_path):
+        modpack_info = {
+            "created_at": datetime.now().isoformat(),
+            "last_updated": datetime.now().isoformat(),
+            "mods": []
+        }
     else:
-        config["Mods"] = {"Mods": value}
+        with open(modpack_info_path, "r") as f:
+            modpack_info = json.load(f)
 
-    # Écrire les données dans le fichier INI
-    with open(filename, "w") as config_file:
-        config.write(config_file)
+    mods_list = modpack_info.get("mods", [])
+
+    for workshop_id in request.workshopIds:
+        # Assurez-vous que la logique de téléchargement et de copie est correctement gérée ici.
+        dst_dir = os.path.abspath(os.path.join(dst_packname, workshop_id))
+        src_dir = os.path.join(app_config["steam"]["steamcmd_path"], "steamapps", "workshop", "content",
+                               str(app_config["steam"]["appid"]), workshop_id)
+
+        if not os.path.exists(src_dir):
+            print(f"Téléchargement du mod {workshop_id}")
+            # Utilisez steamcmd pour télécharger le mod
+            steamcmd.install_workshopfiles(
+                gameid=108600,
+                workshop_id=workshop_id,
+                game_install_dir=None,
+                user='anonymous',  # Utilisez les paramètres nécessaires pour votre cas
+                validate=True  # ou False, selon le besoin
+            )
+            # Copie du mod dans la destination
+        if os.path.exists(src_dir):
+            # Copier le contenu du répertoire et de ses sous-répertoires dans packname
+            shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
+
+        workshop_mod = next((item for item in mods_list if item["workshop_id"] == workshop_id), None)
+        if not workshop_mod:
+            workshop_mod = {"workshop_id": workshop_id, "modIds": [], "last_updated": datetime.now().isoformat()}
+            mods_list.append(workshop_mod)
+
+        mod_info_files = glob.glob(os.path.join(dst_packname, workshop_id, "**", "mod.info"), recursive=True)
+        for mod_info_path in mod_info_files:
+            mod_id = modify_mod_info(mod_info_path, prefix + "_")
+            mod_obj = {"id": prefix + "_" + mod_id, "enabled": True}
+            if all(mod_obj["id"] != mod["id"] for mod in workshop_mod["modIds"]):
+                workshop_mod["modIds"].append(mod_obj)
+
+    modpack_info["mods"] = mods_list
+    modpack_info["last_updated"] = datetime.now().isoformat()
+
+    with open(modpack_info_path, "w") as f:
+        json.dump(modpack_info, f, indent=4)
+
+    return {"message": f"Le pack '{packname}' a été construit avec succès."}
 
 
-def build_modpack_info(packname, pack_info):
-    modpack_info_path = os.path.join(packname, "modpack.info")
-    if os.path.exists(modpack_info_path):
-        with open(modpack_info_path, 'r+') as modpack_info:
-            existing = json.load(modpack_info)
-            modpack_info.close()
-        with open(modpack_info_path, 'w') as modpack_info:
-            json.dump({**existing, **pack_info}, modpack_info, indent=4)
+@router.post("/modpack/toggle_mod", tags=["modpack"])
+async def toggle_mod_in_modpack(request: ModToggleRequest):
+    packname = request.packname
+    workshop_id = request.workshop_id
+    mod_id_to_toggle = request.mod_id
+    enabled = request.enabled
+
+    dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
+    modpack_info_path = os.path.join(dst_packname, "modpackinfo.json")
+
+    if not os.path.exists(modpack_info_path):
+        raise HTTPException(status_code=404, detail="Modpack does not exist or modpack info file missing.")
+
+    with open(modpack_info_path, "r") as f:
+        modpack_info = json.load(f)
+
+    # Trouver le workshop_id dans la liste
+    workshop_mod = next((item for item in modpack_info["mods"] if item["workshop_id"] == workshop_id), None)
+
+    if workshop_mod:
+        mod_found = False
+        # Itérer sur les modIds pour trouver le mod_id spécifié
+        for mod in workshop_mod["modIds"]:
+            if mod["id"] == mod_id_to_toggle:
+                mod["enabled"] = enabled
+                mod_found = True
+                break
+        if not mod_found:
+            raise HTTPException(status_code=404, detail="Specified mod_id not found in the modpack.")
     else:
-        with open(modpack_info_path, "w") as modpack_info:
-            json.dump(pack_info, modpack_info, indent=4)
+        raise HTTPException(status_code=404, detail="Specified workshop_id not found in the modpack.")
 
+    modpack_info["last_updated"] = datetime.now().isoformat()
 
-def parse_mod_info(file) -> str:
-    modId = None
-    with open(file) as f:
-        try:
-            for line in f:
-                if line.startswith("id"):
-                    modId = line.split("=")[1].strip()
-            if modId is not None:
-                return modId
-        except:
-            print(f"Error reading file {file}")
+    with open(modpack_info_path, "w") as f:
+        json.dump(modpack_info, f, indent=4)
 
-
-def modify_mod_info(file_path, prefix):
-    with open(file_path, 'r') as file:
-        content = file.read()
-
-    # Recherche du motif id=xxxxxx dans le contenu du fichier
-    lines = content.split('\n')
-    new_lines = []
-    for line in lines:
-        match_id = re.search(r'id=(.*)', line)
-        match_name = re.search(r'name=(.*)', line)
-        match_require = re.search(r'require=(.*)', line)
-        if match_id:
-            old_id = match_id.group(1)
-            if prefix not in old_id:
-                new_id = f'{prefix}{old_id}'
-                line = line.replace(f'id={old_id}', f'id={new_id}')
-        if match_name:
-            old_name = match_name.group(1)
-            if prefix not in old_name:
-                new_name = f'{prefix}{old_name}'
-                line = line.replace(f'name={old_name}', f'name={new_name}')
-        if match_require:
-            old_require = match_require.group(1)
-            old_requires = old_require.split(',')
-            requires = []
-            for require in old_requires:
-                if prefix not in require:
-                    requires.append(prefix + require)
-                else:
-                    requires.append(require)
-            line = "require=" + ",".join(requires)
-        new_lines.append(line)
-    # Écriture du contenu modifié dans le fichier
-    with open(file_path, 'w') as file:
-        file.write('\n'.join(new_lines))
-
-
-def get_workshop_id(mod_path: str):
-    from main import app_config
-    root_mod_path = app_config["pz"]["mod_path"]
-    workshop_id = mod_path[len(root_mod_path):].split(os.path.sep)[1]
-    print(workshop_id)
-    return workshop_id
+    return {
+        "message": f"Mod '{mod_id_to_toggle}' in modpack '{packname}' has been {'enabled' if enabled else 'disabled'}."}
