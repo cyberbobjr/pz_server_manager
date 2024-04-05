@@ -1,8 +1,11 @@
 import json
+import logging
 import os
 from datetime import datetime, timedelta
 
 import requests
+
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 
 class Steam(object):
