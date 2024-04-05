@@ -4,6 +4,7 @@ import {PzServerAction} from "@core/interfaces/PzServerAction";
 import {PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
 import {WorkshopItems} from "@core/interfaces/PzModsIni";
 import {editor} from "monaco-editor";
+import {Modpack} from "@core/interfaces/PzModpack";
 
 export const getStatus = createAction('[PZ SERVER] - get status');
 export const setStatus = createAction('[PZ SERVER] - set status', props<{ newStatus: PzStatus | null }>());
@@ -43,4 +44,11 @@ export const loadInProgressTasksSuccess = createAction('[PZ SERVER] - Load In Pr
 }>());
 export const loadServerManagerConfig = createAction('[PZ SERVER] - Load server config');
 export const setServerConfig = createAction('[PZ SERVER] - Set server config', props<{ serverConfig: any }>());
-export const saveServerManagerConfig = createAction('[PZ SERVER] - Save server manager config', props<{ content: any }>());
+export const saveServerManagerConfig = createAction('[PZ SERVER] - Save server manager config', props<{
+  content: any
+}>());
+export const getPlayers = createAction('[PZ SERVER] - Get players');
+export const setPlayers = createAction('[PZ SERVER] - Set players', props<{ players: any[] }>());
+export const loadModpacks = createAction('[Modpack] Load Modpacks');
+export const loadModpacksSuccess = createAction('[Modpack] Load Modpacks Success', props<{ modpacks: Modpack[] }>());
+export const loadModpacksFailure = createAction('[Modpack] Load Modpacks Failure', props<{ error: any }>());

@@ -85,4 +85,8 @@ export class PzServerService {
   saveManagerConfig(content: string): Observable<PzServerManagerConfig> {
     return this.httpClient.post<PzServerManagerConfig>(`${environment.baseUrl}/config`, content);
   }
+
+  getPlayers(): Observable<string[]> {
+    return this.httpClient.get<string[]>(`${environment.baseUrl}/server/players`);
+  }
 }

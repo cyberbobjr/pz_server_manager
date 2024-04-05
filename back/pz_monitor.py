@@ -20,14 +20,17 @@ async def monitor_mod_update():
                     if last_update is not None and last_update > running_time:
                         msg = f'Le mod {workshop_id} a été mis à jour le {DatetimeHelper.epoch_to_iso(last_update)}, le serveur a été lancé le {DatetimeHelper.epoch_to_iso(running_time)}, le serveur va rebooter'
                         logging.info(msg)
-                        msg = f'servermsg Le serveur va être relancé dans 5 minutes pour mettre à jour un mod, mettez-vous en lieu sûr...'
-                        logging.info(msg)
+                        msg = f'Le serveur va être relancé dans 10 minutes pour mettre à jour un mod, mettez-vous en lieu sûr...'
+                        await pzRcon.send_command(f"servermsg \"{msg}\"")
+                        await asyncio.sleep(60 * 5)
+                        msg = f'Le serveur va être relancé dans 5 minutes pour mettre à jour un mod...'
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
                         await asyncio.sleep(60 * 4)
-                        msg = f'servermsg Le serveur va être relancé dans 1 minute pour mettre à jour un mod...'
-                        logging.info(msg)
+                        msg = f'Le serveur va être relancé dans 1 minute pour mettre à jour un mod...'
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
                         await asyncio.sleep(60)
+                        msg = f'reboot...'
+                        await pzRcon.send_command(f"servermsg \"{msg}\"")
                         await pzGame.save_server()
                         await asyncio.sleep(30)
                         await pzGame.restart_server()
@@ -36,7 +39,7 @@ async def monitor_mod_update():
                 except Exception as e:
                     logging.error(f'Error checking mod update for {workshop_id}: {e}')
                     continue
-        await asyncio.sleep(30 * 60)  # Check every half-hour
+        await asyncio.sleep(15 * 60)  # Check every half-hour
 
 
 def signal_handler(sig, frame):

@@ -1,15 +1,15 @@
+import json
+import os
+import shutil
 from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.security import OAuth2PasswordBearer
-import os
-import json
-import shutil
 from pydantic import BaseModel
 from setuptools import glob
 
-from libs.modpack_utils import modify_mod_info, get_subdirectories, build_server_ini_file
+from libs.modpack_utils import modify_mod_info
 from pz_setup import app_config, steam, steamcmd
 
 router = APIRouter()
@@ -37,11 +37,11 @@ class ModOrderRequest(BaseModel):
 class ModAddRequest(BaseModel):
     packname: str
     workshopIds: list[str]  # Liste d'ID de workshop
-    prefix: str
 
 
 class ModpackCreateRequest(BaseModel):
     packname: str
+    prefix: str
 
 
 class ModToggleRequest(BaseModel):
@@ -129,9 +129,9 @@ async def get_mod_ids(packname: str):
 
     # Collecter tous les mod_id activés
     mod_ids = []
-    for workshop_id, mod_data in modpack_info["mods"].items():
+    for mod_data in modpack_info["mods"]:  # mod_data est directement le dictionnaire de chaque mod
         for mod in mod_data["modIds"]:
-            if mod.get("enabled", False):  # Assurer que le mod est activé
+            if mod.get("enabled", True):
                 mod_ids.append(mod["id"])
 
     # Joindre les mod_id avec des points-virgules pour le retour
@@ -156,10 +156,11 @@ async def list_modpacks(details: Optional[bool] = Query(default=False)):
 
                 # Récupérer les détails des mods si demandé
                 if details and "mods" in modpack_info:
-                    for workshop_id, mod_data in modpack_info["mods"].items():
-                        mod_details = steam.get_mod_info(workshop_id)
-                        if mod_details:
-                            mod_data["details"] = mod_details
+                    workshop_ids = [mod["workshop_id"] for mod in modpack_info["mods"]]
+                    mod_details = steam.get_mod_info(workshop_ids)
+                    for mod in modpack_info["mods"]:
+                        if mod["workshop_id"] in mod_details:
+                            mod["details"] = mod_details[mod["workshop_id"]]
 
                 modpack_list.append({
                     "name": modpack,
@@ -177,6 +178,7 @@ async def list_modpacks(details: Optional[bool] = Query(default=False)):
 @router.post("/modpack/create", tags=["modpack"])
 async def create_modpack(request: ModpackCreateRequest):
     packname = request.packname
+    prefix = request.prefix  # Récupérer le préfixe à partir de la requête
     dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
 
     if os.path.exists(dst_packname):
@@ -187,7 +189,8 @@ async def create_modpack(request: ModpackCreateRequest):
     modpack_info = {
         "created_at": datetime.now().isoformat(),
         "last_updated": datetime.now().isoformat(),
-        "mods": []
+        "mods": [],
+        "prefix": prefix  # Enregistrer le préfixe dans la configuration du modpack
     }
 
     with open(os.path.join(dst_packname, "modpackinfo.json"), "w") as f:
@@ -215,24 +218,17 @@ async def delete_modpack(packname: str):
 @router.post("/modpack/add_mods", tags=["modpack"])
 async def build_pack(request: ModAddRequest):
     packname = request.packname
-    prefix = request.prefix
     dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
     modpack_info_path = os.path.join(dst_packname, "modpackinfo.json")
 
-    if not os.path.exists(dst_packname):
+    if not os.path.exists(dst_packname) or not os.path.exists(modpack_info_path):
         raise HTTPException(status_code=404, detail="Modpack does not exist")
 
-    if not os.path.exists(modpack_info_path):
-        modpack_info = {
-            "created_at": datetime.now().isoformat(),
-            "last_updated": datetime.now().isoformat(),
-            "mods": []
-        }
-    else:
-        with open(modpack_info_path, "r") as f:
-            modpack_info = json.load(f)
+    with open(modpack_info_path, "r") as f:
+        modpack_info = json.load(f)
 
     mods_list = modpack_info.get("mods", [])
+    prefix = modpack_info.get("prefix", "")
 
     for workshop_id in request.workshopIds:
         # Assurez-vous que la logique de téléchargement et de copie est correctement gérée ici.
@@ -315,3 +311,33 @@ async def toggle_mod_in_modpack(request: ModToggleRequest):
 
     return {
         "message": f"Mod '{mod_id_to_toggle}' in modpack '{packname}' has been {'enabled' if enabled else 'disabled'}."}
+
+
+@router.get("/modpack/{packname}/check_updates", tags=["modpack"])
+async def check_modpack_updates(packname: str):
+    dst_packname = os.path.join(app_config["steam"]["modpack_path"], packname)
+    modpack_info_path = os.path.join(dst_packname, "modpackinfo.json")
+
+    if not os.path.exists(modpack_info_path):
+        raise HTTPException(status_code=404, detail="Modpack does not exist.")
+
+    with open(modpack_info_path, "r") as f:
+        modpack_info = json.load(f)
+
+    updated_mods = []
+    workshop_ids = [mod["workshop_id"] for mod in modpack_info["mods"]]
+    mod_details = steam.get_mod_info(workshop_ids)
+
+    for workshop_mod in modpack_info["mods"]:
+        workshop_id = workshop_mod["workshop_id"]
+        if workshop_id in mod_details:
+            detail = mod_details[workshop_id]
+            if "time_updated" in detail:
+                steam_update_time = datetime.utcfromtimestamp(detail["time_updated"])
+                modpack_update_time = datetime.strptime(workshop_mod["last_updated"], "%Y-%m-%dT%H:%M:%S.%f")
+
+                if steam_update_time > modpack_update_time:
+                    updated_mods.append(workshop_id)
+
+    return {"updated_mods": updated_mods}
+                          

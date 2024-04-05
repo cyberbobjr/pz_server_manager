@@ -4,7 +4,7 @@ import {
   addMods,
   deleteMods,
   getConfig,
-  loadInProgressTasksSuccess,
+  loadInProgressTasksSuccess, loadModpacks, loadModpacksFailure, loadModpacksSuccess,
   loadModsIni,
   saveConfig,
   saveMods,
@@ -12,7 +12,7 @@ import {
   setCommandResult,
   setConfig,
   setIniConfig,
-  setModsIni,
+  setModsIni, setPlayers,
   setPlayersCount,
   setSearchedMods,
   setServerConfig,
@@ -20,11 +20,13 @@ import {
 } from "../actions/server.actions";
 import {PzModsIni, WorkshopItems} from "@core/interfaces/PzModsIni";
 import {PzServerManagerConfig} from "@core/interfaces/PzServerManagerConfig";
+import {Modpack} from "@core/interfaces/PzModpack";
 
 export interface PzStore {
   status: PzStatus | null;
   commandResult: string | null;
   playerCount: number;
+  players: string[];
   server_ini: string | null;
   lua_sandbox: string | null;
   loading: boolean;
@@ -33,11 +35,13 @@ export interface PzStore {
   downloadInProgress: string[];
   inProgressCount: number;
   serverConfig: PzServerManagerConfig | null;
+  modpacks: Modpack[]; // Ajout de la propriété modpacks
 }
 
 export const initialPzStore: PzStore = {
   status: null,
   commandResult: null,
+  players: [],
   playerCount: 0,
   server_ini: null,
   lua_sandbox: null,
@@ -46,7 +50,8 @@ export const initialPzStore: PzStore = {
   mods_searched: [],
   downloadInProgress: [],
   inProgressCount: 0,
-  serverConfig: null
+  serverConfig: null,
+  modpacks: [], // Initialiser modpacks comme un tableau vide
 }
 
 export const pzReducer = createReducer(
@@ -162,5 +167,20 @@ export const pzReducer = createReducer(
     inProgressCount: tasks.length,
     downloadInProgress: tasks
   })),
-  on(setServerConfig, (state, {serverConfig}) => ({...state, serverConfig}))
+  on(setServerConfig, (state, {serverConfig}) => ({...state, serverConfig})),
+  on(setPlayers, (state, {players}) => ({...state, players})),
+  on(loadModpacksSuccess, (state, {modpacks}) => ({
+    ...state,
+    modpacks: modpacks
+  })),
+  on(loadModpacksSuccess, (state, {modpacks}) => ({
+    ...state,
+    loading: false,
+    modpacks: modpacks
+  })),
+  on(loadModpacksFailure, (state, {error}) => ({
+    ...state,
+    loading: false,
+    error: error
+  }))
 )

@@ -9,6 +9,7 @@ import {ServerSendCommandComponent} from "./ui/server-send-command/server-send-c
 import {StopStartRestartComponent} from "./ui/stop-start-restart/stop-start-restart.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {RunningTimePipe} from "./pipes/running-time.pipe";
+import {ServerPlayersComponent} from "./ui/server-players/server-players.component";
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import {RunningTimePipe} from "./pipes/running-time.pipe";
     AppDashboardComponent,
     ServerSendCommandComponent,
     StopStartRestartComponent,
-    ServerStatusComponent
+    ServerStatusComponent,
+    ServerPlayersComponent
   ],
   imports: [
     CommonModule,

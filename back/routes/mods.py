@@ -51,31 +51,51 @@ async def index():
     try:
         mods = []
         pzGame.scan_mods_in_server_dir()
+
+        # Collecter tous les workshopIds
+        workshop_ids = [mod.workshopId for mod in pzGame.mods if mod.workshopId]
+
+        # Récupérer les informations Steam pour tous les workshop_ids
+        steam_data = await steam.get_mod_info(workshop_ids)
+
         for mod in pzGame.mods:
-            mod_info = open(mod.file, "r")
+            mod_info_data = None
+            with open(mod.file, "r") as mod_info:
+                mod_info_data = Mod.convert_modinfo_to_json(mod_info.readlines(), mod.path)
+
+            # Associer les informations Steam avec chaque mod
+            steam_details = steam_data.get(mod.workshopId, {})
+
             mods.append({
                 "WorkshopItems": mod.workshopId,
                 "Mods": mod.id,
-                "mod_info": Mod.convert_modinfo_to_json(mod_info.readlines(), mod.path),
-                "steam_data": steam.get_mod_info(mod.workshopId)
+                "mod_info": mod_info_data,
+                "steam_data": steam_details
             })
+
         return mods
     except Exception as e:
         print(e)
+        return {"error": str(e)}
 
 
 @router.get("/mods/ini", tags=["mods"])
 async def get_mod_ini():
     try:
-        workshops = []
         [Mods, workshop_items] = pzGame.scan_mods_in_ini()
+
+        # Récupérer les informations Steam pour tous les workshop_items en une seule requête
+        steam_data = await steam.get_mod_info(workshop_items)
+
+        workshops = []
         for w in workshop_items:
             workshops.append({
                 "Mods": Mod.get_modids_from_workshop_id(w, pzGame.get_mod_path()),
                 "Maps": Mod.get_mapids_from_workshop_id(w, pzGame.get_mod_path()),
                 "WorkshopItems": w,
-                "steam_data": steam.get_mod_info(w)
+                "steam_data": steam_data.get(w, {})  # Utiliser les données récupérées de Steam
             })
+
         return {
             "success": True,
             "msg": {
@@ -89,7 +109,7 @@ async def get_mod_ini():
         print(e)
         return {
             "success": False,
-            "msg": e
+            "msg": str(e)  # Assurez-vous de convertir l'exception en chaîne pour la réponse
         }
 
 

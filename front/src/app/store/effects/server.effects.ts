@@ -3,9 +3,9 @@ import {Actions, createEffect, ofType} from "@ngrx/effects";
 import {PzServerService} from "@core/services/pz-server.service";
 import {
   getConfig,
+  getPlayers,
   getPlayersCount,
   getStatus,
-  loadInProgressTasksSuccess,
   loadModsIni,
   loadServerManagerConfig,
   saveConfig,
@@ -18,23 +18,19 @@ import {
   setCommandResult,
   setConfig,
   setModsIni,
+  setPlayers,
   setPlayersCount,
   setSearchedMods,
   setServerConfig,
   setStatus
 } from "../actions/server.actions";
-import {catchError, EMPTY, exhaustMap, filter, interval, map, of, switchMap, withLatestFrom} from "rxjs";
+import {catchError, exhaustMap, filter, map, of, withLatestFrom} from "rxjs";
 import {PzStatus} from "@core/interfaces/PzStatus";
 import {PzServerReturn} from "@core/interfaces/PzServerReturn";
 import {PzServerAction} from "@core/interfaces/PzServerAction";
 import {select, Store} from "@ngrx/store";
 import {PzStore} from "@pzstore/reducers/server.reducer";
-import {
-  selectInProgressCount,
-  selectMapsIni,
-  selectModsIni,
-  selectWorkshopIni
-} from "@pzstore/selectors/server.selectors";
+import {selectMapsIni, selectModsIni, selectWorkshopIni} from "@pzstore/selectors/server.selectors";
 
 @Injectable()
 export class ServerEffects {
@@ -220,30 +216,24 @@ export class ServerEffects {
     )
   ));
 
-  // loadInProgressTasks$ = createEffect(() =>
-  //   interval(5000).pipe(
-  //     withLatestFrom(this.store.pipe(select(selectInProgressCount))),
-  //     switchMap(([_, currentCount]) =>
-  //       this.service.getTasksInProgress().pipe(
-  //         map(tasks => {
-  //           // Compare le nouveau nombre de tâches "en cours" avec le précédent
-  //           if (tasks.length !== currentCount) {
-  //             // Si le nombre de tâches a changé, dispatcher l'action loadModsIni
-  //             this.store.dispatch(loadModsIni());
-  //           }
-  //           return loadInProgressTasksSuccess({tasks});
-  //         }),
-  //         catchError(() => EMPTY)
-  //       )
-  //     )
-  //   )
-  // );
-
   loadServerConfig$ = createEffect(() => this.actions$.pipe(
       ofType(loadServerManagerConfig),
       exhaustMap(() => this.service.getConfig()
         .pipe(
           map(r => setServerConfig({serverConfig: r})),
+          catchError(error => {
+            console.error(error);
+            return of(serverStatusError());
+          })
+        ))
+    )
+  )
+
+  getPlayers$ = createEffect(() => this.actions$.pipe(
+      ofType(getPlayers),
+      exhaustMap(() => this.service.getPlayers()
+        .pipe(
+          map(r => setPlayers({players: r})),
           catchError(error => {
             console.error(error);
             return of(serverStatusError());
