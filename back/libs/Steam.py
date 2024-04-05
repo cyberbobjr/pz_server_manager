@@ -34,6 +34,7 @@ class Steam(object):
         cache_filename = os.path.join(self.cache_folder, f"{workshop_id}.json")
         with open(cache_filename, "w") as cache_file:
             json.dump(data, cache_file, indent=4)
+        os.chmod(cache_filename, 0o666)
 
     def _fetch_from_steam(self, workshop_ids):
         """Fait la requête à Steam pour obtenir les infos des workshop_ids en paquets de 20."""
