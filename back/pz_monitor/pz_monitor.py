@@ -18,6 +18,7 @@ async def monitor_mod_update():
     while True:
         [_, workshop_ids] = pzGame.scan_mods_in_ini()
         running_time = pzGame.get_process_running_time()
+        logging.info("Check steam last update")
         mod_details = steam.get_mod_info(workshop_ids, True)
         if running_time is not None:
             for workshop_id in mod_details:
