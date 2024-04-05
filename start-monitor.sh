@@ -24,8 +24,8 @@ source "${SCRIPT_DIR}/back/pz_python/bin/activate"
 # Change working directory
 cd "${SCRIPT_DIR}/back" || { echo "The 'back' directory was not found."; exit 1; }
 
-LOGFILE="${SCRIPT_DIR}/back/logs/app_monitor.log"
+LOGFILE="${SCRIPT_DIR}/back/logs/pz_monitor.log"
 mkdir -p "${SCRIPT_DIR}/back/logs"
 
 # Start the application
-python3 pz_monitor.py >> "$LOGFILE" 2>&1 & echo $! > "${SCRIPT_DIR}/back/pidfile_monitor"
+python3 pz_monitor/pz_monitor.py >> "$LOGFILE" 2>&1 & echo $! > "${SCRIPT_DIR}/back/pidfile_monitor"

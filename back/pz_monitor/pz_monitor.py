@@ -1,6 +1,11 @@
 import asyncio
 import logging
 import signal
+import sys
+from pathlib import Path
+
+chemin_repertoire_frere = Path(__file__).resolve().parent.parent
+sys.path.append(str(chemin_repertoire_frere))
 
 from libs.DatetimeHelper import DatetimeHelper
 from pz_setup import pzGame, steam, pzRcon
@@ -13,10 +18,11 @@ async def monitor_mod_update():
     while True:
         [_, workshop_ids] = pzGame.scan_mods_in_ini()
         running_time = pzGame.get_process_running_time()
+        mod_details = steam.get_mod_info(workshop_ids, True)
         if running_time is not None:
-            for workshop_id in workshop_ids:
+            for workshop_id in mod_details:
+                last_update = mod_details[workshop_id]['time_updated']
                 try:
-                    last_update = steam.get_lastupdate_mod(workshop_id)
                     if last_update is not None and last_update > running_time:
                         msg = f'Le mod {workshop_id} a été mis à jour le {DatetimeHelper.epoch_to_iso(last_update)}, le serveur a été lancé le {DatetimeHelper.epoch_to_iso(running_time)}, le serveur va rebooter'
                         logging.info(msg)

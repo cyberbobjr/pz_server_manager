@@ -9,7 +9,7 @@ from libs.security import decode_jwt
 from routes import auth, mods, server, config, modpacks
 
 angular_static_path = os.path.join(os.path.dirname(__file__), 'front')
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = FastAPI()
 

@@ -36,17 +36,26 @@ class Steam(object):
             json.dump(data, cache_file, indent=4)
 
     def _fetch_from_steam(self, workshop_ids):
-        """Fait la requête à Steam pour obtenir les infos des workshop_ids."""
-        query_params = {"key": self.key, "appid": self.app_id, "includevotes": 1}
-        for i, workshop_id in enumerate(workshop_ids):
-            query_params[f"publishedfileids[{i}]"] = workshop_id
+        """Fait la requête à Steam pour obtenir les infos des workshop_ids en paquets de 20."""
+        all_details = []
 
-        response = requests.get(f"{self.baseUrl}IPublishedFileService/GetDetails/v1/", params=query_params)
-        if response.status_code == 200:
-            return response.json().get('response', {}).get('publishedfiledetails', [])
-        else:
-            print("The request has been failed with the code:", response.status_code)
-            return []
+        # Diviser workshop_ids en sous-listes de 20 éléments chacune
+        for i in range(0, len(workshop_ids), 20):
+            batch = workshop_ids[i:i + 20]
+
+            query_params = {"key": self.key, "appid": self.app_id, "includevotes": 1}
+            for j, workshop_id in enumerate(batch):
+                query_params[f"publishedfileids[{j}]"] = workshop_id
+
+            response = requests.get(f"{self.baseUrl}IPublishedFileService/GetDetails/v1/", params=query_params)
+            if response.status_code == 200:
+                batch_details = response.json().get('response', {}).get('publishedfiledetails', [])
+                all_details.extend(batch_details)
+            else:
+                print(
+                    f"The request has been failed with the code: {response.status_code}, for batch starting with index {i}")
+
+        return all_details
 
     def get_mod_info(self, workshop_ids: list, force=False):
         cached_data = {}
