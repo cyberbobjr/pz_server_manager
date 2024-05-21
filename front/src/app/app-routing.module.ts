@@ -1,9 +1,15 @@
-import { RouterModule, Routes } from '@angular/router';
-import { NgModule } from '@angular/core';
-import { FullComponent } from "./layouts/full/full.component";
-import { BlankComponent } from "./layouts/blank/blank.component";
+import {RouterModule, Routes} from '@angular/router';
+import {NgModule} from '@angular/core';
+import {FullComponent} from "./layouts/full/full.component";
+import {BlankComponent} from "./layouts/blank/blank.component";
+import {RecipeSearchComponent} from "./pages/recipe-search/recipe-search.component";
 
 const routes: Routes = [
+  {
+    path: 'public',
+    pathMatch: 'full',
+    component: RecipeSearchComponent
+  },
   {
     path: '',
     component: FullComponent,

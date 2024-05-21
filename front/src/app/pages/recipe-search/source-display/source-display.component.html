@@ -1,0 +1,6 @@
+<span *ngFor="let item of items">
+  <span [ngClass]="getClass(item)" matTooltip="{{item.item}}">
+    {{item.displayName}} ({{item.count}})
+  </span>
+  <span *ngIf="items.indexOf(item) < items.length - 1">, </span>
+</span>

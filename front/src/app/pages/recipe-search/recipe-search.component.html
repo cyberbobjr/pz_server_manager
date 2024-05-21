@@ -1,0 +1,27 @@
+<div class="container">
+  <h1>Liste de toutes les recettes</h1>
+  <div class="search-bar">
+    <mat-form-field class="search-wrapper">
+      <input matInput
+             type="search"
+             [formControl]="searchQuery"
+             placeholder="Recherche par ingrédient ou par résultat...">
+    </mat-form-field>
+  </div>
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+  <ng-container *ngIf="!isLoading">
+    <div *ngFor="let recipe of filteredRecipes" class="recipe">
+      <h3>{{ recipe[1].result.displayName }}</h3>
+      <p><strong>Résultat : </strong>
+        <span matTooltip="{{recipe[1].result.item}}">{{ recipe[1].result.displayName }}</span></p>
+      <p><strong>Ingrédients : </strong></p>
+      <ul>
+        <li *ngFor="let source of recipe[1].sources">
+          <app-source-display [items]="source.items"></app-source-display>
+        </li>
+      </ul>
+    </div>
+  </ng-container>
+</div>

@@ -1,12 +1,12 @@
 # The main file for zomboi bot. Sets up and runs the discord client
-
 import logging
 import os
 import sys
+from pathlib import Path
+
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from pathlib import Path
 
 chemin_repertoire_frere = Path(__file__).resolve().parent.parent
 sys.path.append(str(chemin_repertoire_frere))
@@ -95,4 +95,5 @@ if token is None:
     zomboi.log.error("DISCORD_TOKEN environment variable not found")
     exit()
 
-zomboi.run(token)
+if __name__ == "__main__":
+    zomboi.run(token)
