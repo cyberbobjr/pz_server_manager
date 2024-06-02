@@ -10,4 +10,6 @@ back/pz-python
 back/modpacks
 back/Frameworks
 back/steamcmd.tar.gz
+back/logs/*
+back/pidfile
 **/__pycache__/*
