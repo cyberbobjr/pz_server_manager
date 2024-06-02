@@ -85,7 +85,7 @@ async def get_mod_ini():
         [Mods, workshop_items] = pzGame.scan_mods_in_ini()
 
         # Récupérer les informations Steam pour tous les workshop_items en une seule requête
-        steam_data = await steam.get_mod_info(workshop_items)
+        steam_data = steam.get_mod_info(workshop_items)
 
         workshops = []
         for w in workshop_items:

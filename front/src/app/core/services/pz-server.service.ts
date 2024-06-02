@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
-import {Observable} from "rxjs";
+import {map, Observable} from "rxjs";
 import {PzStatus} from "../interfaces/PzStatus";
 import {PzServerReturn} from "../interfaces/PzServerReturn";
 import {PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
@@ -87,6 +87,9 @@ export class PzServerService {
   }
 
   getPlayers(): Observable<string[]> {
-    return this.httpClient.get<string[]>(`${environment.baseUrl}/server/players`);
+    return this.httpClient.get<{ success: boolean, msg: string[] }>(`${environment.baseUrl}/server/players`)
+      .pipe(
+        map(r => r.msg)
+      );
   }
 }

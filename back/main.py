@@ -1,11 +1,13 @@
 import logging
 import os
+import uvicorn
 
 from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from libs.security import decode_jwt
+from pz_setup import app_config
 from routes import auth, mods, server, config, modpacks
 
 angular_static_path = os.path.join(os.path.dirname(__file__), 'front')
@@ -26,3 +28,11 @@ app.include_router(config.router, prefix="/api", dependencies=[Depends(decode_jw
 app.include_router(modpacks.router, prefix="/api", dependencies=[Depends(decode_jwt)])
 
 app.mount("/", StaticFiles(directory=angular_static_path, html=True), name="static")
+
+if __name__ == "__main__":
+    uvicorn.run(app,
+                host=app_config["server"]["host"],
+                port=app_config["server"]["port"],
+                ssl_keyfile=app_config["server"]["ssl_keyfile"],
+                ssl_certfile=app_config["server"]["ssl_certfile"],
+                )

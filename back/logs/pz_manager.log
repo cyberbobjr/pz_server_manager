@@ -1,0 +1,40 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Scripts\uvicorn.exe\__main__.py", line 7, in <module>
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Lib\site-packages\click\core.py", line 1130, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Lib\site-packages\click\core.py", line 1055, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Lib\site-packages\click\core.py", line 1404, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Lib\site-packages\click\core.py", line 760, in invoke
+    return __callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Lib\site-packages\uvicorn\main.py", line 404, in main
+    run(
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Lib\site-packages\uvicorn\main.py", line 569, in run
+    server.run()
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Lib\site-packages\uvicorn\server.py", line 60, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Lib\site-packages\uvicorn\server.py", line 67, in serve
+    config.load()
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Lib\site-packages\uvicorn\config.py", line 440, in load
+    self.ssl: Optional[ssl.SSLContext] = create_ssl_context(
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\benjamin\IdeaProjects\pz_server_manager\back\pz_python\Lib\site-packages\uvicorn\config.py", line 139, in create_ssl_context
+    ctx.load_cert_chain(certfile, keyfile, get_password)
+FileNotFoundError: [Errno 2] No such file or directory

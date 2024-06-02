@@ -233,7 +233,10 @@ export class ServerEffects {
       ofType(getPlayers),
       exhaustMap(() => this.service.getPlayers()
         .pipe(
-          map(r => setPlayers({players: r})),
+          map(r => {
+            const players = r.map(s => s[0]);
+            return setPlayers({players})
+          }),
           catchError(error => {
             console.error(error);
             return of(serverStatusError());

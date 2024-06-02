@@ -1,1 +1,8 @@
-<pre>{{players$ | async | json}}</pre>
+<mat-form-field>
+  <mat-label>Players</mat-label>
+  <mat-select *ngIf="players$ | async as players">
+    <ng-container *ngFor="let player of players">
+      <mat-option [value]="player">{{player}}</mat-option>
+    </ng-container>
+  </mat-select>
+</mat-form-field>

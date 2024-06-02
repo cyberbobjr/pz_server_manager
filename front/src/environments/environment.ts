@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  baseUrl: "https://sophie.pzomboid.net:7777/api"
+  baseUrl: "http://localhost:7777/api"
+  // baseUrl: "https://sophie.pzomboid.net:7777/api"
 };
 
 /*
