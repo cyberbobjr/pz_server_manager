@@ -3,6 +3,7 @@ import logging
 import signal
 import sys
 from pathlib import Path
+import requests
 
 chemin_repertoire_frere = Path(__file__).resolve().parent.parent
 sys.path.append(str(chemin_repertoire_frere))
@@ -12,6 +13,7 @@ from pz_setup import pzGame, steam, pzRcon
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+url = "https://discord.com/api/webhooks/1222527123802296352/MbrBgCdlvH0Mj3XBbNRMgUFrUaifUKrEduQ2CQe7a6mV6Wsg1FadUB5KTSsAXbkaLFnk"
 
 
 async def monitor_mod_update():
@@ -28,15 +30,35 @@ async def monitor_mod_update():
                         msg = f'Le mod {workshop_id} a été mis à jour le {DatetimeHelper.epoch_to_iso(last_update)}, le serveur a été lancé le {DatetimeHelper.epoch_to_iso(running_time)}, le serveur va rebooter'
                         logging.info(msg)
                         msg = f'Le serveur va être relancé dans 10 minutes pour mettre à jour un mod, mettez-vous en lieu sûr...'
+                        data = {
+                            "content": msg,
+                            "username": "Spiffo"
+                        }
+                        requests.post(url, json=data)
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
                         await asyncio.sleep(60 * 5)
                         msg = f'Le serveur va être relancé dans 5 minutes pour mettre à jour un mod...'
+                        data = {
+                            "content": msg,
+                            "username": "Spiffo"
+                        }
+                        requests.post(url, json=data)
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
                         await asyncio.sleep(60 * 4)
                         msg = f'Le serveur va être relancé dans 1 minute pour mettre à jour un mod...'
+                        data = {
+                            "content": msg,
+                            "username": "Spiffo"
+                        }
+                        requests.post(url, json=data)
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
                         await asyncio.sleep(60)
                         msg = f'reboot...'
+                        data = {
+                            "content": msg,
+                            "username": "Spiffo"
+                        }
+                        requests.post(url, json=data)
                         await pzRcon.send_command(f"servermsg \"{msg}\"")
                         await pzGame.save_server()
                         await asyncio.sleep(30)
