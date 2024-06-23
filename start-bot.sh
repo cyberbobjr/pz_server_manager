@@ -28,8 +28,5 @@ cd "${SCRIPT_DIR}/back" || { echo "The 'back' directory was not found."; exit 1;
 LOGFILE="${SCRIPT_DIR}/back/logs/pz_bot.log"
 mkdir -p "${SCRIPT_DIR}/back/logs"
 
-# Ensure the logs directory exists
-mkdir -p "${SCRIPT_DIR}/back/logs"
-
 # Start the application and redirect logs
-python3 pz_bot/pz_bot.py >> "${SCRIPT_DIR}/back/logs/app_bot.log" 2>&1 & echo $! > "${SCRIPT_DIR}/back/pidfile_bot"
+python3 pz_bot/pz_bot.py >> "$LOGFILE" 2>&1 & echo $! > "${SCRIPT_DIR}/back/pidfile_bot"
