@@ -11,8 +11,6 @@ ExecStop=/home/ubuntu/pz_server_manager/stop-monitor.sh
 Restart=on-failure
 RestartSec=5s
 PIDFile=/home/ubuntu/pz_server_manager/back/pidfile_monitor
-StandardOutput=journal
-StandardError=inherit
 
 [Install]
 WantedBy=multi-user.target
