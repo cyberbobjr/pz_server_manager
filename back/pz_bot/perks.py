@@ -96,6 +96,11 @@ class PerkHandler(commands.Cog):
         if int(hours) > int(user.recordHoursAlive):
             user.recordHoursAlive = hours
 
+        cooldown_period = timedelta(seconds=5)  # Définissez votre période de cooldown
+        now = datetime.now()
+        if user.name in self.lastMessageTime and now - self.lastMessageTime[user.name] < cooldown_period:
+            return None  # Sortez de la fonction si le dernier message est trop récent
+
         if type == "Died":
             user.died.append(timestamp)
             if timestamp > self.lastUpdateTimestamp:
