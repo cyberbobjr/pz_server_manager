@@ -154,15 +154,28 @@ class PerkHandler(commands.Cog):
                 f":star_struck: {user_name} {log_char_string}, une légende après {hoursAlive} heures, s'est éteinte. Son étoile brille toujours.",
                 f":thunder_cloud_and_rain: Après la tempête de {hoursAlive} heures, {user_name} {log_char_string}trouve le repos. Une fin mémorable."
             ]
-        else:  # 500 heures et plus
+        elif hoursAlive < 1000:
             messages = [
                 f":crown: {user_name} {log_char_string}, avec plus de {hoursAlive} heures de survie, a finalement rejoint le panthéon des héros.",
                 f":sparkles: Une épopée s'achève. {user_name} {log_char_string}, après {hoursAlive} heures, laisse un héritage inoubliable.",
                 f":dizzy: La légende de {user_name} {log_char_string}, qui a survécu {hoursAlive} heures, continuera d'inspirer.",
                 f":fireworks: {user_name} {log_char_string}a survécu {hoursAlive} heures. Quelle vie! Célébrons cette aventure extraordinaire."
             ]
+        elif hoursAlive < 5000:
+            messages = [
+                f":medal_military: {user_name} {log_char_string}a franchi les {hoursAlive} heures de survie. Un vétéran d'élite de l'apocalypse.",
+                f":trophy: {user_name} {log_char_string}nous quitte après {hoursAlive} heures de lutte acharnée. Un trophée de persévérance.",
+                f":stars: {user_name} {log_char_string}, survivant extraordinaire, s'en est allé après {hoursAlive} heures. Un parcours héroïque.",
+                f":globe_with_meridians: {user_name} {log_char_string}a vécu {hoursAlive} heures dans ce monde apocalyptique. Un voyage hors du commun."
+            ]
+        else:
+            messages = [
+                f":medal: {user_name} {log_char_string}, avec plus de {hoursAlive} heures de survie, est un immortel parmi nous.",
+                f":crown: {user_name} {log_char_string}a survécu plus de {hoursAlive} heures! Un souverain de l'apocalypse.",
+                f":fire: {user_name} {log_char_string}a illuminé ce monde pendant plus de {hoursAlive} heures. Un vrai phare de survie.",
+                f":rocket: {user_name} {log_char_string}a atteint les étoiles avec ses {hoursAlive} heures de survie. Une légende indélébile."
+            ]
 
-        # Choose a random message from the appropriate list
         return random.choice(messages)
 
     def get_welcome_message(self, user_name, log_char_string, hoursAlive):
@@ -182,26 +195,24 @@ class PerkHandler(commands.Cog):
                 f":camping: {user_name} {log_char_string}a survécu {hoursAlive} heure(s). Quelle sera la prochaine étape?",
                 f":walking: {user_name} {log_char_string}a brisé le silence, {hoursAlive} heure(s) après avoir commencé. Continuons ainsi!"
             ]
-        elif hoursAlive > 1000:  # Plus de 1000 heures de survie
+        elif hoursAlive < 1000:
             messages = [
-                f":star2: {user_name} {log_char_string}est un maître de la survie avec plus de 1000 heures au compteur! Respect.",
-                f":fire: {user_name} {log_char_string}a dépassé les 1000 heures de survie! Un véritable phénix parmi nous.",
-                f":comet: Avec plus de 1000 heures de survie, {user_name} {log_char_string}brille plus fort que jamais dans le ciel apocalyptique.",
-                f":wizard: {user_name} {log_char_string}est un sorcier de la survie! Plus de 1000 heures d'expériences et de secrets à partager.",
-                f":alien: {user_name} {log_char_string}a exploré des territoires que peu ont vu, survivant plus de 1000 heures. Légendaire!"
-            ]
-        else:  # 500 heures et plus
-            messages = [
-                f":crown: Une légende revient parmi nous! {user_name} {log_char_string}avec plus de 500 heures de survie à son actif.",
-                f":sunglasses: {user_name} {log_char_string}est un véritable vétéran, ayant survécu plus de 500 heures. Chapeau bas!",
-                f":shield: Attention, {user_name} {log_char_string}est là. Avec plus de 500 heures de survie, c'est un pilier de la communauté.",
+                f":crown: Une légende revient parmi nous! {user_name} {log_char_string}avec plus de {hoursAlive} heures de survie à son actif.",
+                f":sunglasses: {user_name} {log_char_string}est un véritable vétéran, ayant survécu plus de {hoursAlive} heures. Chapeau bas!",
+                f":shield: Attention, {user_name} {log_char_string}est là. Avec plus de {hoursAlive} heures de survie, c'est un pilier de la communauté.",
                 f":crossed_swords: {user_name} {log_char_string}le survivant légendaire est de retour, prêt à ajouter plus d'heures à son palmarès!",
-                f":trophy: {user_name} {log_char_string}a franchi le cap des 500 heures! Un exploit à célébrer."
+                f":trophy: {user_name} {log_char_string}a franchi le cap des {hoursAlive} heures! Un exploit à célébrer."
+            ]
+        else:
+            messages = [
+                f":star2: {user_name} {log_char_string}est un maître de la survie avec plus de {hoursAlive} heures au compteur! Respect.",
+                f":fire: {user_name} {log_char_string}a dépassé les {hoursAlive} heures de survie! Un véritable phénix parmi nous.",
+                f":comet: Avec plus de {hoursAlive} heures de survie, {user_name} {log_char_string}brille plus fort que jamais dans le ciel apocalyptique.",
+                f":wizard: {user_name} {log_char_string}est un sorcier de la survie! Plus de {hoursAlive} heures d'expériences et de secrets à partager.",
+                f":alien: {user_name} {log_char_string}a exploré des territoires que peu ont vu, survivant plus de {hoursAlive} heures. Légendaire!"
             ]
 
-        # Choose a random message from the appropriate list
         return random.choice(messages)
-
     def get_level_up_message(self, user_name, perk, level, log_char_string):
         if level == 1:
             messages = [
