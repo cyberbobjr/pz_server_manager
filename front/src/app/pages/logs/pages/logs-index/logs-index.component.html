@@ -1,0 +1,56 @@
+<div>
+  <h2>Search Logs</h2>
+  <form (ngSubmit)="searchLogs()" [formGroup]="searchForm">
+    <mat-form-field appearance="fill">
+      <mat-label>Player</mat-label>
+      <input type="text"
+             placeholder="Pick one"
+             aria-label="Number"
+             matInput
+             formControlName="player"
+             [matAutocomplete]="auto">
+      <mat-autocomplete #auto="matAutocomplete">
+        @for (option of filteredplayers$ | async; track option) {
+        <mat-option [value]="option">{{option}}</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Start Date</mat-label>
+      <mat-datetimepicker-toggle matSuffix
+                                 [for]="startPicker"></mat-datetimepicker-toggle>
+      <mat-datetimepicker #startPicker
+                          openOnFocus="true"
+                          timeInterval="5"></mat-datetimepicker>
+      <input matInput
+             [matDatetimepicker]="startPicker"
+             autocomplete="false"
+             formControlName="startDate">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>End Date</mat-label>
+      <input matInput
+             [matDatetimepicker]="endPicker"
+             autocomplete="false"
+             formControlName="endDate">
+      <mat-datetimepicker-toggle matIconSuffix [for]="endPicker"></mat-datetimepicker-toggle>
+      <mat-datetimepicker #endPicker></mat-datetimepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Log Type</mat-label>
+      <mat-select formControlName="logType" name="logType">
+        <mat-option *ngFor="let type of logTypes" [value]="type">
+          {{ type }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">Search</button>
+  </form>
+
+  <div *ngIf="loading$ | async">Loading...</div>
+  <div *ngIf="error$ | async as error">Error: {{ error }}</div>
+  <div *ngIf="logs$ | async as logs">
+    <h3>Logs:</h3>
+    <pre>{{ logs | json }}</pre>
+  </div>
+</div>

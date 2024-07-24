@@ -30,6 +30,10 @@ const routes: Routes = [
       {
         path: 'mods',
         loadChildren: () => import('./pages/mods/mods.module').then((m) => m.ModsModule),
+      },
+      {
+        path: 'logs',
+        loadChildren: () => import('./pages/logs/logs.module').then((m) => m.LogsModule),
       }
     ],
   },

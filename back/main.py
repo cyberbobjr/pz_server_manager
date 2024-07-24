@@ -8,7 +8,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from libs.security import decode_jwt
 from pz_setup import app_config
-from routes import auth, mods, server, config, modpacks
+from routes import auth, mods, server, config, modpacks, logs
 
 angular_static_path = os.path.join(os.path.dirname(__file__), 'front')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -22,6 +22,7 @@ app.add_middleware(CORSMiddleware,
                    allow_headers=["*"])
 
 app.include_router(auth.router, prefix="/api")
+app.include_router(logs.router, prefix="/api", dependencies=[Depends(decode_jwt)])
 app.include_router(server.router, prefix="/api", dependencies=[Depends(decode_jwt)])
 app.include_router(mods.router, prefix="/api", dependencies=[Depends(decode_jwt)])
 app.include_router(config.router, prefix="/api", dependencies=[Depends(decode_jwt)])

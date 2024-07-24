@@ -8,6 +8,13 @@ import {PzConfigTypeEnum} from "@core/interfaces/PzConfigFileType";
 import {SteamPublishedFileDetails} from "@core/interfaces/SteamPublishedFileDetails";
 import {PzServerManagerConfig} from "@core/interfaces/PzServerManagerConfig";
 
+export interface LogSearchRequest {
+  player?: string;
+  start_date?: string;
+  end_date?: string;
+  log_type?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -91,5 +98,23 @@ export class PzServerService {
       .pipe(
         map(r => r.msg)
       );
+  }
+
+  getLogList(): Observable<string[]> {
+    return this.httpClient.get<{ success: boolean, msg: string[] }>(`${environment.baseUrl}/logs/list_files`)
+      .pipe(
+        map(r => r.msg)
+      );
+  }
+
+  getPlayersInLog(): Observable<string[]> {
+    return this.httpClient.get<{ success: boolean, msg: string[] }>(`${environment.baseUrl}/logs/get_players`)
+      .pipe(
+        map(r => r.msg)
+      );
+  }
+
+  searchLogs(params: LogSearchRequest): Observable<any> {
+    return this.httpClient.post<any>(`${environment.baseUrl}/logs/search`, params);
   }
 }

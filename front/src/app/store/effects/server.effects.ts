@@ -5,18 +5,18 @@ import {
   getConfig,
   getPlayers,
   getPlayersCount,
-  getStatus,
+  getStatus, loadLogList, loadLogPlayers,
   loadModsIni,
   loadServerManagerConfig,
   saveConfig,
   saveMods,
-  saveServerManagerConfig,
+  saveServerManagerConfig, searchLogs, searchLogsFailure, searchLogsSuccess,
   searchMods,
   sendCommand,
   sendServerAction,
   serverStatusError,
   setCommandResult,
-  setConfig,
+  setConfig, setLogList, setLogPlayers,
   setModsIni,
   setPlayers,
   setPlayersCount,
@@ -24,7 +24,7 @@ import {
   setServerConfig,
   setStatus
 } from "../actions/server.actions";
-import {catchError, exhaustMap, filter, map, of, withLatestFrom} from "rxjs";
+import {catchError, exhaustMap, filter, map, mergeMap, of, withLatestFrom} from "rxjs";
 import {PzStatus} from "@core/interfaces/PzStatus";
 import {PzServerReturn} from "@core/interfaces/PzServerReturn";
 import {PzServerAction} from "@core/interfaces/PzServerAction";
@@ -244,6 +244,37 @@ export class ServerEffects {
         ))
     )
   )
+
+  loadPlayersInLog$ = createEffect(() => this.actions$.pipe(
+    ofType(loadLogPlayers),
+    exhaustMap(() => this.service.getPlayersInLog()
+      .pipe(
+        map(players => {
+          return setLogPlayers({players})
+        }),
+        catchError(error => {
+          console.error(error);
+          return of(serverStatusError());
+        })
+      ))
+  ))
+
+  searchLogs$ = createEffect(() => this.actions$.pipe(
+      ofType(searchLogs),
+      mergeMap(action =>
+        this.service.searchLogs({
+          player: action.player,
+          start_date: action.startDate,
+          end_date: action.endDate,
+          log_type: action.logType
+        }).pipe(
+          map(r => r.msg),
+          map(logs => searchLogsSuccess({logs})),
+          catchError(error => of(searchLogsFailure({error})))
+        )
+      )
+    )
+  );
 
   constructor(
     private actions$: Actions,

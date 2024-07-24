@@ -52,3 +52,20 @@ export const setPlayers = createAction('[PZ SERVER] - Set players', props<{ play
 export const loadModpacks = createAction('[Modpack] Load Modpacks');
 export const loadModpacksSuccess = createAction('[Modpack] Load Modpacks Success', props<{ modpacks: Modpack[] }>());
 export const loadModpacksFailure = createAction('[Modpack] Load Modpacks Failure', props<{ error: any }>());
+export const loadLogList = createAction('[LOGS] Load log files list');
+export const setLogList = createAction('[LOGS] set log files list', props<{ log_list: string[] }>());
+export const loadLogPlayers = createAction('[LOGS] Load log players');
+export const setLogPlayers = createAction('[LOGS] set log players', props<{ players: string[] }>());
+export const searchLogs = createAction(
+  '[LOGS] Search Logs',
+  props<{ player?: string; startDate?: string; endDate?: string; logType?: string }>()
+);
+
+export const searchLogsSuccess = createAction(
+  '[LOGS] Search Logs Success',
+  props<{ logs: any[] }>()
+);
+export const searchLogsFailure = createAction(
+  '[LOGS] Search Logs Failure',
+  props<{ error: any }>()
+);

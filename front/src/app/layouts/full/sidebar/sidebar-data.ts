@@ -18,5 +18,10 @@ export const navItems: NavItem[] = [
     displayName: 'Settings',
     iconName: 'settings',
     route: '/settings',
+  },
+  {
+    displayName: 'Logs',
+    iconName: 'file',
+    route: '/logs',
   }
 ];

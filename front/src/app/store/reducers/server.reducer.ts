@@ -4,14 +4,14 @@ import {
   addMods,
   deleteMods,
   getConfig,
-  loadInProgressTasksSuccess, loadModpacks, loadModpacksFailure, loadModpacksSuccess,
+  loadInProgressTasksSuccess, loadLogList, loadLogPlayers, loadModpacks, loadModpacksFailure, loadModpacksSuccess,
   loadModsIni,
   saveConfig,
-  saveMods,
+  saveMods, searchLogs, searchLogsFailure, searchLogsSuccess,
   serverStatusError,
   setCommandResult,
   setConfig,
-  setIniConfig,
+  setIniConfig, setLogList, setLogPlayers,
   setModsIni, setPlayers,
   setPlayersCount,
   setSearchedMods,
@@ -36,6 +36,9 @@ export interface PzStore {
   inProgressCount: number;
   serverConfig: PzServerManagerConfig | null;
   modpacks: Modpack[]; // Ajout de la propriété modpacks
+  log_list: string[];
+  logs: any[];
+  error: any | null;
 }
 
 export const initialPzStore: PzStore = {
@@ -52,6 +55,9 @@ export const initialPzStore: PzStore = {
   inProgressCount: 0,
   serverConfig: null,
   modpacks: [], // Initialiser modpacks comme un tableau vide
+  log_list: [],
+  logs: [],
+  error: null
 }
 
 export const pzReducer = createReducer(
@@ -182,5 +188,20 @@ export const pzReducer = createReducer(
     ...state,
     loading: false,
     error: error
-  }))
+  })),
+  on(loadLogList, (state) => ({...state, loading: true})),
+  on(setLogList, (state, log_list) => ({...state, ...log_list, loading: false})),
+
+  on(loadLogPlayers, (state) => ({...state, loading: true})),
+  on(setLogPlayers, (state, {players}) => {
+    return {
+      ...state,
+      players: [...players].sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'})),
+      loading: false
+    };
+  }),
+
+  on(searchLogs, (state) => ({...state, loading: true, error: null})),
+  on(searchLogsSuccess, (state, {logs}) => ({...state, logs, loading: false})),
+  on(searchLogsFailure, (state, {error}) => ({...state, error, loading: false})),
 )

@@ -3,6 +3,7 @@ import os
 from libs.Bootstrap import Bootstrap
 from libs.Config import init_config
 from libs.PZGame import PZGame
+from libs.PZLog import PZLog
 from libs.PZRcon import PZRcon
 from libs.Steam import Steam
 from libs.Steamcmd import Steamcmd, SteamcmdException
@@ -40,5 +41,5 @@ pzGame = PZGame(app_config["pz"]["pz_exe_path"], app_config["pz"]["server_path"]
 
 pzRcon = PZRcon(app_config["rcon"]["host"], app_config["rcon"]["port"], app_config["rcon"]["password"])
 pzGame.pz_rcon = pzRcon
-
+pzLog = PZLog(app_config["pz"]["server_path"])
 pzMonitoring = app_config["pz"]["monitoring"]
