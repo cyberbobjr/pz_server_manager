@@ -27,7 +27,7 @@ export class LogsIndexComponent implements OnInit {
   startDate?: string;
   endDate?: string;
   logType?: string;
-  logTypes: string[] = ['ITEMS', 'MAPS', 'ACTIONS', 'PERKS'];
+  logTypes: string[] = ['ITEM', 'MAP', 'ACTION', 'PERK'];
 
   constructor(private store: Store<{ pzStore: PzStore }>,
               private fb: FormBuilder) {
