@@ -1,61 +1,55 @@
-﻿aio-mc-rcon==3.2.0
-aiohttp==3.9.3
-aiosignal==1.3.1
-anyio==3.6.2
-attrs==23.2.0
-autopep8==2.0.1
-certifi==2022.12.7
-charset-normalizer==2.1.1
-click==8.1.3
-colorama==0.4.6
-commonmark==0.9.1
-DateTime==4.9
-discord.py==2.3.2
-docopt==0.6.2
-fastapi==0.89.1
-file-read-backwards==3.0.0
-frozenlist==1.4.1
-h11==0.14.0
-httptools==0.5.0
-idna==3.4
-importlib-metadata==6.0.0
-itsdangerous==2.1.2
-Jinja2==3.1.2
-keyboard==0.13.5
-MarkupSafe==2.1.1
-mcrcon==0.7.0
-monotonic==1.6
-multidict==6.0.5
-pillow==11.0.0
-psutil==5.9.8
-pycodestyle==2.10.0
-pydantic==1.10.4
-Pygments==2.13.0
-PyJWT==2.6.0
-pysteamcmd==0.3.0
-python-dotenv==0.21.0
-python-multipart==0.0.5
-pytz==2022.7
-PyYAML==6.0
-rcon @ git+https://github.com/ttk1/py-rcon.git@034dcae666c864a666e9e1d62e4f22c585970904
-requests==2.28.1
-rich==12.5.1
-six==1.16.0
-sniffio==1.3.0
-starlette==0.22.0
-tabulate==0.9.0
-textual==0.1.18
-tomli==2.0.1
-typing_extensions==4.4.0
-unicode==2.9
-urllib3==1.26.13
-uuid==1.30
-uvicorn==0.20.0
-vdf==3.4
-watchfiles==0.18.1
-websockets==10.4
-Werkzeug==2.2.2
-yarl==1.9.4
-zipp==3.11.0
-zope.interface==5.5.2
+# --- Serveur Web & API ---
+fastapi>=0.115.0
+uvicorn[standard]
+pydantic>=2.0
+python-multipart
+starlette
+itsdangerous
+jinja2
 
+# --- Client HTTP & Réseau ---
+aiohttp>=3.10.0
+requests
+urllib3
+websockets
+certifi
+charset-normalizer
+yarl
+multidict
+aiosignal
+frozenlist
+
+# --- Utilitaires Système & Admin ---
+psutil
+python-dotenv
+pyyaml>=6.0.1
+click
+colorama
+watchfiles
+anyio
+sniffio
+typing-extensions
+
+# --- Outils de Gestion de Serveur (PZ/Steam) ---
+pysteamcmd
+vdf
+mcrcon
+aio-mc-rcon
+# Installation directe depuis GitHub pour rcon
+rcon @ git+https://github.com/ttk1/py-rcon.git@034dcae666c864a666e9e1d62e4f22c585970904
+
+# --- Interface & Affichage ---
+textual
+rich
+pygments
+tabulate
+pillow>=11.0.0
+
+# --- Temps & Données ---
+pytz
+datetime
+six
+
+# --- Développement & Qualité ---
+autopep8
+pycodestyle
